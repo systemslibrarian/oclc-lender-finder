@@ -7,7 +7,15 @@
 <meta name="description" content="Faceted search to identify and discover ILL lender libraries from OCLC Borrower reports and a peer directory.">
 <meta name="theme-color" content="#185fa5">
 <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23185fa5'/><text x='16' y='22' font-size='18' text-anchor='middle' fill='white' font-family='system-ui,sans-serif' font-weight='600'>L</text></svg>">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="stylesheet" href="styles.css">
+<script>
+  if ('serviceWorker' in navigator && location.protocol !== 'file:' && location.search.indexOf('test=1') < 0) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW registration failed:', err));
+    });
+  }
+</script>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to results</a>
@@ -38,6 +46,7 @@
 </header>
 
 <div class="sr-only" id="aria-live-status" aria-live="polite" aria-atomic="true"></div>
+<div class="toast-stack" id="toast-stack" aria-live="polite"></div>
 
 <main class="layout" id="rankings-view">
   <button class="filter-toggle" type="button" aria-expanded="false" aria-controls="rankings-facets" data-filter-toggle="rankings">
@@ -121,6 +130,11 @@
       <label class="facet"><span><input type="checkbox" data-facet="hist" value="consistent">Seen in 3+ months</span></label>
     </section>
 
+    <section class="facet-group">
+      <h3>Saved holdings groups</h3>
+      <div class="saved-groups-list" id="saved-groups-rankings"></div>
+    </section>
+
     <button class="link-btn" id="reset-filters">Reset all filters</button>
   </aside>
 
@@ -140,6 +154,7 @@
           <option value="volume">Sort: volume</option>
           <option value="consistency">Sort: consistency</option>
         </select>
+        <button class="ghost-btn" id="compare-btn" type="button" hidden>Compare periods</button>
         <button id="build-group-btn" class="primary-btn">Build holdings group</button>
       </div>
     </div>
@@ -221,6 +236,11 @@
       <p class="upload-status" id="backend-status" style="margin-top:6px;"></p>
     </section>
 
+    <section class="facet-group">
+      <h3>Saved holdings groups</h3>
+      <div class="saved-groups-list" id="saved-groups-discover"></div>
+    </section>
+
     <button class="link-btn" id="reset-dir-filters">Reset Discover filters</button>
   </aside>
 
@@ -240,10 +260,13 @@
           <option value="name">Sort: name</option>
           <option value="state">Sort: state</option>
         </select>
+        <button class="ghost-btn" id="map-toggle" type="button" aria-pressed="false">Map view</button>
+        <button class="ghost-btn" id="bulk-policy-btn" type="button" hidden>Fetch policies (0)</button>
         <button id="dir-build-btn" class="primary-btn">Build holdings group</button>
       </div>
     </div>
     <div class="filter-chips" id="discover-chips" hidden aria-label="Active filters"></div>
+    <div id="map-container" hidden></div>
     <div id="dir-export-panel"></div>
     <div id="dir-list" role="list"></div>
   </section>
@@ -253,8 +276,13 @@
   <p>
     Data stays in your browser — nothing is uploaded to a server. Reports and directory entries persist in localStorage.
     <span class="footer-sep">·</span>
-    <button class="footer-link" id="footer-help" type="button">Keyboard shortcuts</button>
+    <button class="footer-link" id="footer-export" type="button">Export session</button>
+    <span class="footer-sep">·</span>
+    <button class="footer-link" id="footer-import" type="button">Import session</button>
+    <span class="footer-sep">·</span>
+    <button class="footer-link" id="footer-help" type="button">Help &amp; shortcuts</button>
   </p>
+  <input type="file" id="session-import-input" accept=".json,application/json" style="display:none;">
 </footer>
 
 <div class="modal-backdrop" id="modal-backdrop" hidden>

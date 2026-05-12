@@ -1,0 +1,112 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: JavaScript syntax check
+        run: node --check app.js
+
+      - name: Validate directory JSON
+        run: |
+          node -e "
+            const fs = require('fs');
+            const d = JSON.parse(fs.readFileSync('lenders-directory.json', 'utf8'));
+            if (!Array.isArray(d.lenders)) { console.error('Missing lenders[]'); process.exit(1); }
+            const seen = new Set();
+            d.lenders.forEach(l => {
+              if (!l.symbol || !l.name) { console.error('Entry missing symbol or name:', l); process.exit(1); }
+              if (seen.has(l.symbol)) { console.error('Duplicate symbol:', l.symbol); process.exit(1); }
+              seen.add(l.symbol);
+            });
+            console.log('Directory OK:', d.lenders.length, 'entries');
+          "
+
+      - name: Validate manifest JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('manifest.webmanifest','utf8'))"
+
+      - name: Cross-check HTML element IDs referenced by JS
+        run: |
+          node -e "
+            const fs = require('fs');
+            const html = fs.readFileSync('index.html', 'utf8');
+            const js = fs.readFileSync('app.js', 'utf8');
+            const ids = new Set([...html.matchAll(/id=\"([^\"]+)\"/g)].map(m => m[1]));
+            const refs = [...new Set([...js.matchAll(/getElementById\(['\"]([^'\"]+)['\"]\)/g)].map(m => m[1]))];
+            const dynamic = ['empty-upload-cta', 'empty-sample-cta', 'leaflet-map', 'compare-body', 'compare-results', 'compare-close', 'compare-export-csv', 'session-cancel', 'session-merge', 'session-replace', 'csv-cancel', 'csv-apply'];
+            const missing = refs.filter(id => !ids.has(id) && !dynamic.includes(id));
+            if (missing.length) { console.error('Missing IDs:', missing); process.exit(1); }
+            console.log('All', refs.length, 'JS-referenced IDs accounted for');
+          "
+
+      - name: Verify static files load
+        run: |
+          python3 -m http.server 8000 &
+          sleep 2
+          for f in index.html app.js styles.css lenders-directory.json tests.html manifest.webmanifest sw.js; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8000/$f")
+            if [ "$code" != "200" ]; then
+              echo "Failed to load $f (HTTP $code)"
+              exit 1
+            fi
+            echo "✓ $f"
+          done
+
+  tests:
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npm install --silent playwright@1.48.0
+          npx playwright install --with-deps chromium
+
+      - name: Run browser test suite
+        run: |
+          python3 -m http.server 8000 > /dev/null 2>&1 &
+          sleep 2
+          node -e "
+            const { chromium } = require('playwright');
+            (async () => {
+              const browser = await chromium.launch();
+              const page = await browser.newPage();
+              let consoleErrors = [];
+              page.on('pageerror', err => consoleErrors.push(err.message));
+              await page.goto('http://localhost:8000/tests.html?test=1', { waitUntil: 'networkidle' });
+              const result = await page.locator('#summary').textContent();
+              console.log('Result:', result);
+              const failed = await page.locator('.case.fail').count();
+              if (failed > 0 || consoleErrors.length > 0) {
+                if (consoleErrors.length) console.error('Page errors:', consoleErrors);
+                const fails = await page.locator('.case.fail').allTextContents();
+                fails.forEach(f => console.error('FAIL:', f));
+                await browser.close();
+                process.exit(1);
+              }
+              await browser.close();
+            })().catch(e => { console.error(e); process.exit(1); });
+          "

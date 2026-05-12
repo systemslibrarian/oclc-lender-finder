@@ -1,21 +1,27 @@
 {
   "_meta": {
-    "description": "Starter directory of US libraries that participate in ILL via OCLC Resource Sharing. This is a small, conservatively-verified seed. Build out the real directory by uploading a CSV in the Discover tab — sources to use: your past OCLC Lender Detail reports, the OCLC Policies Directory, your consortium's member list, or directories from peer institutions.",
+    "description": "Starter directory of US libraries that participate in ILL via OCLC Resource Sharing. Bundled entries are conservatively chosen; verify OCLC symbols against the OCLC Policies Directory before relying on them in production. Use the Discover tab's CSV import to add your own entries — your imports override bundled rows with the same symbol.",
     "lastUpdated": "2026-05",
-    "version": 1,
+    "version": 2,
     "fields": {
-      "symbol": "OCLC institution symbol",
+      "symbol": "OCLC institution symbol (verify against OCLC Policies Directory)",
       "name": "Institution name",
       "state": "Two-letter US state code",
-      "type": "Library type matching OCLC reports (Academic / Public / Special / Federal/Natl Government / State Library / Major Academic Research / Corporate / Theological / Other)",
-      "groups": "Profiled groups and consortia (LVIS, ASERL, ERG, ARL, etc.)",
+      "type": "Library type matching OCLC reports",
+      "groups": "Profiled groups and consortia (LVIS, ASERL, BTAA, ARL, etc.)",
       "lat": "Approximate latitude for distance filtering",
       "lng": "Approximate longitude for distance filtering"
-    }
+    },
+    "sources_to_grow_directory": [
+      "OCLC Policies Directory (https://illpolicies.oclc.org/) — canonical source for symbols, contacts, fees",
+      "Past Lender Detail reports — every library that has borrowed from you",
+      "Your consortium roster (ASERL, LVIS, BTAA, GWLA, etc.)",
+      "Peer institutions — ask an ILL coordinator at another library to share theirs"
+    ]
   },
   "lenders": [
-    {"symbol": "FUG", "name": "University of Florida", "state": "FL", "type": "Academic", "groups": ["ASERL"], "lat": 29.6516, "lng": -82.3248},
-    {"symbol": "FDA", "name": "Florida State University", "state": "FL", "type": "Academic", "groups": ["ASERL"], "lat": 30.4419, "lng": -84.2985},
+    {"symbol": "FUG", "name": "University of Florida", "state": "FL", "type": "Academic", "groups": ["ASERL", "ARL"], "lat": 29.6516, "lng": -82.3248},
+    {"symbol": "FDA", "name": "Florida State University", "state": "FL", "type": "Academic", "groups": ["ASERL", "ARL"], "lat": 30.4419, "lng": -84.2985},
     {"symbol": "SFU", "name": "University of South Florida", "state": "FL", "type": "Academic", "groups": ["ASERL"], "lat": 28.0587, "lng": -82.4139},
     {"symbol": "FNP", "name": "University of North Florida, Carpenter Library", "state": "FL", "type": "Academic", "groups": [], "lat": 30.2693, "lng": -81.5113},
     {"symbol": "FJV", "name": "Jacksonville Public Library", "state": "FL", "type": "Public", "groups": [], "lat": 30.3263, "lng": -81.6612},
@@ -24,8 +30,8 @@
     {"symbol": "FJD", "name": "Florida State College at Jacksonville", "state": "FL", "type": "Academic", "groups": [], "lat": 30.3322, "lng": -81.6557},
     {"symbol": "FD8", "name": "Niceville Library", "state": "FL", "type": "Public", "groups": [], "lat": 30.5210, "lng": -86.4824},
     {"symbol": "FLK", "name": "Suwannee River Regional Library System", "state": "FL", "type": "Public", "groups": [], "lat": 30.1894, "lng": -83.1718},
-    {"symbol": "GUA", "name": "University of Georgia Libraries", "state": "GA", "type": "Academic", "groups": ["ASERL"], "lat": 33.9480, "lng": -83.3773},
-    {"symbol": "EMU", "name": "Emory University", "state": "GA", "type": "Academic", "groups": ["ASERL"], "lat": 33.7919, "lng": -84.3232},
+    {"symbol": "GUA", "name": "University of Georgia Libraries", "state": "GA", "type": "Academic", "groups": ["ASERL", "ARL"], "lat": 33.9480, "lng": -83.3773},
+    {"symbol": "EMU", "name": "Emory University", "state": "GA", "type": "Academic", "groups": ["ASERL", "ARL"], "lat": 33.7919, "lng": -84.3232},
     {"symbol": "AUU", "name": "Atlanta University Center Robert W. Woodruff Library", "state": "GA", "type": "Academic", "groups": [], "lat": 33.7556, "lng": -84.4101},
     {"symbol": "EGA", "name": "Agnes Scott College", "state": "GA", "type": "Academic", "groups": [], "lat": 33.7681, "lng": -84.2949},
     {"symbol": "JBL", "name": "Arlington Heights Memorial Library", "state": "IL", "type": "Public", "groups": [], "lat": 42.0884, "lng": -87.9806},
@@ -37,6 +43,29 @@
     {"symbol": "YAH", "name": "Alfred University", "state": "NY", "type": "Academic", "groups": [], "lat": 42.2542, "lng": -77.7891},
     {"symbol": "QUE", "name": "Albuquerque Bernalillo County Library System", "state": "NM", "type": "Public", "groups": [], "lat": 35.0844, "lng": -106.6504},
     {"symbol": "LHL", "name": "Linda Hall Library", "state": "MO", "type": "Special", "groups": [], "lat": 39.0345, "lng": -94.5783},
-    {"symbol": "DLC", "name": "Library of Congress", "state": "DC", "type": "Federal/Natl Government", "groups": [], "lat": 38.8887, "lng": -77.0047}
+    {"symbol": "DLC", "name": "Library of Congress", "state": "DC", "type": "Federal/Natl Government", "groups": [], "lat": 38.8887, "lng": -77.0047},
+    {"symbol": "NLM", "name": "National Library of Medicine", "state": "MD", "type": "Federal/Natl Government", "groups": [], "lat": 39.0008, "lng": -77.1027},
+    {"symbol": "AGL", "name": "National Agricultural Library", "state": "MD", "type": "Federal/Natl Government", "groups": [], "lat": 39.0301, "lng": -76.9281},
+    {"symbol": "SMI", "name": "Smithsonian Institution Libraries", "state": "DC", "type": "Federal/Natl Government", "groups": [], "lat": 38.8881, "lng": -77.0260},
+    {"symbol": "CRL", "name": "Center for Research Libraries", "state": "IL", "type": "Special", "groups": [], "lat": 41.7903, "lng": -87.6018},
+    {"symbol": "NYP", "name": "New York Public Library, Research Libraries", "state": "NY", "type": "Public", "groups": ["ARL"], "lat": 40.7532, "lng": -73.9822},
+    {"symbol": "BPL", "name": "Boston Public Library", "state": "MA", "type": "Public", "groups": ["ARL"], "lat": 42.3494, "lng": -71.0782},
+    {"symbol": "CGP", "name": "Chicago Public Library", "state": "IL", "type": "Public", "groups": [], "lat": 41.8763, "lng": -87.6280},
+    {"symbol": "DKC", "name": "Detroit Public Library", "state": "MI", "type": "Public", "groups": [], "lat": 42.3590, "lng": -83.0707},
+    {"symbol": "LAP", "name": "Los Angeles Public Library", "state": "CA", "type": "Public", "groups": [], "lat": 34.0506, "lng": -118.2557},
+    {"symbol": "QSF", "name": "San Francisco Public Library", "state": "CA", "type": "Public", "groups": [], "lat": 37.7793, "lng": -122.4159},
+    {"symbol": "QQS", "name": "Seattle Public Library", "state": "WA", "type": "Public", "groups": [], "lat": 47.6065, "lng": -122.3326},
+    {"symbol": "DCS", "name": "DC Public Library", "state": "DC", "type": "Public", "groups": [], "lat": 38.8989, "lng": -77.0179},
+    {"symbol": "MPH", "name": "Philadelphia, Free Library of", "state": "PA", "type": "Public", "groups": [], "lat": 39.9586, "lng": -75.1718},
+    {"symbol": "MNV", "name": "University of Minnesota", "state": "MN", "type": "Academic", "groups": ["BTAA", "ARL"], "lat": 44.9740, "lng": -93.2274},
+    {"symbol": "VA@", "name": "University of Virginia", "state": "VA", "type": "Academic", "groups": ["ASERL", "ARL"], "lat": 38.0362, "lng": -78.5067},
+    {"symbol": "TJC", "name": "Vanderbilt University", "state": "TN", "type": "Academic", "groups": ["ASERL", "ARL"], "lat": 36.1453, "lng": -86.8027},
+    {"symbol": "LRU", "name": "Louisiana State University", "state": "LA", "type": "Academic", "groups": ["ASERL", "ARL"], "lat": 30.4133, "lng": -91.1800},
+    {"symbol": "VPI", "name": "Virginia Tech", "state": "VA", "type": "Academic", "groups": ["ASERL", "ARL"], "lat": 37.2278, "lng": -80.4232},
+    {"symbol": "AAA", "name": "Auburn University", "state": "AL", "type": "Academic", "groups": ["ASERL"], "lat": 32.5945, "lng": -85.4854},
+    {"symbol": "TKN", "name": "University of Tennessee, Knoxville", "state": "TN", "type": "Academic", "groups": ["ASERL", "ARL"], "lat": 35.9542, "lng": -83.9295},
+    {"symbol": "KUK", "name": "University of Kentucky", "state": "KY", "type": "Academic", "groups": ["ASERL", "ARL"], "lat": 38.0357, "lng": -84.5040},
+    {"symbol": "NOC", "name": "University of North Carolina, Chapel Hill", "state": "NC", "type": "Academic", "groups": ["ASERL", "ARL"], "lat": 35.9100, "lng": -79.0469},
+    {"symbol": "NRC", "name": "North Carolina State University", "state": "NC", "type": "Academic", "groups": ["ASERL", "ARL"], "lat": 35.7873, "lng": -78.6688}
   ]
 }

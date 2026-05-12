@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lender Finder · tests</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; max-width: 840px; margin: 30px auto; padding: 0 20px; color: #222; }
+  h1 { font-size: 20px; margin: 0 0 6px; }
+  .lede { color: #666; margin: 0 0 20px; font-size: 13px; }
+  .summary { padding: 12px 16px; border-radius: 8px; font-weight: 600; margin: 16px 0; }
+  .summary.pass { background: #eaf3de; color: #3b6d11; }
+  .summary.fail { background: #fbe7e6; color: #a32d2d; }
+  .group { margin: 18px 0 8px; font-size: 13px; font-weight: 600; color: #444; text-transform: uppercase; letter-spacing: 0.05em; }
+  .case { padding: 6px 12px; border-left: 3px solid #ccc; margin: 4px 0; font-family: ui-monospace, SF Mono, Menlo, monospace; font-size: 13px; }
+  .case.pass { border-left-color: #3b6d11; background: #f4f9ec; }
+  .case.fail { border-left-color: #a32d2d; background: #fdf0ef; color: #a32d2d; }
+  .case .msg { color: #666; font-size: 11px; margin-top: 2px; font-family: -apple-system, system-ui, sans-serif; }
+  .case.fail .msg { color: #a32d2d; }
+  pre { white-space: pre-wrap; font-size: 11px; margin: 4px 0 0; color: #666; }
+  a { color: #185fa5; }
+</style>
+</head>
+<body>
+<h1>Lender Finder · test suite</h1>
+<p class="lede">Pure-function tests for parsers and scoring. Run by opening this file in any browser. <a href="index.html">← back to app</a></p>
+
+<div id="summary" class="summary">Running tests…</div>
+<div id="output"></div>
+
+<script src="app.js?test=1"></script>
+<script>
+(function () {
+  'use strict';
+
+  const T = window.__lenderFinderTest;
+  if (!T) {
+    document.getElementById('summary').textContent = 'Test harness failed to load.';
+    document.getElementById('summary').className = 'summary fail';
+    return;
+  }
+
+  const groups = {};
+  let passes = 0, fails = 0;
+  function test(group, name, fn) {
+    groups[group] = groups[group] || [];
+    try {
+      fn();
+      groups[group].push({ name, ok: true });
+      passes++;
+    } catch (e) {
+      groups[group].push({ name, ok: false, err: e && e.message || String(e) });
+      fails++;
+    }
+  }
+  function assert(cond, msg) { if (!cond) throw new Error(msg || 'assertion failed'); }
+  function assertEq(a, b, msg) {
+    if (a !== b) throw new Error((msg || 'expected equal') + ` — got ${JSON.stringify(a)}, expected ${JSON.stringify(b)}`);
+  }
+  function assertClose(a, b, eps, msg) {
+    if (Math.abs(a - b) > (eps || 0.01)) throw new Error((msg || 'expected ~equal') + ` — got ${a}, expected ${b} ± ${eps || 0.01}`);
+  }
+
+  /* ------------ parseTurnaround ------------ */
+
+  test('parseTurnaround', 'parses dd:hh:mm into hours', () => {
+    assertEq(T.parseTurnaround('01:00:00'), 24);
+    assertEq(T.parseTurnaround('02:12:00'), 60);
+    assertEq(T.parseTurnaround('00:00:30'), 0.5);
+  });
+  test('parseTurnaround', 'returns 0 for empty/malformed', () => {
+    assertEq(T.parseTurnaround(''), 0);
+    assertEq(T.parseTurnaround(null), 0);
+    assertEq(T.parseTurnaround('1:2'), 0);
+    assertEq(T.parseTurnaround('abc'), 0);
+  });
+
+  /* ------------ parseCSVRow ------------ */
+
+  test('parseCSVRow', 'splits simple comma row', () => {
+    const r = T.parseCSVRow('a,b,c');
+    assertEq(r.length, 3);
+    assertEq(r[0], 'a');
+    assertEq(r[2], 'c');
+  });
+  test('parseCSVRow', 'handles quoted fields with commas', () => {
+    const r = T.parseCSVRow('a,"b,c",d');
+    assertEq(r.length, 3);
+    assertEq(r[1], 'b,c');
+  });
+  test('parseCSVRow', 'handles escaped quotes', () => {
+    const r = T.parseCSVRow('a,"b""c",d');
+    assertEq(r[1], 'b"c');
+  });
+
+  /* ------------ parseOCLCReport ------------ */
+
+  const sampleReport = [
+    'OCLC WorldShare Reports',
+    'Institution\tFlorida State University',
+    'Reporting Period\tJan 2026',
+    '',
+    'Institution Name\tInstitution Symbol\tInstitution State\tLibrary Type\tRequests To Lender\tRequests Filled\tRequests Unfilled\tAverage Turnaround Time For Filled Requests (dd:hh:mm)',
+    'University of Florida\tFUG\tFL\tAcademic\t12\t10\t2\t01:08:00',
+    'Library of Congress\tDLC\tDC\tFederal/Natl Government\t5\t5\t0\t02:00:00',
+    '\t\t\t\t\t\t\t'
+  ].join('\n');
+
+  test('parseOCLCReport', 'parses period and institution from headers', () => {
+    const r = T.parseOCLCReport(sampleReport);
+    assertEq(r.period, 'Jan 2026');
+    assertEq(r.institution, 'Florida State University');
+  });
+  test('parseOCLCReport', 'extracts rows with normalized fields', () => {
+    const r = T.parseOCLCReport(sampleReport);
+    assertEq(r.rows.length, 2);
+    assertEq(r.rows[0].symbol, 'FUG');
+    assertEq(r.rows[0].state, 'FL');
+    assertEq(r.rows[0].filled, 10);
+    assertEq(r.rows[0].requested, 12);
+    assertClose(r.rows[0].avgHours, 32, 0.5);
+  });
+  test('parseOCLCReport', 'rejects Lender (non-Borrower) reports', () => {
+    const bad = sampleReport.replace('Requests To Lender', 'Requests From Borrower');
+    let threw = false;
+    try { T.parseOCLCReport(bad); } catch (e) { threw = true; assert(/Borrower/i.test(e.message)); }
+    assert(threw, 'expected an error for non-Borrower reports');
+  });
+  test('parseOCLCReport', 'rejects unparseable input', () => {
+    let threw = false;
+    try { T.parseOCLCReport('totally not a report'); } catch (e) { threw = true; }
+    assert(threw, 'expected an error for garbage input');
+  });
+
+  /* ------------ parseDirectoryCSV ------------ */
+
+  const sampleCSV = [
+    'symbol,name,state,type,groups,lat,lng',
+    'FUG,University of Florida,FL,Academic,ASERL,29.6516,-82.3248',
+    'FDA,Florida State University,FL,Academic,ASERL;LVIS,30.4419,-84.2985',
+    'DLC,Library of Congress,DC,Federal/Natl Government,,38.8887,-77.0047'
+  ].join('\n');
+
+  test('parseDirectoryCSV', 'parses rows with coordinates', () => {
+    const rows = T.parseDirectoryCSV(sampleCSV);
+    assertEq(rows.length, 3);
+    assertEq(rows[0].symbol, 'FUG');
+    assertEq(rows[0].state, 'FL');
+    assertClose(rows[0].lat, 29.6516, 0.001);
+  });
+  test('parseDirectoryCSV', 'splits semi-colon groups', () => {
+    const rows = T.parseDirectoryCSV(sampleCSV);
+    assertEq(rows[1].groups.length, 2);
+    assertEq(rows[1].groups[0], 'ASERL');
+    assertEq(rows[1].groups[1], 'LVIS');
+  });
+  test('parseDirectoryCSV', 'handles empty groups field', () => {
+    const rows = T.parseDirectoryCSV(sampleCSV);
+    assertEq(rows[2].groups.length, 0);
+  });
+  test('parseDirectoryCSV', 'rejects CSV missing required columns', () => {
+    let threw = false;
+    try { T.parseDirectoryCSV('foo,bar\n1,2'); } catch (e) { threw = true; }
+    assert(threw, 'expected error when symbol/name missing');
+  });
+
+  /* ------------ scoring math ------------ */
+
+  test('scoring', 'fillRate caps at 100 and handles zero', () => {
+    assertEq(T.fillRate({ filled: 10, requested: 10 }), 100);
+    assertEq(T.fillRate({ filled: 5, requested: 10 }), 50);
+    assertEq(T.fillRate({ filled: 0, requested: 0 }), 0);
+    assertEq(T.fillRate({ filled: 15, requested: 10 }), 100);
+  });
+  test('scoring', 'avgDays converts hours correctly', () => {
+    assertClose(T.avgDays({ avgHours: 48 }), 2, 0.01);
+    assertClose(T.avgDays({ avgHours: 0 }), 0, 0.01);
+  });
+  test('scoring', 'consistencyPct computes percent', () => {
+    assertEq(T.consistencyPct({ monthsPresent: 3, monthsSpan: 3 }), 100);
+    assertEq(T.consistencyPct({ monthsPresent: 1, monthsSpan: 4 }), 25);
+    assertEq(T.consistencyPct({ monthsPresent: 0, monthsSpan: 0 }), 0);
+  });
+  test('scoring', 'subscores: 1-day filled lender scores 100 on speed', () => {
+    T.setHomeState('FL');
+    const s = T.subscores({ filled: 5, requested: 5, avgHours: 24, monthsPresent: 1, monthsSpan: 1, state: 'FL' });
+    assertEq(s.speed, 100);
+    assertEq(s.fill, 100);
+    assertEq(s.local, 100);
+  });
+  test('scoring', 'subscores: unfilled lender scores 0 on speed and fill', () => {
+    const s = T.subscores({ filled: 0, requested: 5, avgHours: 0, monthsPresent: 1, monthsSpan: 1, state: 'OH' });
+    assertEq(s.speed, 0);
+    assertEq(s.fill, 0);
+    assertEq(s.local, 0);
+  });
+  test('scoring', 'normalizedWeights sums to ~1', () => {
+    T.setWeights({ speed: 25, fill: 30, volume: 15, consistency: 20, local: 10 });
+    const w = T.normalizedWeights();
+    const total = Object.values(w).reduce((a, b) => a + b, 0);
+    assertClose(total, 1, 0.001);
+  });
+  test('scoring', 'totalScore is bounded 0..100', () => {
+    T.setWeights({ speed: 25, fill: 30, volume: 15, consistency: 20, local: 10 });
+    const lo = T.totalScore({ filled: 0, requested: 10, avgHours: 0, monthsPresent: 1, monthsSpan: 4, state: 'XX' });
+    const hi = T.totalScore({ filled: 100, requested: 100, avgHours: 24, monthsPresent: 4, monthsSpan: 4, state: 'FL' });
+    assert(lo >= 0 && lo <= 100, 'low score out of range: ' + lo);
+    assert(hi >= 0 && hi <= 100, 'high score out of range: ' + hi);
+    assert(hi > lo, 'expected high > low');
+  });
+
+  /* ------------ haversineKm ------------ */
+
+  test('haversineKm', 'returns null if any coord is missing', () => {
+    assertEq(T.haversineKm(null, 0, 0, 0), null);
+    assertEq(T.haversineKm(0, null, 0, 0), null);
+  });
+  test('haversineKm', 'computes distance NYC ↔ LA (~3935 km)', () => {
+    const d = T.haversineKm(40.7128, -74.0060, 34.0522, -118.2437);
+    assertClose(d, 3935, 30);
+  });
+  test('haversineKm', 'kmToMiles conversion', () => {
+    assertClose(T.kmToMiles(100), 62.1371, 0.01);
+  });
+
+  /* ------------ mergeMonths ------------ */
+
+  test('mergeMonths', 'aggregates same symbol across months', () => {
+    T.setMonths([
+      { period: 'Jan', rows: [{ symbol: 'FUG', name: 'Florida', state: 'FL', type: 'Academic', requested: 5, filled: 4, unfilled: 1, avgHours: 24 }] },
+      { period: 'Feb', rows: [{ symbol: 'FUG', name: 'Florida', state: 'FL', type: 'Academic', requested: 10, filled: 8, unfilled: 2, avgHours: 36 }] }
+    ]);
+    const merged = T.mergeMonths();
+    assertEq(merged.length, 1);
+    assertEq(merged[0].requested, 15);
+    assertEq(merged[0].filled, 12);
+    assertEq(merged[0].monthsPresent, 2);
+    assertEq(merged[0].monthsSpan, 2);
+    // Weighted-by-fills average: (24*4 + 36*8) / 12 = 32
+    assertClose(merged[0].avgHours, 32, 0.1);
+  });
+  test('mergeMonths', 'preserves single-month data unchanged', () => {
+    T.setMonths([
+      { period: 'Jan', rows: [{ symbol: 'DLC', name: 'LoC', state: 'DC', type: 'Federal/Natl Government', requested: 3, filled: 3, unfilled: 0, avgHours: 12 }] }
+    ]);
+    const merged = T.mergeMonths();
+    assertEq(merged[0].symbol, 'DLC');
+    assertEq(merged[0].filled, 3);
+    assertEq(merged[0].avgHours, 12);
+  });
+
+  /* ------------ sparkline ------------ */
+
+  test('sparkline', 'returns empty for monthsSpan < 3', () => {
+    const s = T.renderSparkline({ monthsSpan: 2, filledMonths: [1, 1], requestedMonths: [2, 2] });
+    assertEq(s, '');
+  });
+  test('sparkline', 'renders SVG path for 3+ months with data', () => {
+    const s = T.renderSparkline({ monthsSpan: 3, filledMonths: [1, 2, 3], requestedMonths: [2, 4, 4] });
+    assert(s.indexOf('<svg') >= 0, 'expected svg output');
+    assert(s.indexOf('<path') >= 0, 'expected path element');
+  });
+
+  /* ------------ render ------------ */
+
+  const out = document.getElementById('output');
+  Object.keys(groups).forEach(g => {
+    const h = document.createElement('div');
+    h.className = 'group';
+    h.textContent = g;
+    out.appendChild(h);
+    groups[g].forEach(c => {
+      const d = document.createElement('div');
+      d.className = 'case ' + (c.ok ? 'pass' : 'fail');
+      d.textContent = (c.ok ? '✓ ' : '✗ ') + c.name;
+      if (!c.ok) {
+        const m = document.createElement('div');
+        m.className = 'msg';
+        m.textContent = c.err;
+        d.appendChild(m);
+      }
+      out.appendChild(d);
+    });
+  });
+
+  const summary = document.getElementById('summary');
+  const total = passes + fails;
+  summary.textContent = `${passes} / ${total} passing` + (fails ? ` · ${fails} failing` : '');
+  summary.className = 'summary ' + (fails === 0 ? 'pass' : 'fail');
+  document.title = `${fails === 0 ? '✓' : '✗'} ${passes}/${total} · Lender Finder tests`;
+})();
+</script>
+</body>
+</html>

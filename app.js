@@ -5,10 +5,15 @@
   const SETTINGS_KEY = 'lenderFinder.settings.v1';
   const IMPORTED_DIR_KEY = 'lenderFinder.importedDir.v1';
   const UI_KEY = 'lenderFinder.ui.v1';
+  const NOTES_KEY = 'lenderFinder.notes.v1';
+  const SAVED_GROUPS_KEY = 'lenderFinder.savedGroups.v1';
 
   let months = [];
   let bundledDirectory = [];
   let importedDirectory = [];
+  let notes = {};
+  let savedGroups = [];
+  const notesExpanded = new Set();
   let homeState = 'FL';
   let homeLat = 30.4383;
   let homeLng = -84.2807;
@@ -259,6 +264,8 @@
       localStorage.setItem(SETTINGS_KEY, JSON.stringify({ homeState, homeLat, homeLng, weights, backendUrl }));
       localStorage.setItem(IMPORTED_DIR_KEY, JSON.stringify(importedDirectory));
       localStorage.setItem(UI_KEY, JSON.stringify({ activeTab }));
+      localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+      localStorage.setItem(SAVED_GROUPS_KEY, JSON.stringify(savedGroups));
     } catch (e) {
       console.warn('localStorage save failed:', e);
     }
@@ -292,9 +299,140 @@
           activeTab = parsed.activeTab;
         }
       }
+      const n = localStorage.getItem(NOTES_KEY);
+      if (n) {
+        const parsed = JSON.parse(n);
+        if (parsed && typeof parsed === 'object') notes = parsed;
+      }
+      const g = localStorage.getItem(SAVED_GROUPS_KEY);
+      if (g) {
+        const parsed = JSON.parse(g);
+        if (Array.isArray(parsed)) savedGroups = parsed;
+      }
     } catch (e) {
       console.warn('localStorage load failed:', e);
     }
+  }
+
+  function getNote(symbol) { return (notes && notes[symbol]) || ''; }
+  function setNote(symbol, text) {
+    const v = (text || '').trim();
+    if (v) notes[symbol] = v;
+    else delete notes[symbol];
+    saveData();
+  }
+
+  /* ---------- Saved holdings groups ---------- */
+
+  function saveCurrentGroup(name, source) {
+    const trimmed = (name || '').trim();
+    if (!trimmed) { alert('Give the group a name first.'); return null; }
+    const sourceSet = source === 'discover' ? dirSelected : selected;
+    if (sourceSet.size === 0) { alert('Select at least one lender before saving.'); return null; }
+    const symbols = [...sourceSet].sort();
+    const existing = savedGroups.find(g => g.name.toLowerCase() === trimmed.toLowerCase());
+    const now = new Date().toISOString();
+    if (existing) {
+      if (!confirm(`A saved group named "${existing.name}" already exists. Overwrite it?`)) return null;
+      existing.symbols = symbols;
+      existing.source = source;
+      existing.updatedAt = now;
+    } else {
+      savedGroups.push({
+        id: 'g_' + Math.random().toString(36).slice(2, 10),
+        name: trimmed,
+        source,
+        symbols,
+        createdAt: now,
+        updatedAt: now
+      });
+    }
+    saveData();
+    renderSavedGroups();
+    announce(`Saved group "${trimmed}" with ${symbols.length} lenders`);
+    return trimmed;
+  }
+
+  function loadSavedGroup(id, mode) {
+    const g = savedGroups.find(x => x.id === id);
+    if (!g) return;
+    const targetSet = g.source === 'discover' ? dirSelected : selected;
+    if (mode === 'replace') targetSet.clear();
+    g.symbols.forEach(s => targetSet.add(s));
+    if (g.source === 'discover') {
+      if (activeTab !== 'discover') switchTab('discover');
+      renderDiscover();
+    } else {
+      if (activeTab !== 'rankings') switchTab('rankings');
+      renderRankings();
+    }
+    announce(`${mode === 'replace' ? 'Loaded' : 'Appended'} "${g.name}" (${g.symbols.length} lenders)`);
+  }
+
+  function deleteSavedGroup(id) {
+    const idx = savedGroups.findIndex(x => x.id === id);
+    if (idx < 0) return;
+    const snapshot = savedGroups[idx];
+    savedGroups.splice(idx, 1);
+    saveData();
+    renderSavedGroups();
+    showToast({
+      message: `Deleted "${snapshot.name}".`,
+      action: 'Undo',
+      onAction: () => {
+        savedGroups.splice(idx, 0, snapshot);
+        saveData();
+        renderSavedGroups();
+      }
+    });
+  }
+
+  function renderSavedGroups() {
+    ['rankings', 'discover'].forEach(tab => {
+      const wrap = document.getElementById('saved-groups-' + tab);
+      if (!wrap) return;
+      if (savedGroups.length === 0) {
+        wrap.innerHTML = '<p class="hint">No saved groups yet. After selecting lenders, click <em>Build holdings group</em> → <em>Save</em> to keep it for next month.</p>';
+        return;
+      }
+      const sorted = [...savedGroups].sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+      wrap.innerHTML = sorted.map(g => {
+        const when = g.updatedAt ? new Date(g.updatedAt).toLocaleDateString() : '';
+        const src = g.source === 'discover' ? 'Discover' : 'Rankings';
+        return `<div class="saved-group" data-group-id="${escapeHtml(g.id)}">
+          <div class="saved-group-top">
+            <div class="saved-group-name" title="${escapeHtml(g.name)}">${escapeHtml(g.name)}</div>
+            <button class="month-remove" data-delete-group="${escapeHtml(g.id)}" aria-label="Delete ${escapeHtml(g.name)}">×</button>
+          </div>
+          <div class="saved-group-meta">${g.symbols.length} symbols · ${src}${when ? ' · ' + when : ''}</div>
+          <div class="saved-group-actions">
+            <button class="ghost-btn" data-load-group="${escapeHtml(g.id)}" data-mode="replace">Load</button>
+            <button class="ghost-btn" data-load-group="${escapeHtml(g.id)}" data-mode="append">Append</button>
+            <button class="ghost-btn" data-copy-group="${escapeHtml(g.id)}">Copy symbols</button>
+          </div>
+        </div>`;
+      }).join('');
+      wrap.querySelectorAll('[data-load-group]').forEach(btn => {
+        btn.addEventListener('click', () => loadSavedGroup(btn.dataset.loadGroup, btn.dataset.mode));
+      });
+      wrap.querySelectorAll('[data-delete-group]').forEach(btn => {
+        btn.addEventListener('click', () => deleteSavedGroup(btn.dataset.deleteGroup));
+      });
+      wrap.querySelectorAll('[data-copy-group]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const g = savedGroups.find(x => x.id === btn.dataset.copyGroup);
+          if (!g) return;
+          try {
+            await navigator.clipboard.writeText(g.symbols.join(' '));
+            const orig = btn.textContent;
+            btn.textContent = '✓ Copied';
+            setTimeout(() => { btn.textContent = orig; }, 1500);
+          } catch (e) {
+            alert(g.symbols.join(' '));
+          }
+        });
+      });
+    });
   }
 
   async function loadBundledDirectory() {
@@ -319,6 +457,380 @@
     }[c]));
   }
 
+  /* ---------- Period-over-period comparison ---------- */
+
+  function aggregateRangeStats(monthIdxList) {
+    const bySym = new Map();
+    monthIdxList.forEach(idx => {
+      const m = months[idx];
+      if (!m) return;
+      m.rows.forEach(r => {
+        const agg = bySym.get(r.symbol) || {
+          name: r.name, state: r.state, type: r.type,
+          requested: 0, filled: 0, unfilled: 0,
+          weightedHours: 0, hoursFilledCount: 0
+        };
+        agg.requested += r.requested;
+        agg.filled += r.filled;
+        agg.unfilled += r.unfilled;
+        if (r.avgHours > 0 && r.filled > 0) {
+          agg.weightedHours += r.avgHours * r.filled;
+          agg.hoursFilledCount += r.filled;
+        }
+        bySym.set(r.symbol, agg);
+      });
+    });
+    bySym.forEach(agg => {
+      agg.avgHours = agg.hoursFilledCount > 0 ? agg.weightedHours / agg.hoursFilledCount : 0;
+    });
+    return bySym;
+  }
+
+  function showCompareModal() {
+    if (months.length < 2) {
+      showToast({ message: 'Load at least 2 months of reports to compare.', kind: 'err' });
+      return;
+    }
+    const mid = Math.floor(months.length / 2);
+    const sideA = new Set(months.slice(0, mid).map((_, i) => i));
+    const sideB = new Set(months.slice(mid).map((_, i) => mid + i));
+
+    openModal('Compare periods', `<div id="compare-body"></div>`);
+    // Widen the modal for the table
+    const modal = document.querySelector('#modal-backdrop .modal');
+    if (modal) modal.classList.add('modal-wide');
+    renderCompareBody();
+
+    function renderCompareBody() {
+      const monthOpts = (which, set) => months.map((m, i) => `
+        <label class="facet" style="font-size:12px; padding: 3px 0;">
+          <span><input type="checkbox" data-cmp-${which}="${i}" ${set.has(i) ? 'checked' : ''}>${escapeHtml(m.period || ('Month ' + (i + 1)))}</span>
+        </label>
+      `).join('');
+
+      const body = document.getElementById('compare-body');
+      body.innerHTML = `
+        <div class="compare-pickers">
+          <div>
+            <h3 style="margin-top:0;">Period A (baseline)</h3>
+            ${monthOpts('a', sideA)}
+          </div>
+          <div>
+            <h3 style="margin-top:0;">Period B (compare to A)</h3>
+            ${monthOpts('b', sideB)}
+          </div>
+        </div>
+        <div id="compare-results"></div>
+        <div style="display:flex; gap:8px; margin-top:14px; justify-content:flex-end; flex-wrap:wrap;">
+          <button class="ghost-btn" id="compare-export-csv" type="button">Download CSV</button>
+          <button class="primary-btn" id="compare-close" type="button">Done</button>
+        </div>
+      `;
+      body.querySelectorAll('[data-cmp-a]').forEach(cb => cb.addEventListener('change', () => {
+        const idx = parseInt(cb.dataset.cmpA);
+        if (cb.checked) sideA.add(idx); else sideA.delete(idx);
+        recompute();
+      }));
+      body.querySelectorAll('[data-cmp-b]').forEach(cb => cb.addEventListener('change', () => {
+        const idx = parseInt(cb.dataset.cmpB);
+        if (cb.checked) sideB.add(idx); else sideB.delete(idx);
+        recompute();
+      }));
+      body.querySelector('#compare-close').addEventListener('click', closeModal);
+      body.querySelector('#compare-export-csv').addEventListener('click', exportComparisonCSV);
+      recompute();
+    }
+
+    function buildComparisonRows() {
+      const aMonths = [...sideA].sort((a, b) => a - b);
+      const bMonths = [...sideB].sort((a, b) => a - b);
+      const a = aggregateRangeStats(aMonths);
+      const b = aggregateRangeStats(bMonths);
+      const syms = new Set([...a.keys(), ...b.keys()]);
+      const rows = [];
+      syms.forEach(sym => {
+        const aL = a.get(sym), bL = b.get(sym);
+        const ref = aL || bL;
+        const aFR = aL && aL.requested > 0 ? (aL.filled / aL.requested) * 100 : null;
+        const bFR = bL && bL.requested > 0 ? (bL.filled / bL.requested) * 100 : null;
+        const aDays = aL && aL.filled > 0 ? aL.avgHours / 24 : null;
+        const bDays = bL && bL.filled > 0 ? bL.avgHours / 24 : null;
+        rows.push({
+          symbol: sym, name: ref.name, state: ref.state, type: ref.type,
+          aFilled: aL ? aL.filled : 0, bFilled: bL ? bL.filled : 0,
+          aFR, bFR, aDays, bDays,
+          frDelta: (aFR != null && bFR != null) ? bFR - aFR : null,
+          daysDelta: (aDays != null && bDays != null) ? bDays - aDays : null,
+          volDelta: (bL ? bL.filled : 0) - (aL ? aL.filled : 0),
+          inA: !!aL, inB: !!bL
+        });
+      });
+      rows.sort((x, y) => Math.abs(y.frDelta || 0) - Math.abs(x.frDelta || 0));
+      return rows;
+    }
+
+    function exportComparisonCSV() {
+      const rows = buildComparisonRows();
+      const out = [['Symbol', 'Name', 'State', 'A Filled', 'B Filled', 'Vol Δ', 'A FillRate%', 'B FillRate%', 'FR Δ', 'A AvgDays', 'B AvgDays', 'Days Δ']];
+      rows.forEach(r => {
+        out.push([
+          r.symbol, '"' + r.name.replace(/"/g, '""') + '"', r.state,
+          r.aFilled, r.bFilled, r.volDelta,
+          r.aFR != null ? r.aFR.toFixed(0) : '',
+          r.bFR != null ? r.bFR.toFixed(0) : '',
+          r.frDelta != null ? r.frDelta.toFixed(0) : '',
+          r.aDays != null ? r.aDays.toFixed(1) : '',
+          r.bDays != null ? r.bDays.toFixed(1) : '',
+          r.daysDelta != null ? r.daysDelta.toFixed(1) : ''
+        ]);
+      });
+      const csv = out.map(r => r.join(',')).join('\n');
+      downloadFile('period-comparison.csv', csv, 'text/csv');
+    }
+
+    function recompute() {
+      const results = document.getElementById('compare-results');
+      if (sideA.size === 0 || sideB.size === 0) {
+        results.innerHTML = '<p class="hint" style="text-align:center; padding: 20px;">Pick at least one month for each period.</p>';
+        return;
+      }
+      const rows = buildComparisonRows();
+      const newInB = rows.filter(r => !r.inA && r.inB).length;
+      const droppedInB = rows.filter(r => r.inA && !r.inB).length;
+      const improved = rows.filter(r => r.frDelta != null && r.frDelta > 5).length;
+      const declined = rows.filter(r => r.frDelta != null && r.frDelta < -5).length;
+      results.innerHTML = `
+        <div class="compare-summary">
+          <div><span class="cs-num">${rows.length}</span> total</div>
+          <div><span class="cs-num up">${improved}</span> improved (>5pt)</div>
+          <div><span class="cs-num down">${declined}</span> declined</div>
+          <div><span class="cs-num">${newInB}</span> new in B</div>
+          <div><span class="cs-num">${droppedInB}</span> dropped in B</div>
+        </div>
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Symbol · Name</th>
+                <th>Fill rate</th>
+                <th>Avg days</th>
+                <th>Volume</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(r => {
+                const frCell = formatDelta(r.aFR, r.bFR, r.frDelta, v => v != null ? v.toFixed(0) + '%' : '—', 'higher-better');
+                const daysCell = formatDelta(r.aDays, r.bDays, r.daysDelta, v => v != null ? v.toFixed(1) : '—', 'lower-better');
+                const volCell = formatDelta(r.aFilled, r.bFilled, r.volDelta, v => String(v), 'higher-better');
+                const tagA = !r.inA ? '<span class="new-tag">new</span>' : '';
+                const tagB = !r.inB ? '<span class="new-tag dropped">dropped</span>' : '';
+                return `<tr>
+                  <td><div class="cmp-name">${escapeHtml(r.symbol)} <span style="color:var(--text-tertiary);font-weight:400;">· ${escapeHtml(r.name)}</span> ${tagA}${tagB}</div></td>
+                  <td>${frCell}</td>
+                  <td>${daysCell}</td>
+                  <td>${volCell}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function formatDelta(a, b, delta, fmt, direction) {
+      if (delta == null) return `<div class="cmp-cell"><span class="muted-sub">${fmt(a)} → ${fmt(b)}</span></div>`;
+      const isUp = delta > 0;
+      const good = (direction === 'higher-better' ? isUp : !isUp);
+      const cls = Math.abs(delta) < 0.5 ? 'flat' : good ? 'up' : 'down';
+      const arrow = Math.abs(delta) < 0.5 ? '→' : isUp ? '▲' : '▼';
+      const sign = delta > 0 ? '+' : '';
+      return `<div class="cmp-cell">${fmt(a)} → ${fmt(b)} <span class="cmp-delta ${cls}">${arrow} ${sign}${delta.toFixed(direction === 'lower-better' && fmt(0).indexOf('.') >= 0 ? 1 : 0)}</span></div>`;
+    }
+  }
+
+  /* ---------- Map view (Leaflet, lazy-loaded) ---------- */
+
+  let leafletReady = null;
+  let mapInstance = null;
+  let mapMarkers = [];
+  let homeMarker = null;
+  let mapVisible = false;
+
+  function loadLeaflet() {
+    if (leafletReady) return leafletReady;
+    leafletReady = new Promise((resolve, reject) => {
+      if (window.L) { resolve(window.L); return; }
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      link.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';
+      link.crossOrigin = '';
+      document.head.appendChild(link);
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+      script.crossOrigin = '';
+      script.onload = () => resolve(window.L);
+      script.onerror = (e) => reject(new Error('Failed to load Leaflet'));
+      document.head.appendChild(script);
+    });
+    return leafletReady;
+  }
+
+  async function toggleMapView() {
+    mapVisible = !mapVisible;
+    const container = document.getElementById('map-container');
+    const toggleBtn = document.getElementById('map-toggle');
+    toggleBtn.setAttribute('aria-pressed', mapVisible ? 'true' : 'false');
+    toggleBtn.textContent = mapVisible ? '✓ Map view' : 'Map view';
+    if (!mapVisible) {
+      container.hidden = true;
+      return;
+    }
+    container.hidden = false;
+    container.innerHTML = '<div class="map-loading">Loading map…</div>';
+    try {
+      const L = await loadLeaflet();
+      container.innerHTML = '<div id="leaflet-map" style="height: 360px; border-radius: var(--radius-lg); overflow: hidden; border: 0.5px solid var(--border);"></div><p class="hint" style="margin-top:6px;">Click a pin to select that lender. © OpenStreetMap contributors.</p>';
+      if (!mapInstance) {
+        mapInstance = L.map('leaflet-map', { scrollWheelZoom: false }).setView([homeLat || 39.5, homeLng || -98.5], 4);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+          maxZoom: 18
+        }).addTo(mapInstance);
+      } else {
+        // Re-attach after innerHTML wipe
+        mapInstance.remove();
+        mapInstance = L.map('leaflet-map', { scrollWheelZoom: false }).setView([homeLat || 39.5, homeLng || -98.5], 4);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+          maxZoom: 18
+        }).addTo(mapInstance);
+      }
+      refreshMapMarkers();
+    } catch (e) {
+      container.innerHTML = `<div class="warning-panel">Could not load map: ${escapeHtml(e.message)}. The map needs an internet connection on first load.</div>`;
+    }
+  }
+
+  function refreshMapMarkers() {
+    if (!mapVisible || !mapInstance || !window.L) return;
+    const L = window.L;
+    // Clear previous
+    mapMarkers.forEach(m => m.remove());
+    mapMarkers = [];
+    if (homeMarker) { homeMarker.remove(); homeMarker = null; }
+
+    // Home marker
+    if (homeLat != null && homeLng != null) {
+      const homeIcon = L.divIcon({
+        className: 'home-marker',
+        html: '<div style="background:var(--text-info);width:14px;height:14px;border-radius:50%;border:2px solid white;box-shadow:0 0 0 2px var(--text-info);"></div>',
+        iconSize: [14, 14],
+        iconAnchor: [7, 7]
+      });
+      homeMarker = L.marker([homeLat, homeLng], { icon: homeIcon, title: 'Home location' }).addTo(mapInstance);
+    }
+
+    const pins = lastFilteredDir.filter(l => l.lat != null && l.lng != null);
+    const bounds = [];
+    pins.forEach(l => {
+      const sel = dirSelected.has(l.symbol);
+      const icon = L.divIcon({
+        className: 'lender-marker',
+        html: `<div class="lender-pin ${sel ? 'selected' : ''}" title="${escapeHtml(l.symbol)}">${escapeHtml(l.symbol)}</div>`,
+        iconSize: [40, 22],
+        iconAnchor: [20, 11]
+      });
+      const m = L.marker([l.lat, l.lng], { icon }).addTo(mapInstance);
+      const distance = l._distanceMiles != null ? `${Math.round(l._distanceMiles)} mi` : '—';
+      m.bindPopup(`
+        <div style="min-width:180px;">
+          <div style="font-weight:600;margin-bottom:2px;">${escapeHtml(l.name)}</div>
+          <div style="font-size:11px;color:#666;margin-bottom:6px;">${escapeHtml(l.symbol)} · ${escapeHtml(l.type || 'Other')} · ${escapeHtml(l.state || '—')} · ${distance}</div>
+          <button class="map-pin-select" data-pin-select="${escapeHtml(l.symbol)}" style="font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;background:${sel ? '#a32d2d' : '#185fa5'};color:white;border:none;">${sel ? 'Deselect' : 'Select'}</button>
+        </div>
+      `);
+      m.on('popupopen', () => {
+        const btn = document.querySelector('[data-pin-select="' + cssEscape(l.symbol) + '"]');
+        if (btn) btn.addEventListener('click', () => {
+          toggleDiscoverSelection(l.symbol);
+          m.closePopup();
+          refreshMapMarkers();
+        });
+      });
+      mapMarkers.push(m);
+      bounds.push([l.lat, l.lng]);
+    });
+    if (homeLat != null && homeLng != null) bounds.push([homeLat, homeLng]);
+    if (bounds.length > 1) {
+      mapInstance.fitBounds(bounds, { padding: [30, 30], maxZoom: 8 });
+    }
+  }
+
+  /* ---------- Sample data ---------- */
+
+  const SAMPLE_LENDERS = [
+    {name: 'University of Florida', symbol: 'FUG', state: 'FL', type: 'Academic'},
+    {name: 'Florida State University', symbol: 'FDA', state: 'FL', type: 'Academic'},
+    {name: 'University of South Florida', symbol: 'SFU', state: 'FL', type: 'Academic'},
+    {name: 'University of Georgia Libraries', symbol: 'GUA', state: 'GA', type: 'Academic'},
+    {name: 'Emory University', symbol: 'EMU', state: 'GA', type: 'Academic'},
+    {name: 'Library of Congress', symbol: 'DLC', state: 'DC', type: 'Federal/Natl Government'},
+    {name: 'Linda Hall Library', symbol: 'LHL', state: 'MO', type: 'Special'},
+    {name: 'New York Public Library', symbol: 'NYP', state: 'NY', type: 'Public'},
+    {name: 'University of Tennessee, Knoxville', symbol: 'TKN', state: 'TN', type: 'Academic'},
+    {name: 'Vanderbilt University', symbol: 'TJC', state: 'TN', type: 'Academic'},
+    {name: 'University of Virginia', symbol: 'VA@', state: 'VA', type: 'Academic'},
+    {name: 'University of North Carolina, Chapel Hill', symbol: 'NOC', state: 'NC', type: 'Academic'},
+    {name: 'Orange County Library System', symbol: 'FOC', state: 'FL', type: 'Public'},
+    {name: 'Jacksonville Public Library', symbol: 'FJV', state: 'FL', type: 'Public'},
+    {name: 'Center for Research Libraries', symbol: 'CRL', state: 'IL', type: 'Special'}
+  ];
+
+  function loadSampleData() {
+    if (months.length > 0 && !confirm('Replace any loaded reports with sample data?')) return;
+    months = [];
+    selected.clear();
+    expanded.clear();
+    notesExpanded.clear();
+    const periods = ['Sample Jan 2026', 'Sample Feb 2026', 'Sample Mar 2026'];
+    // Deterministic-ish pseudorandom so the sample data is stable
+    let seed = 42;
+    const rand = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
+    periods.forEach((period, monthIdx) => {
+      const rows = SAMPLE_LENDERS.map((l, i) => {
+        // Each lender has a "personality": consistent vs spotty, fast vs slow
+        const isStrong = i % 3 === 0;
+        const isFast = i % 4 < 2;
+        // Some lenders missing in some months
+        if (!isStrong && rand() < 0.18 && monthIdx > 0) return null;
+        const requested = Math.max(0, Math.floor((isStrong ? 12 : 4) + rand() * 8));
+        const fillRatio = isStrong ? 0.78 + rand() * 0.18 : 0.35 + rand() * 0.45;
+        const filled = Math.min(requested, Math.floor(requested * fillRatio));
+        const unfilled = requested - filled;
+        const baseHours = isFast ? 30 : 78;
+        const avgH = filled > 0 ? baseHours + rand() * 40 : 0;
+        return {
+          name: l.name, symbol: l.symbol, state: l.state, type: l.type,
+          requested, filled, unfilled, avgHours: avgH
+        };
+      }).filter(Boolean);
+      months.push({ rows, period, institution: 'Sample Institution' });
+    });
+    saveData();
+    renderMonthsList();
+    rebuildFacetOptions();
+    renderRankings();
+    renderDiscover();
+    const status = document.getElementById('upload-status');
+    if (status) {
+      status.className = 'upload-status ok';
+      status.textContent = `Loaded sample data: 3 months, ${SAMPLE_LENDERS.length} lenders. Click "Clear all loaded months" to remove.`;
+    }
+    announce('Sample data loaded');
+  }
+
   /* ---------- ARIA live announcements ---------- */
 
   function announce(text) {
@@ -326,6 +838,44 @@
     if (!el) return;
     el.textContent = '';
     setTimeout(() => { el.textContent = text; }, 50);
+  }
+
+  /* ---------- Toast notifications ---------- */
+
+  let toastId = 0;
+  function showToast({ message, action, onAction, duration = 5000, kind = '' }) {
+    const stack = document.getElementById('toast-stack');
+    if (!stack) return;
+    const id = 'toast-' + (++toastId);
+    const el = document.createElement('div');
+    el.className = 'toast ' + (kind || '');
+    el.id = id;
+    el.setAttribute('role', kind === 'err' ? 'alert' : 'status');
+    el.innerHTML = `
+      <span class="toast-msg"></span>
+      ${action ? `<button class="toast-action" type="button"></button>` : ''}
+      <button class="toast-close" type="button" aria-label="Dismiss">×</button>
+    `;
+    el.querySelector('.toast-msg').textContent = message;
+    if (action) el.querySelector('.toast-action').textContent = action;
+    stack.appendChild(el);
+    announce(message);
+
+    let timer = setTimeout(dismiss, duration);
+    function dismiss() {
+      clearTimeout(timer);
+      el.classList.add('toast-leaving');
+      setTimeout(() => el.remove(), 200);
+    }
+    el.querySelector('.toast-close').addEventListener('click', dismiss);
+    const actBtn = el.querySelector('.toast-action');
+    if (actBtn) {
+      actBtn.addEventListener('click', () => {
+        clearTimeout(timer);
+        try { onAction && onAction(); } finally { dismiss(); }
+      });
+    }
+    return { dismiss };
   }
 
   /* ---------- Rankings tab rendering ---------- */
@@ -521,6 +1071,8 @@
     document.getElementById('match-count').textContent = filtered.length;
     updateSelectionCounts();
     renderRankingsChips();
+    const cmpBtn = document.getElementById('compare-btn');
+    if (cmpBtn) cmpBtn.hidden = months.length < 2;
 
     const periodsLabel = months.map(m => m.period).filter(p => p).join(' + ') || 'no data';
     document.getElementById('meta').textContent =
@@ -539,10 +1091,15 @@
           <svg class="empty-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m-4 4l4-4 4 4M5 18h14"/></svg>
           <strong>No data yet</strong>
           Upload one or more OCLC Borrower Transaction-Level Detail reports using the panel on the left. Your data stays in this browser.
-          <span class="empty-cta" id="empty-upload-cta">+ Add a report</span>
+          <div class="empty-cta-row">
+            <button class="empty-cta primary" id="empty-upload-cta" type="button">+ Add a report</button>
+            <button class="empty-cta" id="empty-sample-cta" type="button">Try with sample data</button>
+          </div>
         </div>`;
         const cta = document.getElementById('empty-upload-cta');
         if (cta) cta.addEventListener('click', () => document.getElementById('csv-input').click());
+        const sample = document.getElementById('empty-sample-cta');
+        if (sample) sample.addEventListener('click', loadSampleData);
       } else {
         list.innerHTML = `<div class="empty-state">
           <svg class="empty-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="6"/><path d="m20 20-3.5-3.5"/></svg>
@@ -576,6 +1133,21 @@
         }
       });
     });
+    list.querySelectorAll('[data-note-toggle]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const sym = btn.dataset.noteToggle;
+        if (notesExpanded.has(sym)) notesExpanded.delete(sym); else notesExpanded.add(sym);
+        renderRankings();
+      });
+    });
+    list.querySelectorAll('[data-note-input]').forEach(ta => {
+      ta.addEventListener('click', (e) => e.stopPropagation());
+      ta.addEventListener('input', () => {
+        debounce('note-' + ta.dataset.noteInput, () => setNote(ta.dataset.noteInput, ta.value), 400);
+      });
+      ta.addEventListener('blur', () => setNote(ta.dataset.noteInput, ta.value));
+    });
     list.querySelectorAll('[data-select]').forEach(cb => {
       cb.addEventListener('click', (e) => e.stopPropagation());
       cb.addEventListener('change', () => toggleRankingSelection(cb.dataset.select, cb.checked));
@@ -591,6 +1163,8 @@
     const scoreClass = l._score >= 70 ? 'high' : l._score >= 50 ? 'med' : '';
     const isOpen = expanded.has(l.symbol);
     const isSel = selected.has(l.symbol);
+    const noteOpen = notesExpanded.has(l.symbol);
+    const note = getNote(l.symbol);
     const fr = fillRate(l), days = avgDays(l);
     const thinNote = l.filled === 0 ? '<p class="card-thin">No filled requests yet</p>' : '';
     const monthDots = Array.from({ length: l.monthsSpan }).map((_, i) => {
@@ -601,6 +1175,7 @@
       const title = m ? `${escapeHtml(m.period)}: ${l.filledMonths[i] || 0} filled / ${l.requestedMonths[i] || 0} requested` : '';
       return `<span class="month-dot ${cls}" title="${title}"></span>`;
     }).join(' ');
+    const sparkline = renderSparkline(l);
     const explainRows = Object.keys(labels).map(k =>
       `<div class="explain-row">
         <span style="color: var(--text-secondary);">${labels[k]}</span>
@@ -617,7 +1192,7 @@
             <div>
               <p class="card-name">${escapeHtml(l.name)}</p>
               <p class="card-sub">${escapeHtml(l.symbol)} · ${escapeHtml(l.type)} · ${escapeHtml(l.state)}</p>
-              ${l.monthsSpan > 1 ? `<div class="months-dot-row">${monthDots} <span>${l.monthsPresent}/${l.monthsSpan} months</span></div>` : ''}
+              ${l.monthsSpan > 1 ? `<div class="months-dot-row">${monthDots} <span>${l.monthsPresent}/${l.monthsSpan} months</span>${sparkline}</div>` : ''}
               ${thinNote}
             </div>
           </div>
@@ -633,10 +1208,49 @@
         <div class="badges">
           ${l.state === homeState ? '<span class="badge local">Same state</span>' : ''}
           ${l.monthsPresent === l.monthsSpan && l.monthsSpan > 1 ? '<span class="badge every-month">Every month</span>' : ''}
+          ${note ? '<span class="badge note-badge">📝 Note</span>' : ''}
           <button class="explain-btn" data-explain="${escapeHtml(l.symbol)}" aria-expanded="${isOpen}">${isOpen ? 'Hide why ▴' : 'Why this score ▾'}</button>
+          <button class="explain-btn" data-note-toggle="${escapeHtml(l.symbol)}" aria-expanded="${noteOpen}">${noteOpen ? 'Hide note ▴' : (note ? 'Edit note ▾' : 'Add note ▾')}</button>
         </div>
         ${isOpen ? `<div class="explain">${explainRows}<div class="explain-total"><span>Total</span><span>${l._score}</span></div></div>` : ''}
+        ${noteOpen ? renderNoteEditor(l.symbol, note) : ''}
       </div>`;
+  }
+
+  function renderNoteEditor(symbol, note) {
+    return `<div class="note-editor">
+      <textarea data-note-input="${escapeHtml(symbol)}" placeholder="Notes about this lender — preferences, contact, payment, anything useful next time" aria-label="Notes for ${escapeHtml(symbol)}">${escapeHtml(note)}</textarea>
+      <div class="note-meta">Saved automatically · stored locally</div>
+    </div>`;
+  }
+
+  function renderSparkline(l) {
+    if (l.monthsSpan < 3) return '';
+    const points = [];
+    for (let i = 0; i < l.monthsSpan; i++) {
+      const req = l.requestedMonths[i] || 0;
+      const fil = l.filledMonths[i] || 0;
+      if (req > 0) points.push({ i, fr: fil / req });
+      else points.push({ i, fr: null });
+    }
+    const present = points.filter(p => p.fr != null);
+    if (present.length < 2) return '';
+    const w = 56, h = 14;
+    const xStep = l.monthsSpan > 1 ? w / (l.monthsSpan - 1) : w;
+    const segs = [];
+    let last = null;
+    for (let i = 0; i < points.length; i++) {
+      const p = points[i];
+      if (p.fr == null) { last = null; continue; }
+      const x = i * xStep;
+      const y = h - p.fr * (h - 2) - 1;
+      if (last == null) segs.push(`M${x.toFixed(1)} ${y.toFixed(1)}`);
+      else segs.push(`L${x.toFixed(1)} ${y.toFixed(1)}`);
+      last = { x, y };
+    }
+    const first = present[0].fr, lastV = present[present.length - 1].fr;
+    const trendCls = lastV > first + 0.05 ? 'up' : lastV < first - 0.05 ? 'down' : 'flat';
+    return `<svg class="sparkline ${trendCls}" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-label="Fill rate trend across ${l.monthsSpan} months"><path d="${segs.join(' ')}" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>`;
   }
 
   function cssEscape(s) {
@@ -676,6 +1290,7 @@
     document.getElementById('dir-sel-count').textContent = dirSelected.size;
     document.getElementById('clear-selection').hidden = selected.size === 0;
     document.getElementById('dir-clear-selection').hidden = dirSelected.size === 0;
+    updateBulkPolicyBtn();
   }
 
   /* ---------- Policy lookup ---------- */
@@ -838,6 +1453,73 @@
     renderDiscover();
   }
 
+  async function bulkFetchPolicies(symbols) {
+    if (!backendUrl) {
+      showToast({ message: 'Set a proxy backend URL in the OCLC policy lookup panel first.', kind: 'err' });
+      return;
+    }
+    const todo = symbols.filter(s => !policyCache.has(s));
+    if (todo.length === 0) {
+      // Already cached — just expand them all
+      symbols.forEach(s => policyExpanded.add(s));
+      renderDiscover();
+      showToast({ message: `Showed cached policies for ${symbols.length} lender${symbols.length === 1 ? '' : 's'}.`, kind: 'ok' });
+      return;
+    }
+    const total = todo.length;
+    let done = 0, failed = 0;
+    const toast = showToast({
+      message: `Fetching policies… 0 / ${total}`,
+      duration: 1e9 // we'll dismiss manually
+    });
+    const updateProgress = () => {
+      const el = document.querySelector('.toast .toast-msg');
+      if (el && el.textContent.startsWith('Fetching policies')) {
+        el.textContent = `Fetching policies… ${done} / ${total}${failed ? ` · ${failed} failed` : ''}`;
+      }
+    };
+    const CONCURRENCY = 4;
+    let cursor = 0;
+    async function worker() {
+      while (cursor < todo.length) {
+        const idx = cursor++;
+        const sym = todo[idx];
+        try {
+          const result = await fetchPolicies(sym);
+          if (result && result.error) failed++;
+        } catch (e) { failed++; }
+        done++;
+        updateProgress();
+      }
+    }
+    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, todo.length) }, worker));
+    if (toast) toast.dismiss();
+    symbols.forEach(s => policyExpanded.add(s));
+    renderDiscover();
+    showToast({
+      message: `Loaded policies for ${symbols.length - failed} / ${symbols.length}${failed ? `. ${failed} failed.` : ''}`,
+      kind: failed > 0 ? 'err' : 'ok'
+    });
+  }
+
+  function updateBulkPolicyBtn() {
+    const btn = document.getElementById('bulk-policy-btn');
+    if (!btn) return;
+    if (!backendUrl) { btn.hidden = true; return; }
+    btn.hidden = false;
+    const n = dirSelected.size;
+    if (n > 0) {
+      btn.textContent = `Fetch policies (${n})`;
+      btn.disabled = false;
+      btn.title = `Fetch OCLC policies for ${n} selected lender${n === 1 ? '' : 's'}`;
+    } else {
+      const visible = lastFilteredDir.length;
+      btn.textContent = `Fetch policies (visible: ${visible})`;
+      btn.disabled = visible === 0;
+      btn.title = visible > 0 ? `No selection — fetch for all ${visible} visible candidates` : 'No candidates to fetch';
+    }
+  }
+
   /* ---------- Discover tab rendering ---------- */
 
   function getBorrowedSymbols() {
@@ -966,6 +1648,22 @@
         togglePolicyPanel(btn.dataset.policy);
       });
     });
+    list.querySelectorAll('[data-note-toggle]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const sym = btn.dataset.noteToggle;
+        if (notesExpanded.has(sym)) notesExpanded.delete(sym); else notesExpanded.add(sym);
+        renderDiscover();
+      });
+    });
+    list.querySelectorAll('[data-note-input]').forEach(ta => {
+      ta.addEventListener('click', (e) => e.stopPropagation());
+      ta.addEventListener('input', () => {
+        debounce('note-' + ta.dataset.noteInput, () => setNote(ta.dataset.noteInput, ta.value), 400);
+      });
+      ta.addEventListener('blur', () => setNote(ta.dataset.noteInput, ta.value));
+    });
+    if (mapVisible) refreshMapMarkers();
   }
 
   function renderDiscoverCard(l, borrowedSyms) {
@@ -981,6 +1679,10 @@
       ? `<button class="policy-lookup-btn" data-policy="${escapeHtml(l.symbol)}" aria-expanded="${policyExpanded.has(l.symbol)}">${policyExpanded.has(l.symbol) ? 'Hide policies ▴' : 'Load policies from OCLC ▾'}</button>`
       : '';
     const policyHtml = policyExpanded.has(l.symbol) ? renderPolicyPanel(l.symbol) : '';
+    const noteOpen = notesExpanded.has(l.symbol);
+    const note = getNote(l.symbol);
+    const noteBadge = note ? '<span class="badge note-badge">📝 Note</span>' : '';
+    const noteBtn = `<button class="policy-lookup-btn" data-note-toggle="${escapeHtml(l.symbol)}" aria-expanded="${noteOpen}">${noteOpen ? 'Hide note ▴' : (note ? 'Edit note ▾' : 'Add note ▾')}</button>`;
     return `
       <div class="card ${isSel ? 'selected' : ''}" role="listitem" data-symbol="${escapeHtml(l.symbol)}" tabindex="0">
         <div class="card-top">
@@ -1002,9 +1704,12 @@
           ${l.state === homeState ? '<span class="badge local">Same state</span>' : ''}
           ${groupBadges}
           ${importedBadge}
+          ${noteBadge}
           ${policyBtn}
+          ${noteBtn}
         </div>
         ${policyHtml}
+        ${noteOpen ? renderNoteEditor(l.symbol, note) : ''}
       </div>`;
   }
 
@@ -1047,6 +1752,7 @@
         <textarea class="symbols-box" data-symbols-box readonly aria-label="Symbols list">${escapeHtml(symbolString)}</textarea>
         <div class="export-actions">
           <button class="primary-btn" data-copy-btn>Copy symbols</button>
+          <button data-save-btn>💾 Save group</button>
           <button data-download-btn>Download .txt</button>
           ${!isDiscover ? '<button data-csv-btn>Download ranked CSV</button>' : ''}
           <button data-print-btn style="margin-left: auto;">Print</button>
@@ -1083,6 +1789,15 @@
     panel.querySelector('[data-print-btn]').addEventListener('click', () => {
       window.print();
     });
+    panel.querySelector('[data-save-btn]').addEventListener('click', () => {
+      const nameInput = panel.querySelector(`#group-name-${isDiscover ? 'd' : 'r'}`);
+      const saved = saveCurrentGroup(nameInput.value, isDiscover ? 'discover' : 'rankings');
+      if (saved) {
+        const btn = panel.querySelector('[data-save-btn]');
+        btn.textContent = '✓ Saved';
+        setTimeout(() => { btn.textContent = '💾 Save group'; }, 1800);
+      }
+    });
     if (!isDiscover) {
       const csvBtn = panel.querySelector('[data-csv-btn]');
       if (csvBtn) {
@@ -1105,6 +1820,142 @@
         });
       }
     }
+  }
+
+  /* ---------- Session export / import ---------- */
+
+  const SESSION_VERSION = 1;
+
+  function buildSessionBundle() {
+    return {
+      _type: 'lender-finder-session',
+      version: SESSION_VERSION,
+      exportedAt: new Date().toISOString(),
+      months: JSON.parse(JSON.stringify(months)),
+      selected: [...selected],
+      dirSelected: [...dirSelected],
+      notes: { ...notes },
+      savedGroups: JSON.parse(JSON.stringify(savedGroups)),
+      weights: { ...weights },
+      homeState,
+      homeLat,
+      homeLng,
+      importedDirectory: JSON.parse(JSON.stringify(importedDirectory))
+    };
+  }
+
+  function exportSession() {
+    const bundle = buildSessionBundle();
+    const stamp = new Date().toISOString().slice(0, 10);
+    downloadFile(`lender-finder-session-${stamp}.json`, JSON.stringify(bundle, null, 2), 'application/json');
+    showToast({ message: 'Session exported.', kind: 'ok' });
+  }
+
+  function summarizeBundle(b) {
+    return {
+      months: (b.months || []).length,
+      selected: (b.selected || []).length,
+      dirSelected: (b.dirSelected || []).length,
+      notes: Object.keys(b.notes || {}).length,
+      savedGroups: (b.savedGroups || []).length,
+      importedDirectory: (b.importedDirectory || []).length
+    };
+  }
+
+  function applySessionBundle(b, mode) {
+    if (mode === 'replace') {
+      months = b.months || [];
+      selected.clear(); (b.selected || []).forEach(s => selected.add(s));
+      dirSelected.clear(); (b.dirSelected || []).forEach(s => dirSelected.add(s));
+      notes = b.notes || {};
+      savedGroups = b.savedGroups || [];
+      importedDirectory = b.importedDirectory || [];
+      if (b.weights) weights = { ...weights, ...b.weights };
+      if (typeof b.homeState === 'string') homeState = b.homeState;
+      if (typeof b.homeLat === 'number') homeLat = b.homeLat;
+      if (typeof b.homeLng === 'number') homeLng = b.homeLng;
+    } else {
+      // Merge
+      (b.months || []).forEach(m => {
+        if (!months.some(x => x.period === m.period)) months.push(m);
+      });
+      sortMonthsByPeriod();
+      (b.selected || []).forEach(s => selected.add(s));
+      (b.dirSelected || []).forEach(s => dirSelected.add(s));
+      Object.keys(b.notes || {}).forEach(sym => { if (!notes[sym]) notes[sym] = b.notes[sym]; });
+      (b.savedGroups || []).forEach(g => {
+        if (!savedGroups.some(x => x.name.toLowerCase() === g.name.toLowerCase())) savedGroups.push(g);
+      });
+      const dirBySym = new Map(importedDirectory.map(r => [r.symbol, r]));
+      (b.importedDirectory || []).forEach(r => { if (!dirBySym.has(r.symbol)) dirBySym.set(r.symbol, r); });
+      importedDirectory = Array.from(dirBySym.values());
+    }
+    saveData();
+    document.getElementById('home-state').value = homeState;
+    document.getElementById('home-lat').value = homeLat;
+    document.getElementById('home-lng').value = homeLng;
+    syncWeightLabels();
+    renderMonthsList();
+    rebuildFacetOptions();
+    renderSavedGroups();
+    renderDirectoryStats();
+    buildDirFacetOptions();
+    renderRankings();
+    renderDiscover();
+  }
+
+  function handleSessionFile(file) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const bundle = JSON.parse(ev.target.result);
+        if (!bundle || bundle._type !== 'lender-finder-session') {
+          throw new Error('Not a Lender Finder session file.');
+        }
+        const s = summarizeBundle(bundle);
+        const exportedAt = bundle.exportedAt ? new Date(bundle.exportedAt).toLocaleString() : 'unknown date';
+        openModal('Import session', `
+          <p>Loaded a session exported on <strong>${escapeHtml(exportedAt)}</strong>.</p>
+          <h3>Contents</h3>
+          <ul style="margin:6px 0 12px; padding-left: 18px; line-height: 1.7;">
+            <li>${s.months} month${s.months === 1 ? '' : 's'} of reports</li>
+            <li>${s.selected} selected lender${s.selected === 1 ? '' : 's'} (Rankings)</li>
+            <li>${s.dirSelected} selected candidate${s.dirSelected === 1 ? '' : 's'} (Discover)</li>
+            <li>${s.notes} lender note${s.notes === 1 ? '' : 's'}</li>
+            <li>${s.savedGroups} saved holdings group${s.savedGroups === 1 ? '' : 's'}</li>
+            <li>${s.importedDirectory} imported directory entr${s.importedDirectory === 1 ? 'y' : 'ies'}</li>
+          </ul>
+          <h3>How to apply</h3>
+          <p><strong>Merge</strong> — add the imported items to what you already have (skips duplicates). <strong>Replace</strong> — wipe your current data and use only the imported session.</p>
+          <div style="display:flex; gap:8px; margin-top:16px; justify-content:flex-end; flex-wrap:wrap;">
+            <button class="ghost-btn" id="session-cancel" type="button">Cancel</button>
+            <button class="ghost-btn" id="session-merge" type="button">Merge</button>
+            <button class="primary-btn" id="session-replace" type="button">Replace</button>
+          </div>
+        `);
+        document.getElementById('session-cancel').addEventListener('click', closeModal);
+        document.getElementById('session-merge').addEventListener('click', () => {
+          applySessionBundle(bundle, 'merge');
+          closeModal();
+          showToast({ message: 'Session merged.', kind: 'ok' });
+        });
+        document.getElementById('session-replace').addEventListener('click', () => {
+          const snapshot = buildSessionBundle();
+          applySessionBundle(bundle, 'replace');
+          closeModal();
+          showToast({
+            message: 'Session replaced.',
+            action: 'Undo',
+            kind: 'ok',
+            onAction: () => { applySessionBundle(snapshot, 'replace'); }
+          });
+        });
+      } catch (e) {
+        showToast({ message: `Import failed: ${e.message}`, kind: 'err', duration: 7000 });
+      }
+    };
+    reader.onerror = () => showToast({ message: 'Could not read file.', kind: 'err' });
+    reader.readAsText(file);
   }
 
   function downloadFile(filename, content, mimeType) {
@@ -1180,48 +2031,103 @@
     const status = document.getElementById('dir-upload-status');
     let pending = files.length;
     const errors = [];
-    let totalAdded = 0;
+    const parsedRows = [];
     Array.from(files).forEach(file => {
       const reader = new FileReader();
       reader.onload = ev => {
         try {
           const rows = parseDirectoryCSV(ev.target.result);
-          if (rows.length === 0) {
-            errors.push(`${file.name}: no entries`);
-          } else {
-            const bySym = new Map(importedDirectory.map(r => [r.symbol, r]));
-            rows.forEach(r => bySym.set(r.symbol, r));
-            importedDirectory = Array.from(bySym.values());
-            totalAdded += rows.length;
-          }
+          if (rows.length === 0) errors.push(`${file.name}: no entries`);
+          else rows.forEach(r => parsedRows.push(r));
         } catch (err) {
           errors.push(`${file.name}: ${err.message}`);
         }
         pending -= 1;
         if (pending === 0) {
-          saveData();
-          if (errors.length > 0 && totalAdded === 0) {
+          if (parsedRows.length === 0) {
             status.className = 'upload-status err';
-            status.textContent = errors.join(' · ');
-          } else if (errors.length > 0) {
-            status.className = 'upload-status ok';
-            status.textContent = `Imported ${totalAdded}. Issues: ${errors.join(' · ')}`;
-          } else {
-            status.className = 'upload-status ok';
-            status.textContent = `Imported ${totalAdded} entries. Total directory: ${getMergedDirectory().length}.`;
+            status.textContent = errors.join(' · ') || 'No entries found.';
+            return;
           }
-          announce(`Imported ${totalAdded} director${totalAdded === 1 ? 'y entry' : 'y entries'}`);
-          renderDirectoryStats();
-          buildDirFacetOptions();
-          renderDiscover();
+          showDirectoryImportPreview(parsedRows, errors);
         }
       };
       reader.onerror = () => {
         errors.push(`${file.name}: read failed`);
         pending -= 1;
-        if (pending === 0) renderDiscover();
+        if (pending === 0 && parsedRows.length === 0) {
+          status.className = 'upload-status err';
+          status.textContent = errors.join(' · ');
+        } else if (pending === 0) {
+          showDirectoryImportPreview(parsedRows, errors);
+        }
       };
       reader.readAsText(file);
+    });
+  }
+
+  function showDirectoryImportPreview(rows, errors) {
+    const bundledSyms = new Set(bundledDirectory.map(l => l.symbol));
+    const importedSyms = new Set(importedDirectory.map(l => l.symbol));
+    let isNew = 0, updates = 0, overridesBundled = 0;
+    const seen = new Set();
+    const deduped = [];
+    rows.forEach(r => {
+      if (seen.has(r.symbol)) return; // dedupe within import
+      seen.add(r.symbol);
+      deduped.push(r);
+      if (importedSyms.has(r.symbol)) updates++;
+      else if (bundledSyms.has(r.symbol)) overridesBundled++;
+      else isNew++;
+    });
+    const errHtml = errors.length > 0
+      ? `<div class="warning-panel" style="margin-bottom:12px;font-size:12px;">${errors.map(escapeHtml).join('<br>')}</div>`
+      : '';
+    openModal('Import directory CSV', `
+      ${errHtml}
+      <p>Parsed <strong>${deduped.length}</strong> unique entr${deduped.length === 1 ? 'y' : 'ies'}. Review before applying.</p>
+      <h3>Changes</h3>
+      <ul style="margin:6px 0 12px; padding-left: 18px; line-height: 1.7;">
+        <li><strong>${isNew}</strong> brand-new entr${isNew === 1 ? 'y' : 'ies'}</li>
+        <li><strong>${updates}</strong> update${updates === 1 ? '' : 's'} to existing imported entries</li>
+        <li><strong>${overridesBundled}</strong> override${overridesBundled === 1 ? '' : 's'} of bundled entries</li>
+      </ul>
+      <p class="hint">Imported entries always win over bundled ones with the same symbol. You can clear imports later from the Directory panel.</p>
+      <div style="display:flex; gap:8px; margin-top:16px; justify-content:flex-end; flex-wrap:wrap;">
+        <button class="ghost-btn" id="csv-cancel" type="button">Cancel</button>
+        <button class="primary-btn" id="csv-apply" type="button">Apply</button>
+      </div>
+    `);
+    document.getElementById('csv-cancel').addEventListener('click', () => {
+      closeModal();
+      const status = document.getElementById('dir-upload-status');
+      status.className = 'upload-status';
+      status.textContent = 'Import canceled.';
+    });
+    document.getElementById('csv-apply').addEventListener('click', () => {
+      const snapshot = JSON.parse(JSON.stringify(importedDirectory));
+      const bySym = new Map(importedDirectory.map(r => [r.symbol, r]));
+      deduped.forEach(r => bySym.set(r.symbol, r));
+      importedDirectory = Array.from(bySym.values());
+      saveData();
+      renderDirectoryStats();
+      buildDirFacetOptions();
+      renderDiscover();
+      closeModal();
+      const status = document.getElementById('dir-upload-status');
+      status.className = 'upload-status ok';
+      status.textContent = `Imported ${deduped.length} entries. Total directory: ${getMergedDirectory().length}.`;
+      showToast({
+        message: `Imported ${deduped.length} entr${deduped.length === 1 ? 'y' : 'ies'}.`,
+        action: 'Undo',
+        onAction: () => {
+          importedDirectory = snapshot;
+          saveData();
+          renderDirectoryStats();
+          buildDirFacetOptions();
+          renderDiscover();
+        }
+      });
     });
   }
 
@@ -1312,6 +2218,7 @@
       modal.removeEventListener('keydown', modalKeyHandler);
       modalKeyHandler = null;
     }
+    modal.classList.remove('modal-wide');
     backdrop.hidden = true;
     document.body.style.overflow = '';
     if (lastFocusedBeforeModal && lastFocusedBeforeModal.focus) lastFocusedBeforeModal.focus();
@@ -1398,7 +2305,7 @@
     });
 
     document.getElementById('clear-months').addEventListener('click', () => {
-      if (!confirm('Remove all loaded months? This cannot be undone.')) return;
+      const snapshot = { months: JSON.parse(JSON.stringify(months)), selected: [...selected], expanded: [...expanded] };
       months = [];
       selected.clear();
       expanded.clear();
@@ -1410,6 +2317,20 @@
       rebuildFacetOptions();
       renderRankings();
       renderDiscover();
+      showToast({
+        message: `Cleared ${snapshot.months.length} month${snapshot.months.length === 1 ? '' : 's'}.`,
+        action: 'Undo',
+        onAction: () => {
+          months = snapshot.months;
+          snapshot.selected.forEach(s => selected.add(s));
+          snapshot.expanded.forEach(s => expanded.add(s));
+          saveData();
+          renderMonthsList();
+          rebuildFacetOptions();
+          renderRankings();
+          renderDiscover();
+        }
+      });
     });
 
     document.getElementById('show-format-help').addEventListener('click', (e) => {
@@ -1458,6 +2379,7 @@
 
     document.getElementById('sort-by').addEventListener('change', renderRankings);
     document.getElementById('build-group-btn').addEventListener('click', () => renderExportPanel('export-panel', selected, false));
+    document.getElementById('compare-btn').addEventListener('click', showCompareModal);
 
     document.getElementById('select-top-10').addEventListener('click', () => {
       lastFilteredRankings.slice(0, 10).forEach(l => selected.add(l.symbol));
@@ -1500,13 +2422,26 @@
       e.target.setAttribute('aria-expanded', !h.hidden);
     });
     document.getElementById('clear-imported-dir').addEventListener('click', () => {
-      if (!confirm('Clear all imported directory entries? Bundled entries will remain.')) return;
+      const snapshot = { importedDirectory: JSON.parse(JSON.stringify(importedDirectory)), dirSelected: [...dirSelected] };
+      const count = importedDirectory.length;
       importedDirectory = [];
       dirSelected.clear();
       saveData();
       renderDirectoryStats();
       buildDirFacetOptions();
       renderDiscover();
+      showToast({
+        message: `Cleared ${count} imported entr${count === 1 ? 'y' : 'ies'}.`,
+        action: 'Undo',
+        onAction: () => {
+          importedDirectory = snapshot.importedDirectory;
+          snapshot.dirSelected.forEach(s => dirSelected.add(s));
+          saveData();
+          renderDirectoryStats();
+          buildDirFacetOptions();
+          renderDiscover();
+        }
+      });
     });
     document.getElementById('export-imported-dir').addEventListener('click', () => {
       const rows = [['symbol', 'name', 'state', 'type', 'groups', 'lat', 'lng']];
@@ -1552,6 +2487,15 @@
     });
     document.getElementById('dir-sort-by').addEventListener('change', renderDiscover);
     document.getElementById('dir-build-btn').addEventListener('click', () => renderExportPanel('dir-export-panel', dirSelected, true));
+    document.getElementById('map-toggle').addEventListener('click', toggleMapView);
+    document.getElementById('bulk-policy-btn').addEventListener('click', () => {
+      const syms = dirSelected.size > 0
+        ? [...dirSelected]
+        : lastFilteredDir.map(l => l.symbol);
+      if (syms.length === 0) return;
+      if (syms.length > 12 && !confirm(`Fetch policies for ${syms.length} lenders? This will make ${syms.length} requests to your proxy backend.`)) return;
+      bulkFetchPolicies(syms);
+    });
 
     document.getElementById('dir-select-all').addEventListener('click', () => {
       lastFilteredDir.forEach(l => dirSelected.add(l.symbol));
@@ -1587,6 +2531,7 @@
     backendInput.addEventListener('input', e => {
       backendUrl = e.target.value.trim();
       saveData();
+      updateBulkPolicyBtn();
       debounce('backend-check', () => {
         checkBackendHealth();
         renderDiscover();
@@ -1607,6 +2552,16 @@
     document.getElementById('open-help').addEventListener('click', showHelpModal);
     document.getElementById('footer-help').addEventListener('click', showHelpModal);
     document.getElementById('open-scoring-help').addEventListener('click', showScoringModal);
+
+    /* Session export/import */
+    document.getElementById('footer-export').addEventListener('click', exportSession);
+    document.getElementById('footer-import').addEventListener('click', () => {
+      document.getElementById('session-import-input').click();
+    });
+    document.getElementById('session-import-input').addEventListener('change', e => {
+      if (e.target.files && e.target.files[0]) handleSessionFile(e.target.files[0]);
+      e.target.value = '';
+    });
     document.getElementById('modal-close').addEventListener('click', closeModal);
     document.getElementById('modal-backdrop').addEventListener('click', e => {
       if (e.target.id === 'modal-backdrop') closeModal();
@@ -1684,6 +2639,7 @@
 
     renderMonthsList();
     rebuildFacetOptions();
+    renderSavedGroups();
     renderRankings();
     renderDiscover();
 
@@ -1692,9 +2648,36 @@
     }
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
+  const inTestMode = typeof window !== 'undefined' && window.location && window.location.search.indexOf('test=1') >= 0;
+
+  // Expose pure functions for the browser test runner
+  if (inTestMode) {
+    window.__lenderFinderTest = {
+      parseOCLCReport,
+      parseDirectoryCSV,
+      parseTurnaround,
+      parseCSVRow,
+      mergeMonths: () => mergeMonths(),
+      setMonths: (m) => { months = m; },
+      setHomeState: (s) => { homeState = s; },
+      setWeights: (w) => { weights = w; },
+      fillRate,
+      avgDays,
+      consistencyPct,
+      subscores,
+      totalScore,
+      normalizedWeights,
+      haversineKm,
+      kmToMiles,
+      renderSparkline
+    };
+  }
+
+  if (!inTestMode) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   }
 })();
