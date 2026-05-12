@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: lender-finder-proxy
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: OCLC_WSKEY
+        sync: false
+      - key: OCLC_SECRET
+        sync: false
+      - key: ALLOWED_ORIGIN
+        sync: false
+      - key: CACHE_TTL_SECONDS
+        value: 86400

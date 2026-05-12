@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lender Finder</title>
+<meta name="description" content="Faceted search to identify and discover ILL lender libraries from OCLC Borrower reports and a peer directory.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="site-header-inner">
+    <h1>Lender finder</h1>
+    <nav class="tabs" role="tablist" aria-label="Views">
+      <button role="tab" class="tab active" data-tab="rankings" aria-selected="true">Rankings</button>
+      <button role="tab" class="tab" data-tab="discover" aria-selected="false">Discover</button>
+    </nav>
+    <div class="meta" id="meta">No data loaded</div>
+  </div>
+</header>
+
+<main class="layout" id="rankings-view">
+  <aside class="facets" aria-label="Filters">
+    <section class="facet-group">
+      <h3>Upload your reports</h3>
+      <div class="upload-box">
+        <label class="upload-label" for="csv-input">
+          <span aria-hidden="true">⬆</span> Add Borrower report
+        </label>
+        <input type="file" id="csv-input" accept=".xls,.tsv,.csv,.txt" multiple>
+        <p class="upload-status" id="upload-status">Upload one or more monthly Borrower Transaction-Level Detail reports. They merge automatically and save in your browser.</p>
+        <div class="months-list" id="months-list"></div>
+        <button class="link-btn" id="clear-months" hidden>Clear all loaded months</button>
+        <button class="link-btn" id="show-format-help">What file do I upload? ▾</button>
+        <div class="hint" id="format-help" hidden>
+          In OCLC WorldShare Reports, run the <em>Borrower Transaction-Level Detail Report — Institution</em>. Save the .xls and upload it here (it is actually tab-delimited text). The app reads symbol, type, state, fill rate, and turnaround time.
+        </div>
+      </div>
+    </section>
+
+    <section class="facet-group">
+      <h3>Your library</h3>
+      <label class="inline-field">
+        <span>Home state</span>
+        <input type="text" id="home-state" maxlength="2" value="FL">
+      </label>
+      <label class="inline-field" style="margin-top:8px;">
+        <span>Latitude</span>
+        <input type="text" id="home-lat" value="30.4383" style="width:90px;">
+      </label>
+      <label class="inline-field" style="margin-top:8px;">
+        <span>Longitude</span>
+        <input type="text" id="home-lng" value="-84.2807" style="width:90px;">
+      </label>
+      <p class="hint">Used for the same-state boost and distance filtering in Discover.</p>
+    </section>
+
+    <section class="facet-group">
+      <h3>Scoring weights</h3>
+      <div class="preset-btns">
+        <button class="preset" data-preset="balanced">Balanced</button>
+        <button class="preset" data-preset="speed">Speed first</button>
+        <button class="preset" data-preset="trusted">Trusted</button>
+      </div>
+      <div class="weight-row"><div class="weight-label"><span>Speed</span><span data-weight-out="speed">25</span></div><input type="range" min="0" max="50" value="25" data-weight="speed"></div>
+      <div class="weight-row"><div class="weight-label"><span>Fill rate</span><span data-weight-out="fill">30</span></div><input type="range" min="0" max="50" value="30" data-weight="fill"></div>
+      <div class="weight-row"><div class="weight-label"><span>Volume</span><span data-weight-out="volume">15</span></div><input type="range" min="0" max="50" value="15" data-weight="volume"></div>
+      <div class="weight-row"><div class="weight-label"><span>Consistency</span><span data-weight-out="consistency">20</span></div><input type="range" min="0" max="50" value="20" data-weight="consistency"></div>
+      <div class="weight-row"><div class="weight-label"><span>Local (same state)</span><span data-weight-out="local">10</span></div><input type="range" min="0" max="50" value="10" data-weight="local"></div>
+    </section>
+
+    <section class="facet-group">
+      <h3>Library type</h3>
+      <div id="type-facets"><p class="hint">Upload a report to populate filters.</p></div>
+    </section>
+
+    <section class="facet-group">
+      <h3>State</h3>
+      <div id="state-facets" class="scroll-box"></div>
+    </section>
+
+    <section class="facet-group">
+      <h3>Your history filters</h3>
+      <label class="facet"><span><input type="checkbox" data-facet="hist" value="filled">Filled at least 1 request</span></label>
+      <label class="facet"><span><input type="checkbox" data-facet="hist" value="multi">5+ filled requests</span></label>
+      <label class="facet"><span><input type="checkbox" data-facet="hist" value="fast">Average under 3 days</span></label>
+      <label class="facet"><span><input type="checkbox" data-facet="hist" value="reliable">Fill rate over 75%</span></label>
+      <label class="facet"><span><input type="checkbox" data-facet="hist" value="consistent">Seen in 3+ months</span></label>
+    </section>
+
+    <button class="link-btn" id="reset-filters">Reset all filters</button>
+  </aside>
+
+  <section class="results" aria-label="Lender results">
+    <div class="toolbar">
+      <div class="result-count"><strong id="match-count">0</strong> match · <strong id="sel-count">0</strong> selected</div>
+      <div class="toolbar-actions">
+        <select id="sort-by" aria-label="Sort by">
+          <option value="score">Sort: best match</option>
+          <option value="speed">Sort: turnaround time</option>
+          <option value="fill">Sort: fill rate</option>
+          <option value="volume">Sort: volume</option>
+          <option value="consistency">Sort: consistency</option>
+        </select>
+        <button id="build-group-btn" class="primary-btn">Build holdings group</button>
+      </div>
+    </div>
+    <div id="export-panel"></div>
+    <div id="lender-list" role="list"></div>
+  </section>
+</main>
+
+<main class="layout" id="discover-view" hidden>
+  <aside class="facets" aria-label="Discover filters">
+    <section class="facet-group">
+      <h3>Directory</h3>
+      <p class="hint" id="dir-stats">Loading directory…</p>
+      <div class="upload-box" style="margin-top:8px;">
+        <label class="upload-label" for="dir-input">
+          <span aria-hidden="true">⬆</span> Import directory CSV
+        </label>
+        <input type="file" id="dir-input" accept=".csv,.tsv,.txt" multiple>
+        <p class="upload-status" id="dir-upload-status">Add your own lender directory entries. Merges with the starter list.</p>
+        <button class="link-btn" id="show-dir-format-help">CSV format ▾</button>
+        <div class="hint" id="dir-format-help" hidden>
+          Header row required: <code>symbol,name,state,type,groups,lat,lng</code>. Groups can be semicolon-separated (<code>ASERL;LVIS</code>). Lat/lng are optional but enable distance filtering.
+          <a href="directory-template.csv" download style="display:block;margin-top:6px;color:var(--text-info);">Download CSV template</a>
+        </div>
+        <button class="link-btn" id="clear-imported-dir" hidden>Clear imported entries</button>
+      </div>
+    </section>
+
+    <section class="facet-group">
+      <h3>Find candidates</h3>
+      <label style="display:block; font-size:13px; margin-bottom:4px;">Search name or symbol</label>
+      <input type="text" id="dir-search" placeholder="e.g. Florida, UCLA, FUG" style="width:100%; padding:6px 10px; border-radius:var(--radius-md); border: 0.5px solid var(--border); background:var(--bg); color:var(--text); font-family:var(--font); font-size:13px;">
+      <label class="facet" style="margin-top:10px;"><span><input type="checkbox" id="show-only-new" checked>Only libraries I haven't borrowed from</span></label>
+    </section>
+
+    <section class="facet-group">
+      <h3>Distance from home</h3>
+      <div class="weight-row">
+        <div class="weight-label"><span>Within</span><span id="dist-out">Any</span></div>
+        <input type="range" min="0" max="3000" value="0" step="50" id="max-dist">
+      </div>
+      <p class="hint">Set to 0 to disable. Needs lat/long in directory entries.</p>
+    </section>
+
+    <section class="facet-group">
+      <h3>Library type</h3>
+      <div id="dir-type-facets"></div>
+    </section>
+
+    <section class="facet-group">
+      <h3>State</h3>
+      <div id="dir-state-facets" class="scroll-box"></div>
+    </section>
+
+    <section class="facet-group">
+      <h3>Group affiliation</h3>
+      <div id="dir-group-facets"></div>
+    </section>
+
+    <section class="facet-group">
+      <h3>OCLC policy lookup</h3>
+      <label style="display:block; font-size:13px; margin-bottom:4px;">Proxy backend URL</label>
+      <input type="text" id="backend-url" placeholder="https://your-proxy.onrender.com" style="width:100%; padding:6px 10px; border-radius:var(--radius-md); border: 0.5px solid var(--border); background:var(--bg); color:var(--text); font-family:var(--font); font-size:12px;">
+      <p class="hint">Required to fetch fees, materials, hours, contact, and delivery methods from OCLC. Deploy the proxy from the <code>lender-finder-backend</code> companion project. Leave blank to disable lookup.</p>
+      <p class="upload-status" id="backend-status" style="margin-top:6px;"></p>
+    </section>
+
+    <button class="link-btn" id="reset-dir-filters">Reset Discover filters</button>
+  </aside>
+
+  <section class="results" aria-label="Discover results">
+    <div class="toolbar">
+      <div class="result-count"><strong id="dir-match-count">0</strong> candidates · <strong id="dir-sel-count">0</strong> selected</div>
+      <div class="toolbar-actions">
+        <select id="dir-sort-by" aria-label="Sort by">
+          <option value="distance">Sort: distance</option>
+          <option value="name">Sort: name</option>
+          <option value="state">Sort: state</option>
+        </select>
+        <button id="dir-build-btn" class="primary-btn">Build holdings group</button>
+      </div>
+    </div>
+    <div id="dir-export-panel"></div>
+    <div id="dir-list" role="list"></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>
+    Data stays in your browser — nothing is uploaded to a server. Reports and directory entries persist in localStorage.
+  </p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

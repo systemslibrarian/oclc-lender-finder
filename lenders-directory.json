@@ -1,0 +1,42 @@
+{
+  "_meta": {
+    "description": "Starter directory of US libraries that participate in ILL via OCLC Resource Sharing. This is a small, conservatively-verified seed. Build out the real directory by uploading a CSV in the Discover tab — sources to use: your past OCLC Lender Detail reports, the OCLC Policies Directory, your consortium's member list, or directories from peer institutions.",
+    "lastUpdated": "2026-05",
+    "version": 1,
+    "fields": {
+      "symbol": "OCLC institution symbol",
+      "name": "Institution name",
+      "state": "Two-letter US state code",
+      "type": "Library type matching OCLC reports (Academic / Public / Special / Federal/Natl Government / State Library / Major Academic Research / Corporate / Theological / Other)",
+      "groups": "Profiled groups and consortia (LVIS, ASERL, ERG, ARL, etc.)",
+      "lat": "Approximate latitude for distance filtering",
+      "lng": "Approximate longitude for distance filtering"
+    }
+  },
+  "lenders": [
+    {"symbol": "FUG", "name": "University of Florida", "state": "FL", "type": "Academic", "groups": ["ASERL"], "lat": 29.6516, "lng": -82.3248},
+    {"symbol": "FDA", "name": "Florida State University", "state": "FL", "type": "Academic", "groups": ["ASERL"], "lat": 30.4419, "lng": -84.2985},
+    {"symbol": "SFU", "name": "University of South Florida", "state": "FL", "type": "Academic", "groups": ["ASERL"], "lat": 28.0587, "lng": -82.4139},
+    {"symbol": "FNP", "name": "University of North Florida, Carpenter Library", "state": "FL", "type": "Academic", "groups": [], "lat": 30.2693, "lng": -81.5113},
+    {"symbol": "FJV", "name": "Jacksonville Public Library", "state": "FL", "type": "Public", "groups": [], "lat": 30.3263, "lng": -81.6612},
+    {"symbol": "FOC", "name": "Orange County Library System", "state": "FL", "type": "Public", "groups": [], "lat": 28.5421, "lng": -81.3790},
+    {"symbol": "FB3", "name": "Northwest Florida State College Learning Resources", "state": "FL", "type": "Academic", "groups": [], "lat": 30.7438, "lng": -86.5739},
+    {"symbol": "FJD", "name": "Florida State College at Jacksonville", "state": "FL", "type": "Academic", "groups": [], "lat": 30.3322, "lng": -81.6557},
+    {"symbol": "FD8", "name": "Niceville Library", "state": "FL", "type": "Public", "groups": [], "lat": 30.5210, "lng": -86.4824},
+    {"symbol": "FLK", "name": "Suwannee River Regional Library System", "state": "FL", "type": "Public", "groups": [], "lat": 30.1894, "lng": -83.1718},
+    {"symbol": "GUA", "name": "University of Georgia Libraries", "state": "GA", "type": "Academic", "groups": ["ASERL"], "lat": 33.9480, "lng": -83.3773},
+    {"symbol": "EMU", "name": "Emory University", "state": "GA", "type": "Academic", "groups": ["ASERL"], "lat": 33.7919, "lng": -84.3232},
+    {"symbol": "AUU", "name": "Atlanta University Center Robert W. Woodruff Library", "state": "GA", "type": "Academic", "groups": [], "lat": 33.7556, "lng": -84.4101},
+    {"symbol": "EGA", "name": "Agnes Scott College", "state": "GA", "type": "Academic", "groups": [], "lat": 33.7681, "lng": -84.2949},
+    {"symbol": "JBL", "name": "Arlington Heights Memorial Library", "state": "IL", "type": "Public", "groups": [], "lat": 42.0884, "lng": -87.9806},
+    {"symbol": "JVK", "name": "Addison Public Library", "state": "IL", "type": "Public", "groups": [], "lat": 41.9319, "lng": -88.0073},
+    {"symbol": "UIB", "name": "Ames Public Library", "state": "IA", "type": "Public", "groups": [], "lat": 42.0240, "lng": -93.6202},
+    {"symbol": "IAM", "name": "Anderson Public Library", "state": "IN", "type": "Public", "groups": [], "lat": 40.1053, "lng": -85.6803},
+    {"symbol": "O2C", "name": "Ardmore Public Library", "state": "OK", "type": "Public", "groups": [], "lat": 34.1745, "lng": -97.1437},
+    {"symbol": "AVE", "name": "Alvernia University", "state": "PA", "type": "Academic", "groups": [], "lat": 40.3243, "lng": -75.8867},
+    {"symbol": "YAH", "name": "Alfred University", "state": "NY", "type": "Academic", "groups": [], "lat": 42.2542, "lng": -77.7891},
+    {"symbol": "QUE", "name": "Albuquerque Bernalillo County Library System", "state": "NM", "type": "Public", "groups": [], "lat": 35.0844, "lng": -106.6504},
+    {"symbol": "LHL", "name": "Linda Hall Library", "state": "MO", "type": "Special", "groups": [], "lat": 39.0345, "lng": -94.5783},
+    {"symbol": "DLC", "name": "Library of Congress", "state": "DC", "type": "Federal/Natl Government", "groups": [], "lat": 38.8887, "lng": -77.0047}
+  ]
+}
