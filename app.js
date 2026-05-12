@@ -4,6 +4,7 @@
   const STORAGE_KEY = 'lenderFinder.months.v1';
   const SETTINGS_KEY = 'lenderFinder.settings.v1';
   const IMPORTED_DIR_KEY = 'lenderFinder.importedDir.v1';
+  const UI_KEY = 'lenderFinder.ui.v1';
 
   let months = [];
   let bundledDirectory = [];
@@ -12,6 +13,7 @@
   let homeLat = 30.4383;
   let homeLng = -84.2807;
   let backendUrl = '';
+  let activeTab = 'rankings';
   let weights = { speed: 25, fill: 30, volume: 15, consistency: 20, local: 10 };
   const expanded = new Set();
   const selected = new Set();
@@ -22,10 +24,29 @@
   const activeFilters = { type: new Set(), state: new Set(), hist: new Set() };
   const dirFilters = { type: new Set(), state: new Set(), group: new Set(), search: '', maxDist: 0, onlyNew: true };
 
+  // Last-rendered filtered lists, used by bulk actions
+  let lastFilteredRankings = [];
+  let lastFilteredDir = [];
+
+  // Debounce timers
+  const debounceTimers = {};
+  const debounce = (key, fn, ms = 200) => {
+    clearTimeout(debounceTimers[key]);
+    debounceTimers[key] = setTimeout(fn, ms);
+  };
+
   const presets = {
     balanced: { speed: 25, fill: 30, volume: 15, consistency: 20, local: 10 },
     speed: { speed: 45, fill: 25, volume: 10, consistency: 15, local: 5 },
     trusted: { speed: 15, fill: 30, volume: 20, consistency: 30, local: 5 }
+  };
+
+  const histLabels = {
+    filled: 'Filled ≥ 1',
+    multi: 'Filled ≥ 5',
+    fast: 'Avg < 3 days',
+    reliable: 'Fill > 75%',
+    consistent: '3+ months'
   };
 
   /* ---------- OCLC report parser (Rankings tab) ---------- */
@@ -237,6 +258,7 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(months));
       localStorage.setItem(SETTINGS_KEY, JSON.stringify({ homeState, homeLat, homeLng, weights, backendUrl }));
       localStorage.setItem(IMPORTED_DIR_KEY, JSON.stringify(importedDirectory));
+      localStorage.setItem(UI_KEY, JSON.stringify({ activeTab }));
     } catch (e) {
       console.warn('localStorage save failed:', e);
     }
@@ -262,6 +284,13 @@
       if (dir) {
         const parsed = JSON.parse(dir);
         if (Array.isArray(parsed)) importedDirectory = parsed;
+      }
+      const ui = localStorage.getItem(UI_KEY);
+      if (ui) {
+        const parsed = JSON.parse(ui);
+        if (parsed.activeTab === 'rankings' || parsed.activeTab === 'discover') {
+          activeTab = parsed.activeTab;
+        }
       }
     } catch (e) {
       console.warn('localStorage load failed:', e);
@@ -290,6 +319,15 @@
     }[c]));
   }
 
+  /* ---------- ARIA live announcements ---------- */
+
+  function announce(text) {
+    const el = document.getElementById('aria-live-status');
+    if (!el) return;
+    el.textContent = '';
+    setTimeout(() => { el.textContent = text; }, 50);
+  }
+
   /* ---------- Rankings tab rendering ---------- */
 
   function renderMonthsList() {
@@ -313,6 +351,7 @@
         saveData();
         rebuildFacetOptions();
         renderRankings();
+        announce(`Removed report. ${months.length} month${months.length === 1 ? '' : 's'} remaining.`);
       });
     });
   }
@@ -372,6 +411,97 @@
     return true;
   }
 
+  /* ---------- Filter chips ---------- */
+
+  function renderRankingsChips() {
+    const wrap = document.getElementById('rankings-chips');
+    const chips = [];
+    activeFilters.type.forEach(t => chips.push({ label: `Type: ${t}`, remove: () => activeFilters.type.delete(t) }));
+    activeFilters.state.forEach(s => chips.push({ label: `State: ${s}`, remove: () => activeFilters.state.delete(s) }));
+    activeFilters.hist.forEach(h => chips.push({ label: histLabels[h] || h, remove: () => activeFilters.hist.delete(h) }));
+    renderChips(wrap, chips, () => {
+      activeFilters.type.clear();
+      activeFilters.state.clear();
+      activeFilters.hist.clear();
+      rebuildFacetOptions();
+      document.querySelectorAll('#rankings-view input[type="checkbox"][data-facet="hist"]').forEach(cb => cb.checked = false);
+      renderRankings();
+    });
+  }
+
+  function renderDiscoverChips() {
+    const wrap = document.getElementById('discover-chips');
+    const chips = [];
+    dirFilters.type.forEach(t => chips.push({ label: `Type: ${t}`, remove: () => dirFilters.type.delete(t) }));
+    dirFilters.state.forEach(s => chips.push({ label: `State: ${s}`, remove: () => dirFilters.state.delete(s) }));
+    dirFilters.group.forEach(g => chips.push({ label: `Group: ${g}`, remove: () => dirFilters.group.delete(g) }));
+    if (dirFilters.search) chips.push({ label: `"${dirFilters.search}"`, remove: () => {
+      dirFilters.search = '';
+      const inp = document.getElementById('dir-search');
+      if (inp) inp.value = '';
+      document.getElementById('dir-search-clear').hidden = true;
+    }});
+    if (dirFilters.maxDist > 0) chips.push({ label: `Within ${dirFilters.maxDist} mi`, remove: () => {
+      dirFilters.maxDist = 0;
+      document.getElementById('max-dist').value = 0;
+      document.getElementById('dist-out').textContent = 'Any';
+    }});
+    if (!dirFilters.onlyNew) chips.push({ label: 'Including borrowed', remove: () => {
+      dirFilters.onlyNew = true;
+      document.getElementById('show-only-new').checked = true;
+    }});
+    renderChips(wrap, chips, () => {
+      dirFilters.type.clear();
+      dirFilters.state.clear();
+      dirFilters.group.clear();
+      dirFilters.search = '';
+      dirFilters.maxDist = 0;
+      dirFilters.onlyNew = true;
+      document.getElementById('dir-search').value = '';
+      document.getElementById('dir-search-clear').hidden = true;
+      document.getElementById('show-only-new').checked = true;
+      document.getElementById('max-dist').value = 0;
+      document.getElementById('dist-out').textContent = 'Any';
+      buildDirFacetOptions();
+      renderDiscover();
+    });
+  }
+
+  function renderChips(wrap, chips, clearAll) {
+    if (chips.length === 0) {
+      wrap.hidden = true;
+      wrap.innerHTML = '';
+      return;
+    }
+    wrap.hidden = false;
+    wrap.innerHTML = `<span class="filter-chips-label">Filtering by</span>` +
+      chips.map((c, i) => `<span class="chip">${escapeHtml(c.label)}<button class="chip-close" data-chip-idx="${i}" aria-label="Remove filter ${escapeHtml(c.label)}">×</button></span>`).join('') +
+      `<button class="chip-clear-all" data-clear-chips type="button">Clear all</button>`;
+    wrap.querySelectorAll('[data-chip-idx]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.dataset.chipIdx);
+        chips[idx].remove();
+        // Re-render whichever tab owns these chips
+        if (wrap.id === 'rankings-chips') {
+          rebuildFacetOptions();
+          // Sync hist checkboxes
+          document.querySelectorAll('#rankings-view input[type="checkbox"][data-facet="hist"]').forEach(cb => {
+            cb.checked = activeFilters.hist.has(cb.value);
+          });
+          renderRankings();
+        } else {
+          buildDirFacetOptions();
+          renderDiscover();
+        }
+      });
+    });
+    const clearBtn = wrap.querySelector('[data-clear-chips]');
+    if (clearBtn) clearBtn.addEventListener('click', clearAll);
+  }
+
+  /* ---------- Renderers ---------- */
+
   function renderRankings() {
     saveData();
     const merged = mergeMonths();
@@ -386,15 +516,18 @@
       consistency: (a, b) => b.monthsPresent - a.monthsPresent
     };
     filtered.sort(sortFns[sortBy] || sortFns.score);
+    lastFilteredRankings = filtered;
 
     document.getElementById('match-count').textContent = filtered.length;
-    document.getElementById('sel-count').textContent = selected.size;
+    updateSelectionCounts();
+    renderRankingsChips();
 
     const periodsLabel = months.map(m => m.period).filter(p => p).join(' + ') || 'no data';
     document.getElementById('meta').textContent =
       months.length === 0
-        ? 'No reports loaded — upload one to start'
-        : `${months.length} month${months.length === 1 ? '' : 's'} (${periodsLabel}) · ${merged.length} unique lenders`;
+        ? 'No reports loaded'
+        : `${months.length} month${months.length === 1 ? '' : 's'} · ${merged.length} lenders`;
+    document.getElementById('meta').setAttribute('title', `${periodsLabel}`);
 
     const labels = { speed: 'Speed', fill: 'Fill rate', volume: 'Volume', consistency: 'Consistency', local: 'Same state' };
     const list = document.getElementById('lender-list');
@@ -403,84 +536,149 @@
     if (filtered.length === 0) {
       if (months.length === 0) {
         list.innerHTML = `<div class="empty-state">
+          <svg class="empty-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m-4 4l4-4 4 4M5 18h14"/></svg>
           <strong>No data yet</strong>
           Upload one or more OCLC Borrower Transaction-Level Detail reports using the panel on the left. Your data stays in this browser.
+          <span class="empty-cta" id="empty-upload-cta">+ Add a report</span>
         </div>`;
+        const cta = document.getElementById('empty-upload-cta');
+        if (cta) cta.addEventListener('click', () => document.getElementById('csv-input').click());
       } else {
-        list.innerHTML = '<div class="empty-state"><strong>No lenders match these filters</strong>Try removing some filters or resetting them.</div>';
+        list.innerHTML = `<div class="empty-state">
+          <svg class="empty-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="6"/><path d="m20 20-3.5-3.5"/></svg>
+          <strong>No lenders match these filters</strong>
+          Try removing some filters or resetting them.
+        </div>`;
       }
       return;
     }
 
-    list.innerHTML = filtered.map(l => {
-      const scoreClass = l._score >= 70 ? 'high' : l._score >= 50 ? 'med' : '';
-      const isOpen = expanded.has(l.symbol);
-      const isSel = selected.has(l.symbol);
-      const fr = fillRate(l), days = avgDays(l);
-      const thinNote = l.filled === 0 ? '<p class="card-thin">No filled requests yet</p>' : '';
-      const monthDots = Array.from({ length: l.monthsSpan }).map((_, i) => {
-        const present = l.filledMonths[i] !== undefined;
-        const filled = (l.filledMonths[i] || 0) > 0;
-        const cls = !present ? 'missing' : filled ? 'filled' : 'empty';
-        const m = months[i];
-        const title = m ? `${escapeHtml(m.period)}: ${l.filledMonths[i] || 0} filled / ${l.requestedMonths[i] || 0} requested` : '';
-        return `<span class="month-dot ${cls}" title="${title}"></span>`;
-      }).join(' ');
-      const explainRows = Object.keys(labels).map(k =>
-        `<div class="explain-row">
-          <span style="color: var(--text-secondary);">${labels[k]}</span>
-          <div class="bar"><div class="bar-fill" style="width: ${l._subs[k]}%;"></div></div>
-          <span class="pts">${l._subs[k]} × ${(w[k] * 100).toFixed(0)}%</span>
-          <span class="wt">${Math.round(l._subs[k] * w[k])}</span>
-        </div>`
-      ).join('');
-      return `
-        <div class="card ${isSel ? 'selected' : ''}" role="listitem">
-          <div class="card-top">
-            <div class="card-left">
-              <input type="checkbox" data-select="${escapeHtml(l.symbol)}" ${isSel ? 'checked' : ''} aria-label="Select ${escapeHtml(l.name)}">
-              <div>
-                <p class="card-name">${escapeHtml(l.name)}</p>
-                <p class="card-sub">${escapeHtml(l.symbol)} · ${escapeHtml(l.type)} · ${escapeHtml(l.state)}</p>
-                ${l.monthsSpan > 1 ? `<div class="months-dot-row">${monthDots} <span>${l.monthsPresent}/${l.monthsSpan} months</span></div>` : ''}
-                ${thinNote}
-              </div>
-            </div>
-            <span class="score ${scoreClass}">${l._score}</span>
-          </div>
-          <div class="card-stats">
-            <div class="stat"><span class="stat-label">Requested</span><span class="stat-val">${l.requested}</span></div>
-            <div class="stat"><span class="stat-label">Filled</span><span class="stat-val">${l.filled}</span></div>
-            <div class="stat"><span class="stat-label">Fill rate</span><span class="stat-val ${l.requested === 0 ? 'muted' : ''}">${l.requested > 0 ? fr.toFixed(0) + '%' : '—'}</span></div>
-            <div class="stat"><span class="stat-label">Avg days</span><span class="stat-val ${l.filled === 0 ? 'muted' : ''}">${l.filled > 0 ? days.toFixed(1) : '—'}</span></div>
-            <div class="stat"><span class="stat-label">Months</span><span class="stat-val">${l.monthsPresent}/${l.monthsSpan}</span></div>
-          </div>
-          <div class="badges">
-            ${l.state === homeState ? '<span class="badge local">Same state</span>' : ''}
-            ${l.monthsPresent === l.monthsSpan && l.monthsSpan > 1 ? '<span class="badge every-month">Every month</span>' : ''}
-            <button class="explain-btn" data-explain="${escapeHtml(l.symbol)}">${isOpen ? 'Hide why ▴' : 'Why this score ▾'}</button>
-          </div>
-          ${isOpen ? `<div class="explain">${explainRows}<div class="explain-total"><span>Total</span><span>${l._score}</span></div></div>` : ''}
-        </div>`;
-    }).join('');
+    list.innerHTML = filtered.map(l => renderRankingCard(l, labels, w)).join('');
 
+    // Card click → toggle selection (but not when clicking interactive children)
+    list.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('input, button, a, .explain')) return;
+        const sym = card.dataset.symbol;
+        toggleRankingSelection(sym);
+      });
+    });
     list.querySelectorAll('[data-explain]').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         const sym = btn.dataset.explain;
         if (expanded.has(sym)) expanded.delete(sym); else expanded.add(sym);
-        renderRankings();
+        const card = list.querySelector(`.card[data-symbol="${cssEscape(sym)}"]`);
+        if (card) {
+          const l = filtered.find(x => x.symbol === sym);
+          if (l) card.outerHTML = renderRankingCard(l, labels, w);
+          rewireCardEvents();
+        }
       });
     });
     list.querySelectorAll('[data-select]').forEach(cb => {
-      cb.addEventListener('change', () => {
-        const sym = cb.dataset.select;
-        if (cb.checked) selected.add(sym); else selected.delete(sym);
-        renderRankings();
-      });
+      cb.addEventListener('click', (e) => e.stopPropagation());
+      cb.addEventListener('change', () => toggleRankingSelection(cb.dataset.select, cb.checked));
     });
   }
 
-  /* ---------- Policy lookup (calls backend proxy) ---------- */
+  function rewireCardEvents() {
+    // After surgical re-render of one card, re-wire only what's needed
+    renderRankings(); // simplest correctness path; cheap because cards re-render is fast
+  }
+
+  function renderRankingCard(l, labels, w) {
+    const scoreClass = l._score >= 70 ? 'high' : l._score >= 50 ? 'med' : '';
+    const isOpen = expanded.has(l.symbol);
+    const isSel = selected.has(l.symbol);
+    const fr = fillRate(l), days = avgDays(l);
+    const thinNote = l.filled === 0 ? '<p class="card-thin">No filled requests yet</p>' : '';
+    const monthDots = Array.from({ length: l.monthsSpan }).map((_, i) => {
+      const present = l.filledMonths[i] !== undefined;
+      const filled = (l.filledMonths[i] || 0) > 0;
+      const cls = !present ? 'missing' : filled ? 'filled' : 'empty';
+      const m = months[i];
+      const title = m ? `${escapeHtml(m.period)}: ${l.filledMonths[i] || 0} filled / ${l.requestedMonths[i] || 0} requested` : '';
+      return `<span class="month-dot ${cls}" title="${title}"></span>`;
+    }).join(' ');
+    const explainRows = Object.keys(labels).map(k =>
+      `<div class="explain-row">
+        <span style="color: var(--text-secondary);">${labels[k]}</span>
+        <div class="bar"><div class="bar-fill" style="width: ${l._subs[k]}%;"></div></div>
+        <span class="pts">${l._subs[k]} × ${(w[k] * 100).toFixed(0)}%</span>
+        <span class="wt">${Math.round(l._subs[k] * w[k])}</span>
+      </div>`
+    ).join('');
+    return `
+      <div class="card ${isSel ? 'selected' : ''}" role="listitem" data-symbol="${escapeHtml(l.symbol)}" tabindex="0">
+        <div class="card-top">
+          <div class="card-left">
+            <input type="checkbox" data-select="${escapeHtml(l.symbol)}" ${isSel ? 'checked' : ''} aria-label="Select ${escapeHtml(l.name)}">
+            <div>
+              <p class="card-name">${escapeHtml(l.name)}</p>
+              <p class="card-sub">${escapeHtml(l.symbol)} · ${escapeHtml(l.type)} · ${escapeHtml(l.state)}</p>
+              ${l.monthsSpan > 1 ? `<div class="months-dot-row">${monthDots} <span>${l.monthsPresent}/${l.monthsSpan} months</span></div>` : ''}
+              ${thinNote}
+            </div>
+          </div>
+          <span class="score ${scoreClass}" title="Composite score from weighted subscores">${l._score}</span>
+        </div>
+        <div class="card-stats">
+          <div class="stat"><span class="stat-label">Requested</span><span class="stat-val">${l.requested}</span></div>
+          <div class="stat"><span class="stat-label">Filled</span><span class="stat-val">${l.filled}</span></div>
+          <div class="stat"><span class="stat-label">Fill rate</span><span class="stat-val ${l.requested === 0 ? 'muted' : ''}">${l.requested > 0 ? fr.toFixed(0) + '%' : '—'}</span></div>
+          <div class="stat"><span class="stat-label">Avg days</span><span class="stat-val ${l.filled === 0 ? 'muted' : ''}">${l.filled > 0 ? days.toFixed(1) : '—'}</span></div>
+          <div class="stat"><span class="stat-label">Months</span><span class="stat-val">${l.monthsPresent}/${l.monthsSpan}</span></div>
+        </div>
+        <div class="badges">
+          ${l.state === homeState ? '<span class="badge local">Same state</span>' : ''}
+          ${l.monthsPresent === l.monthsSpan && l.monthsSpan > 1 ? '<span class="badge every-month">Every month</span>' : ''}
+          <button class="explain-btn" data-explain="${escapeHtml(l.symbol)}" aria-expanded="${isOpen}">${isOpen ? 'Hide why ▴' : 'Why this score ▾'}</button>
+        </div>
+        ${isOpen ? `<div class="explain">${explainRows}<div class="explain-total"><span>Total</span><span>${l._score}</span></div></div>` : ''}
+      </div>`;
+  }
+
+  function cssEscape(s) {
+    if (window.CSS && window.CSS.escape) return CSS.escape(s);
+    return String(s).replace(/[^a-zA-Z0-9_-]/g, '\\$&');
+  }
+
+  /* ---------- Surgical selection updates ---------- */
+
+  function toggleRankingSelection(symbol, force) {
+    const isSelected = force != null ? force : !selected.has(symbol);
+    if (isSelected) selected.add(symbol); else selected.delete(symbol);
+    updateCardSelectionUI('lender-list', symbol, isSelected);
+    updateSelectionCounts();
+  }
+
+  function toggleDiscoverSelection(symbol, force) {
+    const isSelected = force != null ? force : !dirSelected.has(symbol);
+    if (isSelected) dirSelected.add(symbol); else dirSelected.delete(symbol);
+    updateCardSelectionUI('dir-list', symbol, isSelected);
+    updateSelectionCounts();
+  }
+
+  function updateCardSelectionUI(listId, symbol, isSelected) {
+    const list = document.getElementById(listId);
+    if (!list) return;
+    const card = list.querySelector(`.card[data-symbol="${cssEscape(symbol)}"]`);
+    if (card) {
+      card.classList.toggle('selected', isSelected);
+      const cb = card.querySelector('input[type="checkbox"]');
+      if (cb && cb.checked !== isSelected) cb.checked = isSelected;
+    }
+  }
+
+  function updateSelectionCounts() {
+    document.getElementById('sel-count').textContent = selected.size;
+    document.getElementById('dir-sel-count').textContent = dirSelected.size;
+    document.getElementById('clear-selection').hidden = selected.size === 0;
+    document.getElementById('dir-clear-selection').hidden = dirSelected.size === 0;
+  }
+
+  /* ---------- Policy lookup ---------- */
 
   async function checkBackendHealth() {
     const statusEl = document.getElementById('backend-status');
@@ -496,10 +694,10 @@
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const body = await r.json();
       if (body.has_credentials) {
-        statusEl.textContent = 'Proxy reachable. OCLC credentials configured.';
+        statusEl.textContent = '✓ Proxy reachable. OCLC credentials configured.';
         statusEl.className = 'upload-status ok';
       } else {
-        statusEl.textContent = 'Proxy reachable but OCLC credentials missing.';
+        statusEl.textContent = '⚠ Proxy reachable but OCLC credentials missing.';
         statusEl.className = 'upload-status err';
       }
     } catch (e) {
@@ -684,6 +882,7 @@
     const stats = document.getElementById('dir-stats');
     stats.textContent = `${total} entries (${bundledDirectory.length} bundled${imported > 0 ? `, ${imported} imported` : ''}).`;
     document.getElementById('clear-imported-dir').hidden = imported === 0;
+    document.getElementById('export-imported-dir').hidden = imported === 0;
   }
 
   function renderDiscover() {
@@ -725,70 +924,88 @@
       state: (a, b) => (a.state || '').localeCompare(b.state || '')
     };
     filtered.sort(sortFns[sortBy] || sortFns.distance);
+    lastFilteredDir = filtered;
 
     document.getElementById('dir-match-count').textContent = filtered.length;
-    document.getElementById('dir-sel-count').textContent = dirSelected.size;
+    const newCount = filtered.filter(l => !borrowedSyms.has(l.symbol)).length;
+    const extra = document.getElementById('dir-summary-extra');
+    if (extra) {
+      extra.textContent = filtered.length > 0
+        ? `(${newCount} new, ${filtered.length - newCount} known)`
+        : '';
+    }
+    updateSelectionCounts();
+    renderDiscoverChips();
 
     const list = document.getElementById('dir-list');
     if (filtered.length === 0) {
       const dirEmpty = dir.length === 0;
       list.innerHTML = `<div class="empty-state">
+        <svg class="empty-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="6"/><path d="m20 20-3.5-3.5"/></svg>
         <strong>${dirEmpty ? 'Directory is empty' : 'No candidates match'}</strong>
         ${dirEmpty ? 'Import a directory CSV using the panel on the left.' : 'Try removing filters, or turn off "Only libraries I haven\'t borrowed from".'}
       </div>`;
       return;
     }
 
-    list.innerHTML = filtered.map(l => {
-      const isSel = dirSelected.has(l.symbol);
-      const alreadyBorrowed = borrowedSyms.has(l.symbol);
-      const groupBadges = (l.groups || []).map(g => `<span class="badge">${escapeHtml(g)}</span>`).join('');
-      const distanceText = l._distanceMiles != null
-        ? `${Math.round(l._distanceMiles)} mi`
-        : '—';
-      const importedBadge = l._imported ? '<span class="badge" style="background:var(--bg-info); color:var(--text-info);">Imported</span>' : '';
-      const borrowedBadge = alreadyBorrowed ? '<span class="badge every-month">Borrowed from before</span>' : '<span class="badge local">New candidate</span>';
-      const policyBtn = backendUrl
-        ? `<button class="policy-lookup-btn" data-policy="${escapeHtml(l.symbol)}">${policyExpanded.has(l.symbol) ? 'Hide policies ▴' : 'Load policies from OCLC ▾'}</button>`
-        : '';
-      const policyHtml = policyExpanded.has(l.symbol) ? renderPolicyPanel(l.symbol) : '';
-      return `
-        <div class="card ${isSel ? 'selected' : ''}" role="listitem">
-          <div class="card-top">
-            <div class="card-left">
-              <input type="checkbox" data-dir-select="${escapeHtml(l.symbol)}" ${isSel ? 'checked' : ''} aria-label="Select ${escapeHtml(l.name)}">
-              <div>
-                <p class="card-name">${escapeHtml(l.name)}</p>
-                <p class="card-sub">${escapeHtml(l.symbol)} · ${escapeHtml(l.type || 'Other')} · ${escapeHtml(l.state || '—')}</p>
-              </div>
-            </div>
-          </div>
-          <div class="discover-card-stats">
-            <div class="stat"><span class="stat-label">Distance</span><span class="stat-val ${l._distanceMiles == null ? 'muted' : ''}">${distanceText}</span></div>
-            <div class="stat"><span class="stat-label">Groups</span><span class="stat-val ${(l.groups || []).length === 0 ? 'muted' : ''}">${(l.groups || []).length || '—'}</span></div>
-            <div class="stat"><span class="stat-label">Status</span><span class="stat-val">${alreadyBorrowed ? 'Known' : 'New'}</span></div>
-          </div>
-          <div class="badges">
-            ${borrowedBadge}
-            ${l.state === homeState ? '<span class="badge local">Same state</span>' : ''}
-            ${groupBadges}
-            ${importedBadge}
-            ${policyBtn}
-          </div>
-          ${policyHtml}
-        </div>`;
-    }).join('');
+    list.innerHTML = filtered.map(l => renderDiscoverCard(l, borrowedSyms)).join('');
 
-    list.querySelectorAll('[data-dir-select]').forEach(cb => {
-      cb.addEventListener('change', () => {
-        const sym = cb.dataset.dirSelect;
-        if (cb.checked) dirSelected.add(sym); else dirSelected.delete(sym);
-        renderDiscover();
+    list.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('input, button, a, .policy-panel')) return;
+        toggleDiscoverSelection(card.dataset.symbol);
       });
     });
-    list.querySelectorAll('[data-policy]').forEach(btn => {
-      btn.addEventListener('click', () => togglePolicyPanel(btn.dataset.policy));
+    list.querySelectorAll('[data-dir-select]').forEach(cb => {
+      cb.addEventListener('click', (e) => e.stopPropagation());
+      cb.addEventListener('change', () => toggleDiscoverSelection(cb.dataset.dirSelect, cb.checked));
     });
+    list.querySelectorAll('[data-policy]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        togglePolicyPanel(btn.dataset.policy);
+      });
+    });
+  }
+
+  function renderDiscoverCard(l, borrowedSyms) {
+    const isSel = dirSelected.has(l.symbol);
+    const alreadyBorrowed = borrowedSyms.has(l.symbol);
+    const groupBadges = (l.groups || []).map(g => `<span class="badge">${escapeHtml(g)}</span>`).join('');
+    const distanceText = l._distanceMiles != null
+      ? `${Math.round(l._distanceMiles)} mi`
+      : '—';
+    const importedBadge = l._imported ? '<span class="badge" style="background:var(--bg-info); color:var(--text-info);">Imported</span>' : '';
+    const borrowedBadge = alreadyBorrowed ? '<span class="badge every-month">Borrowed before</span>' : '<span class="badge local">New candidate</span>';
+    const policyBtn = backendUrl
+      ? `<button class="policy-lookup-btn" data-policy="${escapeHtml(l.symbol)}" aria-expanded="${policyExpanded.has(l.symbol)}">${policyExpanded.has(l.symbol) ? 'Hide policies ▴' : 'Load policies from OCLC ▾'}</button>`
+      : '';
+    const policyHtml = policyExpanded.has(l.symbol) ? renderPolicyPanel(l.symbol) : '';
+    return `
+      <div class="card ${isSel ? 'selected' : ''}" role="listitem" data-symbol="${escapeHtml(l.symbol)}" tabindex="0">
+        <div class="card-top">
+          <div class="card-left">
+            <input type="checkbox" data-dir-select="${escapeHtml(l.symbol)}" ${isSel ? 'checked' : ''} aria-label="Select ${escapeHtml(l.name)}">
+            <div>
+              <p class="card-name">${escapeHtml(l.name)}</p>
+              <p class="card-sub">${escapeHtml(l.symbol)} · ${escapeHtml(l.type || 'Other')} · ${escapeHtml(l.state || '—')}</p>
+            </div>
+          </div>
+        </div>
+        <div class="discover-card-stats">
+          <div class="stat"><span class="stat-label">Distance</span><span class="stat-val ${l._distanceMiles == null ? 'muted' : ''}">${distanceText}</span></div>
+          <div class="stat"><span class="stat-label">Groups</span><span class="stat-val ${(l.groups || []).length === 0 ? 'muted' : ''}">${(l.groups || []).length || '—'}</span></div>
+          <div class="stat"><span class="stat-label">Status</span><span class="stat-val">${alreadyBorrowed ? 'Known' : 'New'}</span></div>
+        </div>
+        <div class="badges">
+          ${borrowedBadge}
+          ${l.state === homeState ? '<span class="badge local">Same state</span>' : ''}
+          ${groupBadges}
+          ${importedBadge}
+          ${policyBtn}
+        </div>
+        ${policyHtml}
+      </div>`;
   }
 
   /* ---------- Export panels ---------- */
@@ -811,6 +1028,7 @@
     const panel = document.getElementById(panelId);
     if (symbols.size === 0) {
       panel.innerHTML = `<div class="warning-panel">No lenders selected. Tick boxes on the cards, then click <strong>Build holdings group</strong> again.</div>`;
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       return;
     }
     const syms = [...symbols].sort();
@@ -826,11 +1044,12 @@
           <input type="text" id="group-name-${isDiscover ? 'd' : 'r'}" value="${escapeHtml(defaultGroupName(isDiscover ? dirFilters : activeFilters, isDiscover))}" maxlength="50">
         </div>
         <div class="count-row">OCLC Symbols · <strong>${syms.length}</strong> in this group</div>
-        <textarea class="symbols-box" data-symbols-box readonly>${escapeHtml(symbolString)}</textarea>
+        <textarea class="symbols-box" data-symbols-box readonly aria-label="Symbols list">${escapeHtml(symbolString)}</textarea>
         <div class="export-actions">
-          <button class="primary-btn" data-copy-btn style="border: 0.5px solid var(--border-info);">Copy symbols</button>
+          <button class="primary-btn" data-copy-btn>Copy symbols</button>
           <button data-download-btn>Download .txt</button>
-          ${!isDiscover ? '<button data-csv-btn style="margin-left: auto;">Download ranked CSV</button>' : ''}
+          ${!isDiscover ? '<button data-csv-btn>Download ranked CSV</button>' : ''}
+          <button data-print-btn style="margin-left: auto;">Print</button>
         </div>
         <div class="export-instructions">
           <strong>How to paste into OCLC:</strong>
@@ -841,13 +1060,15 @@
           </ol>
         </div>
       </div>`;
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     panel.querySelector('[data-close-export]').addEventListener('click', () => { panel.innerHTML = ''; });
     panel.querySelector('[data-copy-btn]').addEventListener('click', async () => {
       const text = panel.querySelector('[data-symbols-box]').value;
+      const btn = panel.querySelector('[data-copy-btn]');
       try {
         await navigator.clipboard.writeText(text);
-        const btn = panel.querySelector('[data-copy-btn]');
-        btn.textContent = 'Copied to clipboard';
+        btn.textContent = '✓ Copied to clipboard';
+        announce('Symbols copied to clipboard');
         setTimeout(() => { if (btn) btn.textContent = 'Copy symbols'; }, 2000);
       } catch (e) {
         panel.querySelector('[data-symbols-box]').select();
@@ -858,6 +1079,9 @@
       const nameInput = panel.querySelector(`#group-name-${isDiscover ? 'd' : 'r'}`);
       const name = nameInput.value || 'lenders';
       downloadFile(`${name}.txt`, symbolString, 'text/plain');
+    });
+    panel.querySelector('[data-print-btn]').addEventListener('click', () => {
+      window.print();
     });
     if (!isDiscover) {
       const csvBtn = panel.querySelector('[data-csv-btn]');
@@ -898,6 +1122,7 @@
   /* ---------- File handling ---------- */
 
   function handleReportSelection(files) {
+    if (!files || files.length === 0) return;
     const status = document.getElementById('upload-status');
     let pending = files.length;
     const errors = [];
@@ -925,12 +1150,15 @@
           if (errors.length > 0 && added === 0) {
             status.className = 'upload-status err';
             status.textContent = errors.join(' · ');
+            announce('Upload failed');
           } else if (errors.length > 0) {
             status.className = 'upload-status ok';
             status.textContent = `Added ${added}. Skipped: ${errors.join(' · ')}`;
+            announce(`Added ${added} report${added === 1 ? '' : 's'}`);
           } else {
             status.className = 'upload-status ok';
             status.textContent = `Loaded ${months.length} month${months.length === 1 ? '' : 's'}.`;
+            announce(`Loaded ${months.length} month${months.length === 1 ? '' : 's'}`);
           }
           renderMonthsList();
           rebuildFacetOptions();
@@ -948,6 +1176,7 @@
   }
 
   function handleDirectorySelection(files) {
+    if (!files || files.length === 0) return;
     const status = document.getElementById('dir-upload-status');
     let pending = files.length;
     const errors = [];
@@ -981,6 +1210,7 @@
             status.className = 'upload-status ok';
             status.textContent = `Imported ${totalAdded} entries. Total directory: ${getMergedDirectory().length}.`;
           }
+          announce(`Imported ${totalAdded} director${totalAdded === 1 ? 'y entry' : 'y entries'}`);
           renderDirectoryStats();
           buildDirFacetOptions();
           renderDiscover();
@@ -995,9 +1225,42 @@
     });
   }
 
+  /* ---------- Drag & drop ---------- */
+
+  function bindDropzones() {
+    // Page-level: prevent browser from opening dropped files outside dropzones
+    ['dragover', 'drop'].forEach(ev => {
+      document.addEventListener(ev, e => {
+        if (!e.target.closest('[data-dropzone]')) {
+          e.preventDefault();
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-dropzone]').forEach(zone => {
+      const kind = zone.dataset.dropzone;
+      zone.addEventListener('dragover', e => {
+        e.preventDefault();
+        zone.classList.add('drag-over');
+      });
+      zone.addEventListener('dragleave', e => {
+        if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+      });
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('drag-over');
+        const files = e.dataTransfer && e.dataTransfer.files;
+        if (!files || !files.length) return;
+        if (kind === 'report') handleReportSelection(files);
+        else if (kind === 'directory') handleDirectorySelection(files);
+      });
+    });
+  }
+
   /* ---------- Tab switching ---------- */
 
   function switchTab(name) {
+    activeTab = name;
     document.querySelectorAll('.tab').forEach(b => {
       const active = b.dataset.tab === name;
       b.classList.toggle('active', active);
@@ -1005,6 +1268,121 @@
     });
     document.getElementById('rankings-view').hidden = name !== 'rankings';
     document.getElementById('discover-view').hidden = name !== 'discover';
+    saveData();
+  }
+
+  /* ---------- Modal & help ---------- */
+
+  let lastFocusedBeforeModal = null;
+  let modalKeyHandler = null;
+  function openModal(title, html) {
+    lastFocusedBeforeModal = document.activeElement;
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-body').innerHTML = html;
+    const backdrop = document.getElementById('modal-backdrop');
+    backdrop.hidden = false;
+    const modal = backdrop.querySelector('.modal');
+    modal.focus();
+    document.body.style.overflow = 'hidden';
+
+    // Focus trap: keep Tab inside the modal
+    modalKeyHandler = (e) => {
+      if (e.key !== 'Tab') return;
+      const focusables = modal.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusables.length === 0) { e.preventDefault(); return; }
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === modal)) {
+        last.focus();
+        e.preventDefault();
+      } else if (!e.shiftKey && active === last) {
+        first.focus();
+        e.preventDefault();
+      }
+    };
+    modal.addEventListener('keydown', modalKeyHandler);
+  }
+  function closeModal() {
+    const backdrop = document.getElementById('modal-backdrop');
+    const modal = backdrop.querySelector('.modal');
+    if (modalKeyHandler) {
+      modal.removeEventListener('keydown', modalKeyHandler);
+      modalKeyHandler = null;
+    }
+    backdrop.hidden = true;
+    document.body.style.overflow = '';
+    if (lastFocusedBeforeModal && lastFocusedBeforeModal.focus) lastFocusedBeforeModal.focus();
+  }
+
+  function showHelpModal() {
+    openModal('Help & shortcuts', `
+      <h3>Keyboard shortcuts</h3>
+      <div class="shortcut-row"><span>Switch to Rankings</span><span class="shortcut-keys"><kbd>1</kbd></span></div>
+      <div class="shortcut-row"><span>Switch to Discover</span><span class="shortcut-keys"><kbd>2</kbd></span></div>
+      <div class="shortcut-row"><span>Focus search (Discover)</span><span class="shortcut-keys"><kbd>/</kbd></span></div>
+      <div class="shortcut-row"><span>Clear search / close panel</span><span class="shortcut-keys"><kbd>Esc</kbd></span></div>
+      <div class="shortcut-row"><span>Toggle card selection</span><span class="shortcut-keys"><kbd>Enter</kbd> or <kbd>Space</kbd></span></div>
+      <div class="shortcut-row"><span>Show this help</span><span class="shortcut-keys"><kbd>?</kbd></span></div>
+
+      <h3>Tips</h3>
+      <p>Drag-and-drop CSV/XLS files anywhere on the sidebar upload boxes.</p>
+      <p>Click anywhere on a card (not just the checkbox) to select it.</p>
+      <p>Use the filter chips at the top of the results to remove filters one at a time.</p>
+      <p>All data lives in your browser. Nothing is uploaded.</p>
+    `);
+  }
+
+  function showScoringModal() {
+    openModal('How the score is calculated', `
+      <p>The composite score (0–100) is a weighted average of five subscores. Adjust the sliders to match your priorities — the weights renormalize automatically.</p>
+
+      <div class="scoring-row"><strong>Speed</strong><span>Faster turnaround scores higher. A 1-day average is 100; each extra day subtracts 18 points. Zero if the lender has never filled.</span></div>
+      <div class="scoring-row"><strong>Fill rate</strong><span>Percentage of your requests that were filled, capped at 100. The single most predictive metric for whether a request will succeed.</span></div>
+      <div class="scoring-row"><strong>Volume</strong><span>Reaches 100 at 30 filled requests. Higher volume means more confidence in the speed and fill-rate measurements.</span></div>
+      <div class="scoring-row"><strong>Consistency</strong><span>Months the lender appeared in your reports as a share of months loaded. Filters out one-off flukes.</span></div>
+      <div class="scoring-row"><strong>Local</strong><span>100 if the lender is in your home state, 0 otherwise. Same-state borrowing is usually faster and cheaper.</span></div>
+
+      <h3>Presets</h3>
+      <p><strong>Balanced</strong> — sensible defaults for everyday use.<br>
+      <strong>Speed first</strong> — prioritizes turnaround time. Use for urgent / patron-facing requests.<br>
+      <strong>Trusted</strong> — favors fill rate and consistency. Use to identify reliable suppliers for course reserves or repeat needs.</p>
+    `);
+  }
+
+  /* ---------- Geolocation ---------- */
+
+  function useMyLocation() {
+    if (!navigator.geolocation) {
+      announce('Geolocation is not supported in this browser.');
+      return;
+    }
+    const btn = document.getElementById('use-location');
+    const original = btn.textContent;
+    btn.textContent = '⌛ Locating…';
+    btn.disabled = true;
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        homeLat = +pos.coords.latitude.toFixed(4);
+        homeLng = +pos.coords.longitude.toFixed(4);
+        document.getElementById('home-lat').value = homeLat;
+        document.getElementById('home-lng').value = homeLng;
+        saveData();
+        renderDiscover();
+        btn.textContent = original;
+        btn.disabled = false;
+        announce(`Location set to ${homeLat}, ${homeLng}`);
+      },
+      err => {
+        btn.textContent = original;
+        btn.disabled = false;
+        announce('Could not get location: ' + err.message);
+        alert('Could not get your location: ' + err.message);
+      },
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 }
+    );
   }
 
   /* ---------- Event wiring ---------- */
@@ -1027,38 +1405,39 @@
       saveData();
       const status = document.getElementById('upload-status');
       status.className = 'upload-status';
-      status.textContent = 'Upload one or more monthly Borrower Transaction-Level Detail reports. They merge automatically and save in your browser.';
+      status.textContent = 'Drop one or more monthly Borrower Transaction-Level Detail reports here, or click above.';
       renderMonthsList();
       rebuildFacetOptions();
       renderRankings();
       renderDiscover();
     });
 
-    document.getElementById('show-format-help').addEventListener('click', () => {
+    document.getElementById('show-format-help').addEventListener('click', (e) => {
       const h = document.getElementById('format-help');
       h.hidden = !h.hidden;
+      e.target.setAttribute('aria-expanded', !h.hidden);
     });
 
     document.getElementById('home-state').addEventListener('input', e => {
       homeState = (e.target.value || '').toUpperCase().slice(0, 2);
       e.target.value = homeState;
-      renderRankings();
-      renderDiscover();
+      debounce('home-state', () => { renderRankings(); renderDiscover(); }, 200);
     });
     document.getElementById('home-lat').addEventListener('input', e => {
       const v = parseFloat(e.target.value);
-      if (!isNaN(v)) { homeLat = v; renderDiscover(); }
+      if (!isNaN(v)) { homeLat = v; debounce('home-lat', renderDiscover, 200); }
     });
     document.getElementById('home-lng').addEventListener('input', e => {
       const v = parseFloat(e.target.value);
-      if (!isNaN(v)) { homeLng = v; renderDiscover(); }
+      if (!isNaN(v)) { homeLng = v; debounce('home-lng', renderDiscover, 200); }
     });
+    document.getElementById('use-location').addEventListener('click', useMyLocation);
 
     document.querySelectorAll('input[data-weight]').forEach(inp => {
       inp.addEventListener('input', () => {
         weights[inp.dataset.weight] = parseInt(inp.value);
         syncWeightLabels();
-        renderRankings();
+        debounce('weight', renderRankings, 50);
       });
     });
 
@@ -1080,6 +1459,22 @@
     document.getElementById('sort-by').addEventListener('change', renderRankings);
     document.getElementById('build-group-btn').addEventListener('click', () => renderExportPanel('export-panel', selected, false));
 
+    document.getElementById('select-top-10').addEventListener('click', () => {
+      lastFilteredRankings.slice(0, 10).forEach(l => selected.add(l.symbol));
+      renderRankings();
+      announce(`Selected top ${Math.min(10, lastFilteredRankings.length)}`);
+    });
+    document.getElementById('select-all-visible').addEventListener('click', () => {
+      lastFilteredRankings.forEach(l => selected.add(l.symbol));
+      renderRankings();
+      announce(`Selected all ${lastFilteredRankings.length} visible`);
+    });
+    document.getElementById('clear-selection').addEventListener('click', () => {
+      selected.clear();
+      renderRankings();
+      announce('Selection cleared');
+    });
+
     document.getElementById('reset-filters').addEventListener('click', () => {
       activeFilters.type.clear();
       activeFilters.state.clear();
@@ -1099,9 +1494,10 @@
       handleDirectorySelection(e.target.files);
       e.target.value = '';
     });
-    document.getElementById('show-dir-format-help').addEventListener('click', () => {
+    document.getElementById('show-dir-format-help').addEventListener('click', (e) => {
       const h = document.getElementById('dir-format-help');
       h.hidden = !h.hidden;
+      e.target.setAttribute('aria-expanded', !h.hidden);
     });
     document.getElementById('clear-imported-dir').addEventListener('click', () => {
       if (!confirm('Clear all imported directory entries? Bundled entries will remain.')) return;
@@ -1112,10 +1508,38 @@
       buildDirFacetOptions();
       renderDiscover();
     });
-    document.getElementById('dir-search').addEventListener('input', e => {
-      dirFilters.search = e.target.value;
-      renderDiscover();
+    document.getElementById('export-imported-dir').addEventListener('click', () => {
+      const rows = [['symbol', 'name', 'state', 'type', 'groups', 'lat', 'lng']];
+      importedDirectory.forEach(l => {
+        rows.push([
+          l.symbol,
+          '"' + (l.name || '').replace(/"/g, '""') + '"',
+          l.state || '',
+          l.type || 'Other',
+          (l.groups || []).join(';'),
+          l.lat != null ? l.lat : '',
+          l.lng != null ? l.lng : ''
+        ]);
+      });
+      const csv = rows.map(r => r.join(',')).join('\n');
+      downloadFile('imported-directory.csv', csv, 'text/csv');
     });
+
+    const searchInput = document.getElementById('dir-search');
+    const searchClear = document.getElementById('dir-search-clear');
+    searchInput.addEventListener('input', e => {
+      dirFilters.search = e.target.value;
+      searchClear.hidden = !e.target.value;
+      debounce('search', renderDiscover, 150);
+    });
+    searchClear.addEventListener('click', () => {
+      searchInput.value = '';
+      dirFilters.search = '';
+      searchClear.hidden = true;
+      renderDiscover();
+      searchInput.focus();
+    });
+
     document.getElementById('show-only-new').addEventListener('change', e => {
       dirFilters.onlyNew = e.target.checked;
       renderDiscover();
@@ -1124,10 +1548,22 @@
       dirFilters.maxDist = parseInt(e.target.value);
       const out = document.getElementById('dist-out');
       out.textContent = dirFilters.maxDist > 0 ? `${dirFilters.maxDist} mi` : 'Any';
-      renderDiscover();
+      debounce('dist', renderDiscover, 50);
     });
     document.getElementById('dir-sort-by').addEventListener('change', renderDiscover);
     document.getElementById('dir-build-btn').addEventListener('click', () => renderExportPanel('dir-export-panel', dirSelected, true));
+
+    document.getElementById('dir-select-all').addEventListener('click', () => {
+      lastFilteredDir.forEach(l => dirSelected.add(l.symbol));
+      renderDiscover();
+      announce(`Selected all ${lastFilteredDir.length} visible`);
+    });
+    document.getElementById('dir-clear-selection').addEventListener('click', () => {
+      dirSelected.clear();
+      renderDiscover();
+      announce('Selection cleared');
+    });
+
     document.getElementById('reset-dir-filters').addEventListener('click', () => {
       dirFilters.type.clear();
       dirFilters.state.clear();
@@ -1136,6 +1572,7 @@
       dirFilters.maxDist = 0;
       dirFilters.onlyNew = true;
       document.getElementById('dir-search').value = '';
+      document.getElementById('dir-search-clear').hidden = true;
       document.getElementById('show-only-new').checked = true;
       document.getElementById('max-dist').value = 0;
       document.getElementById('dist-out').textContent = 'Any';
@@ -1145,15 +1582,87 @@
       renderDiscover();
     });
 
-    /* Backend URL */
+    /* Backend URL: debounced health check */
     const backendInput = document.getElementById('backend-url');
     backendInput.addEventListener('input', e => {
       backendUrl = e.target.value.trim();
       saveData();
+      debounce('backend-check', () => {
+        checkBackendHealth();
+        renderDiscover();
+      }, 600);
     });
-    backendInput.addEventListener('blur', () => {
-      checkBackendHealth();
-      renderDiscover();
+
+    /* Filter toggle (mobile) */
+    document.querySelectorAll('[data-filter-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const which = btn.dataset.filterToggle;
+        const facets = document.getElementById(which === 'rankings' ? 'rankings-facets' : 'discover-facets');
+        const open = facets.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open);
+      });
+    });
+
+    /* Modal */
+    document.getElementById('open-help').addEventListener('click', showHelpModal);
+    document.getElementById('footer-help').addEventListener('click', showHelpModal);
+    document.getElementById('open-scoring-help').addEventListener('click', showScoringModal);
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('modal-backdrop').addEventListener('click', e => {
+      if (e.target.id === 'modal-backdrop') closeModal();
+    });
+
+    /* Keyboard shortcuts */
+    document.addEventListener('keydown', e => {
+      const target = e.target;
+      const inEditable = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+
+      // Esc: close modal first, then export panel, then clear search
+      if (e.key === 'Escape') {
+        const backdrop = document.getElementById('modal-backdrop');
+        if (!backdrop.hidden) { closeModal(); return; }
+        const expPanel = document.getElementById('export-panel');
+        const dExpPanel = document.getElementById('dir-export-panel');
+        if (expPanel && expPanel.innerHTML.trim()) { expPanel.innerHTML = ''; return; }
+        if (dExpPanel && dExpPanel.innerHTML.trim()) { dExpPanel.innerHTML = ''; return; }
+        const searchInp = document.getElementById('dir-search');
+        if (document.activeElement === searchInp && searchInp.value) {
+          searchInp.value = '';
+          dirFilters.search = '';
+          document.getElementById('dir-search-clear').hidden = true;
+          renderDiscover();
+          return;
+        }
+        if (target && target.blur && !inEditable) target.blur();
+        return;
+      }
+
+      if (inEditable) return;
+
+      if (e.key === '1') { switchTab('rankings'); e.preventDefault(); }
+      else if (e.key === '2') { switchTab('discover'); e.preventDefault(); }
+      else if (e.key === '/') {
+        if (activeTab !== 'discover') switchTab('discover');
+        const inp = document.getElementById('dir-search');
+        if (inp) { inp.focus(); inp.select(); }
+        e.preventDefault();
+      }
+      else if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+        showHelpModal();
+        e.preventDefault();
+      }
+      else if (e.key === 'Enter' || e.key === ' ') {
+        // Toggle selection if a card has focus
+        const card = document.activeElement && document.activeElement.classList && document.activeElement.classList.contains('card')
+          ? document.activeElement : null;
+        if (card) {
+          const sym = card.dataset.symbol;
+          const list = card.parentElement;
+          if (list && list.id === 'lender-list') toggleRankingSelection(sym);
+          else if (list && list.id === 'dir-list') toggleDiscoverSelection(sym);
+          e.preventDefault();
+        }
+      }
     });
   }
 
@@ -1165,6 +1674,9 @@
     document.getElementById('backend-url').value = backendUrl;
     syncWeightLabels();
     bindEvents();
+    bindDropzones();
+
+    switchTab(activeTab);
 
     await loadBundledDirectory();
     renderDirectoryStats();

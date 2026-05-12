@@ -5,33 +5,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lender Finder</title>
 <meta name="description" content="Faceted search to identify and discover ILL lender libraries from OCLC Borrower reports and a peer directory.">
+<meta name="theme-color" content="#185fa5">
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23185fa5'/><text x='16' y='22' font-size='18' text-anchor='middle' fill='white' font-family='system-ui,sans-serif' font-weight='600'>L</text></svg>">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to results</a>
+
 <header class="site-header">
   <div class="site-header-inner">
-    <h1>Lender finder</h1>
+    <div class="brand">
+      <span class="brand-logo" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="currentColor"/><path d="M9 21V11h2v8h6v2H9zm9-3l4-7 4 7-1.5.5L23 16l-1.5 2.5L20 18l1.5-2.5L20 13l-1.5 2.5L17 18l1-.5z" fill="white"/></svg>
+      </span>
+      <h1>Lender Finder</h1>
+    </div>
     <nav class="tabs" role="tablist" aria-label="Views">
-      <button role="tab" class="tab active" data-tab="rankings" aria-selected="true">Rankings</button>
-      <button role="tab" class="tab" data-tab="discover" aria-selected="false">Discover</button>
+      <button role="tab" class="tab active" data-tab="rankings" aria-selected="true" aria-controls="rankings-view">
+        <span class="tab-num">1</span>Rankings
+      </button>
+      <button role="tab" class="tab" data-tab="discover" aria-selected="false" aria-controls="discover-view">
+        <span class="tab-num">2</span>Discover
+      </button>
     </nav>
-    <div class="meta" id="meta">No data loaded</div>
+    <div class="header-right">
+      <div class="meta" id="meta">No data loaded</div>
+      <button class="icon-btn" id="open-help" aria-label="Keyboard shortcuts and help" title="Help & shortcuts (?)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.25"/><path d="M6 6c.4-1.2 1.6-1.8 2.7-1.3 1.1.5 1.4 2 .3 2.7-.6.4-1 .7-1 1.6M8 11v.5"/></svg>
+      </button>
+    </div>
   </div>
 </header>
 
+<div class="sr-only" id="aria-live-status" aria-live="polite" aria-atomic="true"></div>
+
 <main class="layout" id="rankings-view">
-  <aside class="facets" aria-label="Filters">
+  <button class="filter-toggle" type="button" aria-expanded="false" aria-controls="rankings-facets" data-filter-toggle="rankings">
+    <span>Filters</span>
+    <span class="chev" aria-hidden="true">▾</span>
+  </button>
+
+  <aside class="facets" id="rankings-facets" aria-label="Filters">
     <section class="facet-group">
       <h3>Upload your reports</h3>
-      <div class="upload-box">
+      <div class="upload-box" data-dropzone="report">
         <label class="upload-label" for="csv-input">
-          <span aria-hidden="true">⬆</span> Add Borrower report
+          <span class="upload-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 11V3M5 6l3-3 3 3M3 11v2.5h10V11"/></svg>
+          </span>
+          Add Borrower report
         </label>
         <input type="file" id="csv-input" accept=".xls,.tsv,.csv,.txt" multiple>
-        <p class="upload-status" id="upload-status">Upload one or more monthly Borrower Transaction-Level Detail reports. They merge automatically and save in your browser.</p>
+        <p class="upload-status" id="upload-status">Drop one or more monthly Borrower Transaction-Level Detail reports here, or click above. They merge automatically and save in your browser.</p>
+        <div class="dropzone-overlay" aria-hidden="true">Drop to import</div>
         <div class="months-list" id="months-list"></div>
         <button class="link-btn" id="clear-months" hidden>Clear all loaded months</button>
-        <button class="link-btn" id="show-format-help">What file do I upload? ▾</button>
+        <button class="link-btn" id="show-format-help" aria-expanded="false">What file do I upload? ▾</button>
         <div class="hint" id="format-help" hidden>
           In OCLC WorldShare Reports, run the <em>Borrower Transaction-Level Detail Report — Institution</em>. Save the .xls and upload it here (it is actually tab-delimited text). The app reads symbol, type, state, fill rate, and turnaround time.
         </div>
@@ -52,21 +81,25 @@
         <span>Longitude</span>
         <input type="text" id="home-lng" value="-84.2807" style="width:90px;">
       </label>
+      <button class="link-btn" id="use-location" type="button">📍 Use my location</button>
       <p class="hint">Used for the same-state boost and distance filtering in Discover.</p>
     </section>
 
     <section class="facet-group">
-      <h3>Scoring weights</h3>
+      <div class="group-header">
+        <h3>Scoring weights</h3>
+        <button class="link-btn link-btn-inline" id="open-scoring-help" type="button" aria-label="How is the score calculated?">How is this calculated?</button>
+      </div>
       <div class="preset-btns">
         <button class="preset" data-preset="balanced">Balanced</button>
         <button class="preset" data-preset="speed">Speed first</button>
         <button class="preset" data-preset="trusted">Trusted</button>
       </div>
-      <div class="weight-row"><div class="weight-label"><span>Speed</span><span data-weight-out="speed">25</span></div><input type="range" min="0" max="50" value="25" data-weight="speed"></div>
-      <div class="weight-row"><div class="weight-label"><span>Fill rate</span><span data-weight-out="fill">30</span></div><input type="range" min="0" max="50" value="30" data-weight="fill"></div>
-      <div class="weight-row"><div class="weight-label"><span>Volume</span><span data-weight-out="volume">15</span></div><input type="range" min="0" max="50" value="15" data-weight="volume"></div>
-      <div class="weight-row"><div class="weight-label"><span>Consistency</span><span data-weight-out="consistency">20</span></div><input type="range" min="0" max="50" value="20" data-weight="consistency"></div>
-      <div class="weight-row"><div class="weight-label"><span>Local (same state)</span><span data-weight-out="local">10</span></div><input type="range" min="0" max="50" value="10" data-weight="local"></div>
+      <div class="weight-row"><div class="weight-label"><span>Speed</span><span data-weight-out="speed">25</span></div><input type="range" min="0" max="50" value="25" data-weight="speed" aria-label="Speed weight"></div>
+      <div class="weight-row"><div class="weight-label"><span>Fill rate</span><span data-weight-out="fill">30</span></div><input type="range" min="0" max="50" value="30" data-weight="fill" aria-label="Fill rate weight"></div>
+      <div class="weight-row"><div class="weight-label"><span>Volume</span><span data-weight-out="volume">15</span></div><input type="range" min="0" max="50" value="15" data-weight="volume" aria-label="Volume weight"></div>
+      <div class="weight-row"><div class="weight-label"><span>Consistency</span><span data-weight-out="consistency">20</span></div><input type="range" min="0" max="50" value="20" data-weight="consistency" aria-label="Consistency weight"></div>
+      <div class="weight-row"><div class="weight-label"><span>Local (same state)</span><span data-weight-out="local">10</span></div><input type="range" min="0" max="50" value="10" data-weight="local" aria-label="Local weight"></div>
     </section>
 
     <section class="facet-group">
@@ -91,10 +124,15 @@
     <button class="link-btn" id="reset-filters">Reset all filters</button>
   </aside>
 
-  <section class="results" aria-label="Lender results">
+  <section class="results" id="main-content" aria-label="Lender results">
     <div class="toolbar">
       <div class="result-count"><strong id="match-count">0</strong> match · <strong id="sel-count">0</strong> selected</div>
       <div class="toolbar-actions">
+        <div class="bulk-actions">
+          <button class="ghost-btn" id="select-top-10" type="button" title="Select the top 10 by current sort">Select top 10</button>
+          <button class="ghost-btn" id="select-all-visible" type="button" title="Select every card currently visible">Select all</button>
+          <button class="ghost-btn" id="clear-selection" type="button" title="Deselect everything" hidden>Clear selection</button>
+        </div>
         <select id="sort-by" aria-label="Sort by">
           <option value="score">Sort: best match</option>
           <option value="speed">Sort: turnaround time</option>
@@ -105,27 +143,38 @@
         <button id="build-group-btn" class="primary-btn">Build holdings group</button>
       </div>
     </div>
+    <div class="filter-chips" id="rankings-chips" hidden aria-label="Active filters"></div>
     <div id="export-panel"></div>
     <div id="lender-list" role="list"></div>
   </section>
 </main>
 
 <main class="layout" id="discover-view" hidden>
-  <aside class="facets" aria-label="Discover filters">
+  <button class="filter-toggle" type="button" aria-expanded="false" aria-controls="discover-facets" data-filter-toggle="discover">
+    <span>Filters</span>
+    <span class="chev" aria-hidden="true">▾</span>
+  </button>
+
+  <aside class="facets" id="discover-facets" aria-label="Discover filters">
     <section class="facet-group">
       <h3>Directory</h3>
       <p class="hint" id="dir-stats">Loading directory…</p>
-      <div class="upload-box" style="margin-top:8px;">
+      <div class="upload-box" data-dropzone="directory" style="margin-top:8px;">
         <label class="upload-label" for="dir-input">
-          <span aria-hidden="true">⬆</span> Import directory CSV
+          <span class="upload-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 11V3M5 6l3-3 3 3M3 11v2.5h10V11"/></svg>
+          </span>
+          Import directory CSV
         </label>
         <input type="file" id="dir-input" accept=".csv,.tsv,.txt" multiple>
-        <p class="upload-status" id="dir-upload-status">Add your own lender directory entries. Merges with the starter list.</p>
-        <button class="link-btn" id="show-dir-format-help">CSV format ▾</button>
+        <p class="upload-status" id="dir-upload-status">Drop CSV files or click above. Merges with the starter list.</p>
+        <div class="dropzone-overlay" aria-hidden="true">Drop to import</div>
+        <button class="link-btn" id="show-dir-format-help" aria-expanded="false">CSV format ▾</button>
         <div class="hint" id="dir-format-help" hidden>
           Header row required: <code>symbol,name,state,type,groups,lat,lng</code>. Groups can be semicolon-separated (<code>ASERL;LVIS</code>). Lat/lng are optional but enable distance filtering.
           <a href="directory-template.csv" download style="display:block;margin-top:6px;color:var(--text-info);">Download CSV template</a>
         </div>
+        <button class="link-btn" id="export-imported-dir" hidden>Export imported entries as CSV</button>
         <button class="link-btn" id="clear-imported-dir" hidden>Clear imported entries</button>
       </div>
     </section>
@@ -133,7 +182,10 @@
     <section class="facet-group">
       <h3>Find candidates</h3>
       <label style="display:block; font-size:13px; margin-bottom:4px;">Search name or symbol</label>
-      <input type="text" id="dir-search" placeholder="e.g. Florida, UCLA, FUG" style="width:100%; padding:6px 10px; border-radius:var(--radius-md); border: 0.5px solid var(--border); background:var(--bg); color:var(--text); font-family:var(--font); font-size:13px;">
+      <div class="search-wrap">
+        <input type="text" id="dir-search" placeholder="e.g. Florida, UCLA, FUG" autocomplete="off">
+        <button type="button" class="search-clear" id="dir-search-clear" aria-label="Clear search" hidden>×</button>
+      </div>
       <label class="facet" style="margin-top:10px;"><span><input type="checkbox" id="show-only-new" checked>Only libraries I haven't borrowed from</span></label>
     </section>
 
@@ -141,7 +193,7 @@
       <h3>Distance from home</h3>
       <div class="weight-row">
         <div class="weight-label"><span>Within</span><span id="dist-out">Any</span></div>
-        <input type="range" min="0" max="3000" value="0" step="50" id="max-dist">
+        <input type="range" min="0" max="3000" value="0" step="50" id="max-dist" aria-label="Maximum distance in miles">
       </div>
       <p class="hint">Set to 0 to disable. Needs lat/long in directory entries.</p>
     </section>
@@ -164,7 +216,7 @@
     <section class="facet-group">
       <h3>OCLC policy lookup</h3>
       <label style="display:block; font-size:13px; margin-bottom:4px;">Proxy backend URL</label>
-      <input type="text" id="backend-url" placeholder="https://your-proxy.onrender.com" style="width:100%; padding:6px 10px; border-radius:var(--radius-md); border: 0.5px solid var(--border); background:var(--bg); color:var(--text); font-family:var(--font); font-size:12px;">
+      <input type="text" id="backend-url" placeholder="https://your-proxy.onrender.com" autocomplete="off">
       <p class="hint">Required to fetch fees, materials, hours, contact, and delivery methods from OCLC. Deploy the proxy from the <code>lender-finder-backend</code> companion project. Leave blank to disable lookup.</p>
       <p class="upload-status" id="backend-status" style="margin-top:6px;"></p>
     </section>
@@ -174,8 +226,15 @@
 
   <section class="results" aria-label="Discover results">
     <div class="toolbar">
-      <div class="result-count"><strong id="dir-match-count">0</strong> candidates · <strong id="dir-sel-count">0</strong> selected</div>
+      <div class="result-count">
+        <strong id="dir-match-count">0</strong> candidates · <strong id="dir-sel-count">0</strong> selected
+        <span id="dir-summary-extra" class="muted-sub"></span>
+      </div>
       <div class="toolbar-actions">
+        <div class="bulk-actions">
+          <button class="ghost-btn" id="dir-select-all" type="button" title="Select every card currently visible">Select all</button>
+          <button class="ghost-btn" id="dir-clear-selection" type="button" title="Deselect everything" hidden>Clear selection</button>
+        </div>
         <select id="dir-sort-by" aria-label="Sort by">
           <option value="distance">Sort: distance</option>
           <option value="name">Sort: name</option>
@@ -184,6 +243,7 @@
         <button id="dir-build-btn" class="primary-btn">Build holdings group</button>
       </div>
     </div>
+    <div class="filter-chips" id="discover-chips" hidden aria-label="Active filters"></div>
     <div id="dir-export-panel"></div>
     <div id="dir-list" role="list"></div>
   </section>
@@ -192,8 +252,20 @@
 <footer class="site-footer">
   <p>
     Data stays in your browser — nothing is uploaded to a server. Reports and directory entries persist in localStorage.
+    <span class="footer-sep">·</span>
+    <button class="footer-link" id="footer-help" type="button">Keyboard shortcuts</button>
   </p>
 </footer>
+
+<div class="modal-backdrop" id="modal-backdrop" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
+    <div class="modal-header">
+      <h2 id="modal-title" class="modal-title">Help</h2>
+      <button class="close-btn" id="modal-close" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
 
 <script src="app.js"></script>
 </body>
