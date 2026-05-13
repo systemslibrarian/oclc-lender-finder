@@ -260,17 +260,12 @@
     </section>
 
     <section class="facet-group" id="backend-section">
-      <h3>Live OCLC policy lookup <span class="optional-pill">optional</span></h3>
-      <p class="hint" style="margin-top:0;">Connect to the FastAPI proxy to load fees, hours, contact, materials, and delivery methods from OCLC on demand.</p>
-      <label style="display:block; font-size:13px; margin:8px 0 4px;">Proxy backend URL</label>
-      <input type="text" id="backend-url" placeholder="http://localhost:8000" autocomplete="off">
-      <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;">
-        <button class="link-btn" id="backend-use-localhost" type="button">Use http://localhost:8000</button>
-      </div>
-      <p class="upload-status" id="backend-status" style="margin-top:6px;"></p>
-      <details style="margin-top:8px;">
-        <summary class="link-btn" style="display:inline-block;">How does this work? ▾</summary>
-        <p class="hint" style="margin-top:6px;">Run <code>uvicorn main:app --port 8000</code> from this repo and paste the URL above. Then click <strong>Load policies from OCLC ▾</strong> on any Discover card on the right to fetch live OCLC data for that library. Lookups need a one-time registryId pin per symbol — see <code>waitingonoclc.md</code>.</p>
+      <details>
+        <summary class="advanced-summary">Advanced: live OCLC lookup</summary>
+        <p class="hint" style="margin-top:8px;">Power-user feature. Skip this unless you've set up the FastAPI proxy from this repo to fetch fees/hours/contact directly from OCLC.</p>
+        <label style="display:block; font-size:13px; margin:8px 0 4px;">Proxy URL</label>
+        <input type="text" id="backend-url" placeholder="http://localhost:8000" autocomplete="off">
+        <p class="upload-status" id="backend-status" style="margin-top:6px;"></p>
       </details>
     </section>
 
@@ -283,17 +278,6 @@
   </aside>
 
   <section class="results" aria-label="Discover results">
-    <div class="oclc-banner" id="oclc-banner" hidden>
-      <div class="oclc-banner-text">
-        <strong>💡 Want live OCLC policies on each library card?</strong>
-        <span>Connect your local proxy to fetch fees, hours, contact, and delivery methods from OCLC.</span>
-      </div>
-      <div class="oclc-banner-actions">
-        <button class="oclc-banner-cta" id="oclc-banner-use-localhost" type="button">Use http://localhost:8000</button>
-        <button class="oclc-banner-secondary" id="oclc-banner-configure" type="button">Other URL…</button>
-        <button class="oclc-banner-dismiss" id="oclc-banner-dismiss" type="button" aria-label="Dismiss">×</button>
-      </div>
-    </div>
     <div class="process-panel" id="discover-process" aria-label="Discover workflow">
       <div class="process-head">
         <span class="process-title" id="discover-process-title">How Discover works · 4 steps</span>

@@ -1528,14 +1528,6 @@
   let processCollapsed = { rankings: false, discover: false };
   let weightsTouched = false;
   let stepSkipped = { 'rankings-3': false, 'discover-1': false };
-  let oclcBannerDismissed = false;
-  try { oclcBannerDismissed = localStorage.getItem('lf-oclc-banner-dismissed') === '1'; } catch (_) {}
-
-  function updateOclcBanner() {
-    const banner = document.getElementById('oclc-banner');
-    if (!banner) return;
-    banner.hidden = !!backendUrl || oclcBannerDismissed;
-  }
   try {
     processCollapsed.rankings = localStorage.getItem('lf-rankings-process-collapsed') === '1';
     processCollapsed.discover = localStorage.getItem('lf-discover-process-collapsed') === '1';
@@ -1826,7 +1818,6 @@
     updateSelectionCounts();
     renderDiscoverChips();
     renderProcessPanel('discover');
-    updateOclcBanner();
 
     const list = document.getElementById('dir-list');
     if (filtered.length === 0) {
@@ -1855,13 +1846,6 @@
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         togglePolicyPanel(btn.dataset.policy);
-      });
-    });
-    list.querySelectorAll('[data-policy-setup]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openSidebarIfNeeded('discover');
-        scrollFocus(document.getElementById('backend-url'));
       });
     });
     list.querySelectorAll('[data-note-toggle]').forEach(btn => {
@@ -1893,7 +1877,7 @@
     const borrowedBadge = alreadyBorrowed ? '<span class="badge every-month">Borrowed before</span>' : '<span class="badge local">New candidate</span>';
     const policyBtn = backendUrl
       ? `<button class="policy-lookup-btn" data-policy="${escapeHtml(l.symbol)}" aria-expanded="${policyExpanded.has(l.symbol)}">${policyExpanded.has(l.symbol) ? 'Hide policies ▴' : 'Load policies from OCLC ▾'}</button>`
-      : `<button class="policy-lookup-btn policy-lookup-btn-disabled" data-policy-setup="1" type="button" title="Connect to your OCLC proxy in the sidebar first">⚙ Connect OCLC proxy to load policies</button>`;
+      : '';
     const policyHtml = policyExpanded.has(l.symbol) ? renderPolicyPanel(l.symbol) : '';
     const noteOpen = notesExpanded.has(l.symbol);
     const note = getNote(l.symbol);
@@ -2774,40 +2758,6 @@
         renderDiscover();
       }, 600);
     });
-    const useLocalhostBtn = document.getElementById('backend-use-localhost');
-    if (useLocalhostBtn) {
-      useLocalhostBtn.addEventListener('click', () => {
-        backendUrl = 'http://localhost:8000';
-        backendInput.value = backendUrl;
-        saveData();
-        updateBulkPolicyBtn();
-        checkBackendHealth();
-        renderDiscover();
-      });
-    }
-
-    /* OCLC banner — show prominent prompt when no proxy is configured */
-    const banner = document.getElementById('oclc-banner');
-    if (banner) {
-      document.getElementById('oclc-banner-use-localhost').addEventListener('click', () => {
-        backendUrl = 'http://localhost:8000';
-        backendInput.value = backendUrl;
-        saveData();
-        updateBulkPolicyBtn();
-        checkBackendHealth();
-        renderDiscover();
-      });
-      document.getElementById('oclc-banner-configure').addEventListener('click', () => {
-        openSidebarIfNeeded('discover');
-        scrollFocus(document.getElementById('backend-url'));
-      });
-      document.getElementById('oclc-banner-dismiss').addEventListener('click', () => {
-        oclcBannerDismissed = true;
-        try { localStorage.setItem('lf-oclc-banner-dismissed', '1'); } catch (_) {}
-        updateOclcBanner();
-      });
-    }
-    updateOclcBanner();
 
     /* Filter toggle (mobile) */
     document.querySelectorAll('[data-filter-toggle]').forEach(btn => {
