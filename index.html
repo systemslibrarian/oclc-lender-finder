@@ -172,7 +172,7 @@
 
   <aside class="facets" id="discover-facets" aria-label="Discover filters">
     <section class="facet-group">
-      <h3>Directory</h3>
+      <h3><span class="step-num" aria-hidden="true">1</span>Pick a directory</h3>
       <p class="hint" id="dir-stats">Loading directory…</p>
       <div class="upload-box" data-dropzone="directory" style="margin-top:8px;">
         <label class="upload-label" for="dir-input">
@@ -195,41 +195,52 @@
     </section>
 
     <section class="facet-group">
-      <h3>Find candidates</h3>
+      <h3><span class="step-num" aria-hidden="true">2</span>Your library</h3>
+      <p class="hint" id="dir-home-summary">—</p>
+      <label class="inline-field"><span>Home state</span><input type="text" id="dir-home-state" maxlength="2"></label>
+      <label class="inline-field" style="margin-top:8px;"><span>Latitude</span><input type="text" id="dir-home-lat" style="width:90px;"></label>
+      <label class="inline-field" style="margin-top:8px;"><span>Longitude</span><input type="text" id="dir-home-lng" style="width:90px;"></label>
+      <button class="link-btn" id="dir-use-location" type="button">📍 Use my location</button>
+      <p class="hint">Powers the distance filter and same-state badge below. Shared with the Rankings tab.</p>
+    </section>
+
+    <section class="facet-group">
+      <h3><span class="step-num" aria-hidden="true">3</span>Narrow the list</h3>
       <label style="display:block; font-size:13px; margin-bottom:4px;">Search name or symbol</label>
       <div class="search-wrap">
         <input type="text" id="dir-search" placeholder="e.g. Florida, UCLA, FUG" autocomplete="off">
         <button type="button" class="search-clear" id="dir-search-clear" aria-label="Clear search" hidden>×</button>
       </div>
       <label class="facet" style="margin-top:10px;"><span><input type="checkbox" id="show-only-new" checked>Only libraries I haven't borrowed from</span></label>
-    </section>
-
-    <section class="facet-group">
-      <h3>Distance from home</h3>
-      <div class="weight-row">
-        <div class="weight-label"><span>Within</span><span id="dist-out">Any</span></div>
-        <input type="range" min="0" max="3000" value="0" step="50" id="max-dist" aria-label="Maximum distance in miles">
+      <div class="sub-facet">
+        <div class="sub-facet-label">Distance from home</div>
+        <div class="weight-row">
+          <div class="weight-label"><span>Within</span><span id="dist-out">Any</span></div>
+          <input type="range" min="0" max="3000" value="0" step="50" id="max-dist" aria-label="Maximum distance in miles">
+        </div>
+        <p class="hint">Set to 0 to disable. Needs lat/long in directory entries.</p>
       </div>
-      <p class="hint">Set to 0 to disable. Needs lat/long in directory entries.</p>
+      <div class="sub-facet">
+        <div class="sub-facet-label">Library type</div>
+        <div id="dir-type-facets"></div>
+      </div>
+      <div class="sub-facet">
+        <div class="sub-facet-label">State</div>
+        <div id="dir-state-facets" class="scroll-box"></div>
+      </div>
+      <div class="sub-facet">
+        <div class="sub-facet-label">Group affiliation</div>
+        <div id="dir-group-facets"></div>
+      </div>
     </section>
 
     <section class="facet-group">
-      <h3>Library type</h3>
-      <div id="dir-type-facets"></div>
+      <h3><span class="step-num step-num-muted" aria-hidden="true">4</span>Select &amp; build a group</h3>
+      <p class="hint">Click any card on the right to select it. When you're happy with the picks, hit <strong>Build holdings group</strong> in the toolbar to name, save, and export them.</p>
     </section>
 
     <section class="facet-group">
-      <h3>State</h3>
-      <div id="dir-state-facets" class="scroll-box"></div>
-    </section>
-
-    <section class="facet-group">
-      <h3>Group affiliation</h3>
-      <div id="dir-group-facets"></div>
-    </section>
-
-    <section class="facet-group">
-      <h3>OCLC policy lookup</h3>
+      <h3>OCLC policy lookup <span class="optional-pill">optional</span></h3>
       <label style="display:block; font-size:13px; margin-bottom:4px;">Proxy backend URL</label>
       <input type="text" id="backend-url" placeholder="https://your-proxy.onrender.com" autocomplete="off">
       <p class="hint">Required to fetch fees, materials, hours, contact, and delivery methods from OCLC. Deploy the proxy from the <code>lender-finder-backend</code> companion project. Leave blank to disable lookup.</p>
@@ -245,6 +256,27 @@
   </aside>
 
   <section class="results" aria-label="Discover results">
+    <div class="process-strip" id="discover-process" aria-label="Discover workflow">
+      <button type="button" class="process-close" id="discover-process-close" aria-label="Hide steps">×</button>
+      <ol class="process-steps">
+        <li data-step="1" id="process-step-1">
+          <span class="step-circle">1</span>
+          <div class="step-text"><strong>Load a directory</strong><span>Use the bundled list or import your own CSV.</span></div>
+        </li>
+        <li data-step="2" id="process-step-2">
+          <span class="step-circle">2</span>
+          <div class="step-text"><strong>Set your library</strong><span>Home state + lat/long enable distance &amp; local boost.</span></div>
+        </li>
+        <li data-step="3" id="process-step-3">
+          <span class="step-circle">3</span>
+          <div class="step-text"><strong>Narrow the list</strong><span>Search, distance, type, state, group affiliation.</span></div>
+        </li>
+        <li data-step="4" id="process-step-4">
+          <span class="step-circle">4</span>
+          <div class="step-text"><strong>Build a holdings group</strong><span>Click cards to select, then export or save the group.</span></div>
+        </li>
+      </ol>
+    </div>
     <div class="toolbar">
       <div class="result-count">
         <strong id="dir-match-count">0</strong> candidates · <strong id="dir-sel-count">0</strong> selected

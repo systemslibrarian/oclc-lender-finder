@@ -1272,6 +1272,7 @@
     if (isSelected) dirSelected.add(symbol); else dirSelected.delete(symbol);
     updateCardSelectionUI('dir-list', symbol, isSelected);
     updateSelectionCounts();
+    updateProcessStrip();
   }
 
   function updateCardSelectionUI(listId, symbol, isSelected) {
@@ -1522,6 +1523,60 @@
 
   /* ---------- Discover tab rendering ---------- */
 
+  let processDismissed = false;
+  try { processDismissed = localStorage.getItem('lf-discover-process-dismissed') === '1'; } catch (_) {}
+
+  function syncHomeInputs() {
+    const set = (id, v) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const s = (v == null || (typeof v === 'number' && isNaN(v))) ? '' : String(v);
+      if (document.activeElement !== el && el.value !== s) el.value = s;
+    };
+    set('home-state', homeState);
+    set('home-lat', homeLat);
+    set('home-lng', homeLng);
+    set('dir-home-state', homeState);
+    set('dir-home-lat', homeLat);
+    set('dir-home-lng', homeLng);
+    const summary = document.getElementById('dir-home-summary');
+    if (summary) {
+      const state = homeState || '—';
+      const hasCoords = typeof homeLat === 'number' && typeof homeLng === 'number' && !isNaN(homeLat) && !isNaN(homeLng);
+      summary.textContent = hasCoords
+        ? `Home: ${state} · ${homeLat.toFixed(2)}, ${homeLng.toFixed(2)}`
+        : `Home state: ${state} — add coordinates to enable distance filtering.`;
+    }
+  }
+
+  function updateProcessStrip() {
+    const strip = document.getElementById('discover-process');
+    if (!strip) return;
+    if (processDismissed) { strip.hidden = true; return; }
+    strip.hidden = false;
+
+    const hasDirectory = getMergedDirectory().length > 0;
+    const hasHome = !!homeState && typeof homeLat === 'number' && typeof homeLng === 'number'
+      && !isNaN(homeLat) && !isNaN(homeLng);
+    const hasFilters = !!dirFilters.search
+      || dirFilters.type.size > 0
+      || dirFilters.state.size > 0
+      || dirFilters.group.size > 0
+      || dirFilters.maxDist > 0;
+    const hasSelection = dirSelected.size > 0;
+
+    const setState = (n, state) => {
+      const li = document.getElementById(`process-step-${n}`);
+      if (!li) return;
+      li.classList.remove('done', 'active', 'pending');
+      li.classList.add(state);
+    };
+    setState(1, hasDirectory ? 'done' : 'active');
+    setState(2, hasHome ? 'done' : (hasDirectory ? 'active' : 'pending'));
+    setState(3, hasFilters ? 'done' : ((hasDirectory && hasHome) ? 'active' : 'pending'));
+    setState(4, hasSelection ? 'done' : (hasDirectory ? 'active' : 'pending'));
+  }
+
   function getBorrowedSymbols() {
     const set = new Set();
     months.forEach(m => m.rows.forEach(r => { if (r.filled > 0) set.add(r.symbol); }));
@@ -1618,6 +1673,7 @@
     }
     updateSelectionCounts();
     renderDiscoverChips();
+    updateProcessStrip();
 
     const list = document.getElementById('dir-list');
     if (filtered.length === 0) {
@@ -1891,9 +1947,7 @@
       importedDirectory = Array.from(dirBySym.values());
     }
     saveData();
-    document.getElementById('home-state').value = homeState;
-    document.getElementById('home-lat').value = homeLat;
-    document.getElementById('home-lng').value = homeLng;
+    syncHomeInputs();
     syncWeightLabels();
     renderMonthsList();
     rebuildFacetOptions();
@@ -2274,8 +2328,7 @@
       pos => {
         homeLat = +pos.coords.latitude.toFixed(4);
         homeLng = +pos.coords.longitude.toFixed(4);
-        document.getElementById('home-lat').value = homeLat;
-        document.getElementById('home-lng').value = homeLng;
+        syncHomeInputs();
         saveData();
         renderDiscover();
         btn.textContent = original;
@@ -2339,20 +2392,31 @@
       e.target.setAttribute('aria-expanded', !h.hidden);
     });
 
-    document.getElementById('home-state').addEventListener('input', e => {
-      homeState = (e.target.value || '').toUpperCase().slice(0, 2);
-      e.target.value = homeState;
-      debounce('home-state', () => { renderRankings(); renderDiscover(); }, 200);
-    });
-    document.getElementById('home-lat').addEventListener('input', e => {
-      const v = parseFloat(e.target.value);
-      if (!isNaN(v)) { homeLat = v; debounce('home-lat', renderDiscover, 200); }
-    });
-    document.getElementById('home-lng').addEventListener('input', e => {
-      const v = parseFloat(e.target.value);
-      if (!isNaN(v)) { homeLng = v; debounce('home-lng', renderDiscover, 200); }
-    });
+    const wireHomeState = (id) => {
+      document.getElementById(id).addEventListener('input', e => {
+        homeState = (e.target.value || '').toUpperCase().slice(0, 2);
+        e.target.value = homeState;
+        syncHomeInputs();
+        debounce('home-state', () => { renderRankings(); renderDiscover(); }, 200);
+      });
+    };
+    const wireHomeLat = (id) => {
+      document.getElementById(id).addEventListener('input', e => {
+        const v = parseFloat(e.target.value);
+        if (!isNaN(v)) { homeLat = v; syncHomeInputs(); debounce('home-lat', renderDiscover, 200); }
+      });
+    };
+    const wireHomeLng = (id) => {
+      document.getElementById(id).addEventListener('input', e => {
+        const v = parseFloat(e.target.value);
+        if (!isNaN(v)) { homeLng = v; syncHomeInputs(); debounce('home-lng', renderDiscover, 200); }
+      });
+    };
+    wireHomeState('home-state'); wireHomeState('dir-home-state');
+    wireHomeLat('home-lat');     wireHomeLat('dir-home-lat');
+    wireHomeLng('home-lng');     wireHomeLng('dir-home-lng');
     document.getElementById('use-location').addEventListener('click', useMyLocation);
+    document.getElementById('dir-use-location').addEventListener('click', useMyLocation);
 
     document.querySelectorAll('input[data-weight]').forEach(inp => {
       inp.addEventListener('input', () => {
@@ -2412,6 +2476,16 @@
     });
 
     /* Discover tab events */
+    const procClose = document.getElementById('discover-process-close');
+    if (procClose) {
+      procClose.addEventListener('click', () => {
+        processDismissed = true;
+        try { localStorage.setItem('lf-discover-process-dismissed', '1'); } catch (_) {}
+        const strip = document.getElementById('discover-process');
+        if (strip) strip.hidden = true;
+      });
+    }
+
     document.getElementById('dir-input').addEventListener('change', e => {
       handleDirectorySelection(e.target.files);
       e.target.value = '';
@@ -2623,9 +2697,7 @@
 
   async function init() {
     loadData();
-    document.getElementById('home-state').value = homeState;
-    document.getElementById('home-lat').value = homeLat;
-    document.getElementById('home-lng').value = homeLng;
+    syncHomeInputs();
     document.getElementById('backend-url').value = backendUrl;
     syncWeightLabels();
     bindEvents();
