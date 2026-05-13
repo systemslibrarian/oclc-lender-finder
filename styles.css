@@ -202,27 +202,47 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 .tab:hover { color: var(--text); }
 .tab.active {
   background: var(--bg);
-  color: var(--text-info);
   box-shadow: var(--shadow-sm);
 }
+
+/* Identity colors carry through whether or not the tab is active */
+.tab[data-tab="rankings"] { color: var(--text-info); }
+.tab[data-tab="discover"] { color: var(--text-success); }
+.tab[data-tab="rankings"]:not(.active) { color: color-mix(in srgb, var(--text-info) 70%, var(--text-tertiary)); }
+.tab[data-tab="discover"]:not(.active) { color: color-mix(in srgb, var(--text-success) 70%, var(--text-tertiary)); }
+.tab.active[data-tab="rankings"] { border-color: var(--border-info); }
+.tab.active[data-tab="discover"] { border-color: rgba(59, 109, 17, 0.35); }
+
 .tab-num {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 16px;
   height: 16px;
-  background: var(--bg-secondary);
   border-radius: 4px;
   font-size: 10px;
-  color: var(--text-tertiary);
-  font-weight: 600;
+  font-weight: 700;
+  border: 0.5px solid transparent;
 }
-.tab.active .tab-num { background: var(--bg-info); color: var(--text-info); }
-
-.tab.active[data-tab="discover"] { color: var(--text-success); }
-.tab.active[data-tab="discover"] .tab-num {
+/* Inactive: pale identity-tinted pill */
+.tab[data-tab="rankings"] .tab-num {
+  background: var(--bg-info);
+  color: var(--text-info);
+}
+.tab[data-tab="discover"] .tab-num {
   background: var(--bg-success);
   color: var(--text-success);
+}
+/* Active: solid identity-filled pill */
+.tab.active[data-tab="rankings"] .tab-num {
+  background: var(--text-info);
+  color: #fff;
+  border-color: var(--text-info);
+}
+.tab.active[data-tab="discover"] .tab-num {
+  background: var(--text-success);
+  color: #fff;
+  border-color: var(--text-success);
 }
 
 /* ---------- Layout ---------- */
