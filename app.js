@@ -1217,12 +1217,6 @@
     renderRankings(); // simplest correctness path; cheap because cards re-render is fast
   }
 
-  function oclcPolicyUrl(symbol) {
-    const lvis = lvisPolicies.get(symbol);
-    if (lvis && lvis.policyUrl) return lvis.policyUrl;
-    return `https://illpolicies.oclc.org/?searchText=${encodeURIComponent(symbol)}`;
-  }
-
   function renderRankingCard(l, labels, w) {
     const scoreClass = l._score >= 70 ? 'high' : l._score >= 50 ? 'med' : '';
     const isOpen = expanded.has(l.symbol);
@@ -1275,7 +1269,6 @@
           ${note ? '<span class="badge note-badge">📝 Note</span>' : ''}
           <button class="explain-btn" data-explain="${escapeHtml(l.symbol)}" aria-expanded="${isOpen}">${isOpen ? 'Hide why ▴' : 'Why this score ▾'}</button>
           <button class="explain-btn" data-note-toggle="${escapeHtml(l.symbol)}" aria-expanded="${noteOpen}">${noteOpen ? 'Hide note ▴' : (note ? 'Edit note ▾' : 'Add note ▾')}</button>
-          <a class="policy-link" href="${oclcPolicyUrl(l.symbol)}" target="_blank" rel="noopener" title="Opens the OCLC ILL Policies Directory for ${escapeHtml(l.symbol)} in a new tab" onclick="event.stopPropagation()">📋 View OCLC policies ↗</a>
         </div>
         ${isOpen ? `<div class="explain">${explainRows}<div class="explain-total"><span>Total</span><span>${l._score}</span></div></div>` : ''}
         ${noteOpen ? renderNoteEditor(l.symbol, note) : ''}
@@ -1710,7 +1703,6 @@
       : '—';
     const importedBadge = l._imported ? '<span class="badge" style="background:var(--bg-info); color:var(--text-info);">Imported</span>' : '';
     const borrowedBadge = alreadyBorrowed ? '<span class="badge every-month">Borrowed before</span>' : '<span class="badge local">New candidate</span>';
-    const policyLink = `<a class="policy-link" href="${oclcPolicyUrl(l.symbol)}" target="_blank" rel="noopener" title="Opens the OCLC ILL Policies Directory for ${escapeHtml(l.symbol)} in a new tab" onclick="event.stopPropagation()">📋 View OCLC policies ↗</a>`;
     const noteOpen = notesExpanded.has(l.symbol);
     const note = getNote(l.symbol);
     const noteBadge = note ? '<span class="badge note-badge">📝 Note</span>' : '';
@@ -1737,7 +1729,6 @@
           ${groupBadges}
           ${importedBadge}
           ${noteBadge}
-          ${policyLink}
           ${noteBtn}
         </div>
         ${noteOpen ? renderNoteEditor(l.symbol, note) : ''}
