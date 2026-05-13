@@ -26,6 +26,7 @@
   const policyCache = new Map();
   const policyLoading = new Set();
   const policyExpanded = new Set();
+  const lvisPolicies = new Map();
   const activeFilters = { type: new Set(), state: new Set(), hist: new Set() };
   const dirFilters = { type: new Set(), state: new Set(), group: new Set(), search: '', maxDist: 0, onlyNew: true };
 
@@ -444,6 +445,63 @@
     } catch (e) {
       console.warn('Could not load bundled directory:', e);
       bundledDirectory = [];
+    }
+  }
+
+  function parseLvisFee(raw) {
+    if (!raw) return { min: null, max: null, raw: null };
+    // Take the first slash-separated segment (sheets use "domestic / international").
+    const first = String(raw).split('/')[0].trim();
+    const nums = first.match(/\d+(?:\.\d+)?/g);
+    if (!nums || nums.length === 0) return { min: null, max: null, raw };
+    const lo = parseFloat(nums[0]);
+    const hi = nums.length > 1 ? parseFloat(nums[1]) : lo;
+    return { min: lo, max: hi, raw };
+  }
+
+  function buildLvisPolicyData(entry) {
+    const loanFee = parseLvisFee(entry.loansFees);
+    const copyFee = parseLvisFee(entry.copiesFees);
+    return {
+      _lvisSource: true,
+      policyUrl: entry.policyUrl || null,
+      is_supplier: null,
+      fees: {
+        loan_min: loanFee.min,
+        loan_max: loanFee.max,
+        loan_raw: loanFee.raw,
+        copy_min: copyFee.min,
+        copy_max: copyFee.max,
+        copy_raw: copyFee.raw,
+        accepts_ifm: null
+      },
+      response_days: {
+        loan: entry.loansDaysToRespond ?? null,
+        copy: entry.copiesDaysToRespond ?? null
+      },
+      materials: [],
+      delivery: {},
+      contact: {},
+      hours: {},
+      loan_terms: {}
+    };
+  }
+
+  async function loadLvisPolicies() {
+    try {
+      const r = await fetch('lvis-policies.json');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const data = await r.json();
+      const libs = data.libraries || {};
+      Object.keys(libs).forEach(sym => {
+        const entry = libs[sym];
+        lvisPolicies.set(sym, entry);
+        if (!policyCache.has(sym)) {
+          policyCache.set(sym, buildLvisPolicyData(entry));
+        }
+      });
+    } catch (e) {
+      console.warn('Could not load LVIS policies:', e);
     }
   }
 
@@ -1161,6 +1219,8 @@
   }
 
   function oclcPolicyUrl(symbol) {
+    const lvis = lvisPolicies.get(symbol);
+    if (lvis && lvis.policyUrl) return lvis.policyUrl;
     return `https://illpolicies.oclc.org/?searchText=${encodeURIComponent(symbol)}`;
   }
 
@@ -1398,7 +1458,20 @@
     const contact = data.contact || {};
     const hours = data.hours || {};
     const loan = data.loan_terms || {};
+    const respond = data.response_days || {};
     const warning = data.raw_warning ? `<div class="policy-panel err" style="margin-top:0;margin-bottom:8px;">${escapeHtml(data.raw_warning)}</div>` : '';
+    const respondHtml = (respond.loan != null || respond.copy != null) ? `
+        <div class="policy-section">
+          <div class="policy-section-label">Response time</div>
+          <dl class="policy-grid">
+            <dt>Loans</dt><dd>${respond.loan != null ? respond.loan + ' days' : '—'}</dd>
+            <dt>Copies</dt><dd>${respond.copy != null ? respond.copy + ' days' : '—'}</dd>
+          </dl>
+        </div>` : '';
+    const lvisFooter = data._lvisSource ? `
+        <div class="policy-section" style="border-top:1px solid var(--border); padding-top:8px; color:var(--text-secondary); font-size:0.85em;">
+          Source: LVIS Group export. ${data.policyUrl ? `<a href="${escapeHtml(data.policyUrl)}" target="_blank" rel="noopener">View full policy ↗</a>` : ''}
+        </div>` : '';
 
     return `
       <div class="policy-panel">
@@ -1407,6 +1480,7 @@
           <div class="policy-section-label">Status</div>
           <div>${escapeHtml(supplierLabel)}</div>
         </div>
+        ${respondHtml}
         <div class="policy-section">
           <div class="policy-section-label">Fees</div>
           <dl class="policy-grid">
@@ -1444,6 +1518,7 @@
           <div>${hours.weekly_hours ? escapeHtml(hours.weekly_hours) : '—'}</div>
           ${hours.closures && hours.closures.length ? `<div style="margin-top:4px; color:var(--text-secondary);">Closed: ${hours.closures.map(escapeHtml).join(', ')}</div>` : ''}
         </div>
+        ${lvisFooter}
       </div>`;
   }
 
@@ -1462,16 +1537,16 @@
   }
 
   async function bulkFetchPolicies(symbols) {
-    if (!backendUrl) {
-      showToast({ message: 'Set a proxy backend URL in the OCLC policy lookup panel first.', kind: 'err' });
-      return;
-    }
     const todo = symbols.filter(s => !policyCache.has(s));
     if (todo.length === 0) {
-      // Already cached — just expand them all
+      // Already cached (LVIS pre-seed or prior backend fetch) — just expand them all
       symbols.forEach(s => policyExpanded.add(s));
       renderDiscover();
-      showToast({ message: `Showed cached policies for ${symbols.length} lender${symbols.length === 1 ? '' : 's'}.`, kind: 'ok' });
+      showToast({ message: `Showed policies for ${symbols.length} lender${symbols.length === 1 ? '' : 's'}.`, kind: 'ok' });
+      return;
+    }
+    if (!backendUrl) {
+      showToast({ message: `${todo.length} lender${todo.length === 1 ? '' : 's'} need the proxy backend (not in LVIS export). Configure it first.`, kind: 'err' });
       return;
     }
     const total = todo.length;
@@ -1513,7 +1588,8 @@
   function updateBulkPolicyBtn() {
     const btn = document.getElementById('bulk-policy-btn');
     if (!btn) return;
-    if (!backendUrl) { btn.hidden = true; return; }
+    const hasLvis = lvisPolicies.size > 0;
+    if (!backendUrl && !hasLvis) { btn.hidden = true; return; }
     btn.hidden = false;
     const n = dirSelected.size;
     if (n > 0) {
@@ -1881,7 +1957,8 @@
     const importedBadge = l._imported ? '<span class="badge" style="background:var(--bg-info); color:var(--text-info);">Imported</span>' : '';
     const borrowedBadge = alreadyBorrowed ? '<span class="badge every-month">Borrowed before</span>' : '<span class="badge local">New candidate</span>';
     const policyLink = `<a class="policy-link" href="${oclcPolicyUrl(l.symbol)}" target="_blank" rel="noopener" title="Opens the OCLC ILL Policies Directory for ${escapeHtml(l.symbol)} in a new tab" onclick="event.stopPropagation()">📋 View OCLC policies ↗</a>`;
-    const policyBtn = backendUrl
+    const hasInlinePolicy = backendUrl || lvisPolicies.has(l.symbol);
+    const policyBtn = hasInlinePolicy
       ? `<button class="policy-lookup-btn" data-policy="${escapeHtml(l.symbol)}" aria-expanded="${policyExpanded.has(l.symbol)}">${policyExpanded.has(l.symbol) ? 'Hide policies ▴' : 'Load policies from OCLC ▾'}</button>`
       : '';
     const policyHtml = policyExpanded.has(l.symbol) ? renderPolicyPanel(l.symbol) : '';
@@ -2859,7 +2936,7 @@
 
     switchTab(activeTab);
 
-    await loadBundledDirectory();
+    await Promise.all([loadBundledDirectory(), loadLvisPolicies()]);
     renderDirectoryStats();
     buildDirFacetOptions();
 

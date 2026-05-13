@@ -1,11 +1,12 @@
 /* Lender Finder service worker — offline shell cache */
-const CACHE = 'lender-finder-v6';
+const CACHE = 'lender-finder-v7';
 const SHELL = [
   './',
   './index.html',
   './styles.css',
   './app.js',
   './lenders-directory.json',
+  './lvis-policies.json',
   './manifest.webmanifest'
 ];
 

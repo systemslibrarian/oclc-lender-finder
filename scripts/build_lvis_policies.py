@@ -1,0 +1,150 @@
+"""Convert OCLC_Libraries_Cleaned.xlsx into lvis-policies.json.
+
+The spreadsheet lists LVIS Group libraries. Each Institution cell carries
+a hyperlink to that institution's OCLC ILL policies page — we keep that
+as `policyUrl` so the app can deep-link to the policy page instead of
+running a symbol search.
+
+Run: python3 scripts/build_lvis_policies.py
+"""
+from __future__ import annotations
+
+import json
+import re
+import sys
+from datetime import date
+from pathlib import Path
+from urllib.parse import parse_qs, urlparse
+
+import openpyxl
+
+ROOT = Path(__file__).resolve().parent.parent
+SRC = ROOT / "OCLC_Libraries_Cleaned.xlsx"
+DST = ROOT / "lvis-policies.json"
+
+DAYS_RE = re.compile(r"^(\d+)\s*days?$", re.I)
+LOC_RE = re.compile(r"^(?P<city>.+?),\s*(?P<state>[A-Z]{2})\s+(?P<country>[A-Z]{2,3})$")
+LOC_FALLBACK_RE = re.compile(r"^(?P<city>.+?),\s*(?P<country>[A-Z]{2,3})$")
+
+
+def parse_days(value):
+    if value is None:
+        return None
+    m = DAYS_RE.match(str(value).strip())
+    return int(m.group(1)) if m else None
+
+
+def parse_location(value):
+    if not value:
+        return {"city": None, "state": None, "country": None, "raw": value}
+    raw = str(value).strip()
+    m = LOC_RE.match(raw)
+    if m:
+        return {"city": m["city"], "state": m["state"], "country": m["country"], "raw": raw}
+    m = LOC_FALLBACK_RE.match(raw)
+    if m:
+        return {"city": m["city"], "state": None, "country": m["country"], "raw": raw}
+    return {"city": None, "state": None, "country": None, "raw": raw}
+
+
+def institution_id_from(url):
+    if not url:
+        return None
+    try:
+        qs = parse_qs(urlparse(url).query)
+        vals = qs.get("institutionId") or qs.get("institutionID")
+        return vals[0] if vals else None
+    except Exception:
+        return None
+
+
+def clean_fee(value):
+    if value is None:
+        return None
+    s = str(value).strip()
+    return s or None
+
+
+def main():
+    if not SRC.exists():
+        print(f"missing source: {SRC}", file=sys.stderr)
+        sys.exit(1)
+
+    wb = openpyxl.load_workbook(SRC)
+    ws = wb["Cleaned Libraries"]
+    libraries: dict[str, dict] = {}
+    skipped = 0
+    duplicates: list[str] = []
+
+    for row in ws.iter_rows(min_row=2):
+        inst_cell, branch_cell, sym_cell, cdays, ldays, cfees, lfees, loc_cell = row
+        symbol = (sym_cell.value or "").strip()
+        if not symbol:
+            skipped += 1
+            continue
+
+        policy_url = inst_cell.hyperlink.target if inst_cell.hyperlink else None
+        loc = parse_location(loc_cell.value)
+
+        entry = {
+            "symbol": symbol,
+            "institution": (inst_cell.value or "").strip() or None,
+            "branch": (branch_cell.value or "").strip() if branch_cell.value else None,
+            "city": loc["city"],
+            "state": loc["state"],
+            "country": loc["country"],
+            "location": loc["raw"],
+            "copiesDaysToRespond": parse_days(cdays.value),
+            "loansDaysToRespond": parse_days(ldays.value),
+            "copiesFees": clean_fee(cfees.value),
+            "loansFees": clean_fee(lfees.value),
+            "policyUrl": policy_url,
+            "institutionId": institution_id_from(policy_url),
+            "group": "LVIS",
+        }
+
+        if symbol in libraries:
+            duplicates.append(symbol)
+            continue
+        libraries[symbol] = entry
+
+    out = {
+        "_meta": {
+            "description": (
+                "LVIS Group library data used by Lender Finder. Each entry's "
+                "`policyUrl` is that institution's OCLC ILL policies page — use it "
+                "for 'View OCLC policies' / 'Load policies from OCLC' instead of "
+                "running a symbol search."
+            ),
+            "source": SRC.name,
+            "group": "LVIS",
+            "lastUpdated": date.today().isoformat(),
+            "count": len(libraries),
+            "fields": {
+                "symbol": "OCLC institution symbol",
+                "institution": "Institution name",
+                "branch": "Library/branch name when distinct from institution",
+                "city": "City parsed from location",
+                "state": "Two-letter US state code (null for non-US)",
+                "country": "Country code (e.g. US)",
+                "location": "Raw location string from the export",
+                "copiesDaysToRespond": "Stated turnaround for copy requests, in days",
+                "loansDaysToRespond": "Stated turnaround for loan requests, in days",
+                "copiesFees": "Fee string for copies (varies — may be a range or 'XXX' currency)",
+                "loansFees": "Fee string for loans",
+                "policyUrl": "Direct link to this institution in the OCLC ILL Policies Directory",
+                "institutionId": "OCLC DILL institutionId parsed from policyUrl",
+                "group": "Always 'LVIS' for this dataset",
+            },
+        },
+        "libraries": libraries,
+    }
+
+    DST.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"wrote {DST.relative_to(ROOT)}: {len(libraries)} entries, skipped {skipped}, duplicates {len(duplicates)}")
+    if duplicates:
+        print("  duplicate symbols (first kept):", duplicates[:10])
+
+
+if __name__ == "__main__":
+    main()
