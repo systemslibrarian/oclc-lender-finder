@@ -1527,7 +1527,7 @@
 
   let processCollapsed = { rankings: false, discover: false };
   let weightsTouched = false;
-  let stepSkipped = { 'rankings-3': false };
+  let stepSkipped = { 'rankings-3': false, 'discover-1': false };
   try {
     processCollapsed.rankings = localStorage.getItem('lf-rankings-process-collapsed') === '1';
     processCollapsed.discover = localStorage.getItem('lf-discover-process-collapsed') === '1';
@@ -1596,9 +1596,11 @@
   function discoverStepConfigs() {
     return [
       {
-        done: getMergedDirectory().length > 0,
-        title: 'Pick a directory of candidate libraries',
-        desc: 'A starter directory is already loaded. To add your own, import a CSV with symbol, name, state, type, groups and (optionally) lat/lng.',
+        done: getMergedDirectory().length > 0 || stepSkipped['discover-1'],
+        skippable: true,
+        skipLabel: 'Use the starter directory',
+        title: '(Optional) Bring your own directory',
+        desc: 'A starter directory of US libraries is already loaded — you can skip this and dive in. Import a CSV (symbol, name, state, type, groups, lat/lng) only if you want to add your own candidates.',
         cta: 'Import directory CSV',
         action: () => { openSidebarIfNeeded('discover'); document.getElementById('dir-input').click(); }
       },
@@ -1681,6 +1683,7 @@
       if (skip) {
         skip.hidden = !cfg.skippable;
         if (cfg.skippable) {
+          skip.textContent = cfg.skipLabel || 'Skip for now';
           skip.onclick = () => {
             stepSkipped[`${tab}-${activeIdx + 1}`] = true;
             renderProcessPanel(tab);
