@@ -27,7 +27,8 @@
   const policyLoading = new Set();
   const policyExpanded = new Set();
   const lvisPolicies = new Map();
-  const activeFilters = { type: new Set(), state: new Set(), hist: new Set() };
+  const activeFilters = { type: new Set(), state: new Set(), hist: new Set(), group: new Set() };
+  const symbolGroups = new Map();
   const dirFilters = { type: new Set(), state: new Set(), group: new Set(), search: '', maxDist: 0, onlyNew: true };
 
   // Last-rendered filtered lists, used by bulk actions
@@ -206,9 +207,39 @@
 
   function getMergedDirectory() {
     const map = new Map();
-    bundledDirectory.forEach(l => map.set(l.symbol, { ...l, _imported: false }));
-    importedDirectory.forEach(l => map.set(l.symbol, { ...l, _imported: true }));
+    bundledDirectory.forEach(l => map.set(l.symbol, { ...l, groups: [...(l.groups || [])], _imported: false }));
+    importedDirectory.forEach(l => map.set(l.symbol, { ...l, groups: [...(l.groups || [])], _imported: true }));
+    lvisPolicies.forEach((entry, sym) => {
+      if (map.has(sym)) {
+        const existing = map.get(sym);
+        if (!existing.groups.includes('LVIS')) existing.groups.push('LVIS');
+      } else {
+        map.set(sym, {
+          symbol: sym,
+          name: entry.institution || sym,
+          state: entry.state || null,
+          type: 'Other',
+          groups: ['LVIS'],
+          lat: null,
+          lng: null,
+          _imported: false,
+          _lvisOnly: true
+        });
+      }
+    });
     return Array.from(map.values());
+  }
+
+  function rebuildSymbolGroups() {
+    symbolGroups.clear();
+    const add = (sym, g) => {
+      let s = symbolGroups.get(sym);
+      if (!s) { s = new Set(); symbolGroups.set(sym, s); }
+      s.add(g);
+    };
+    bundledDirectory.forEach(l => (l.groups || []).forEach(g => add(l.symbol, g)));
+    importedDirectory.forEach(l => (l.groups || []).forEach(g => add(l.symbol, g)));
+    lvisPolicies.forEach((_, sym) => add(sym, 'LVIS'));
   }
 
   function haversineKm(lat1, lng1, lat2, lng2) {
@@ -966,13 +997,16 @@
 
   function rebuildFacetOptions() {
     const merged = mergeMonths();
-    const typeCounts = {}, stateCounts = {};
+    const typeCounts = {}, stateCounts = {}, groupCounts = {};
     merged.forEach(l => {
       typeCounts[l.type] = (typeCounts[l.type] || 0) + 1;
       stateCounts[l.state] = (stateCounts[l.state] || 0) + 1;
+      const groups = symbolGroups.get(l.symbol);
+      if (groups) groups.forEach(g => { groupCounts[g] = (groupCounts[g] || 0) + 1; });
     });
     const types = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
     const states = Object.entries(stateCounts).sort((a, b) => b[1] - a[1]);
+    const groups = Object.entries(groupCounts).sort((a, b) => b[1] - a[1]);
 
     const typeWrap = document.getElementById('type-facets');
     if (types.length === 0) {
@@ -986,17 +1020,23 @@
     stateWrap.innerHTML = states.map(([s, c]) =>
       `<label class="facet"><span><input type="checkbox" data-facet="state" value="${escapeHtml(s)}" ${activeFilters.state.has(s) ? 'checked' : ''}>${escapeHtml(s)}</span><span class="count">${c}</span></label>`
     ).join('');
+    const groupWrap = document.getElementById('group-facets');
+    if (groupWrap) {
+      groupWrap.innerHTML = groups.length === 0
+        ? '<p class="hint">No group affiliations among current rankings.</p>'
+        : groups.map(([g, c]) =>
+            `<label class="facet"><span><input type="checkbox" data-facet="group" value="${escapeHtml(g)}" ${activeFilters.group.has(g) ? 'checked' : ''}>${escapeHtml(g)}</span><span class="count">${c}</span></label>`
+          ).join('');
+    }
 
-    typeWrap.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.addEventListener('change', () => {
+    const wireFacet = wrap => wrap && wrap.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.addEventListener('change', () => {
       const set = activeFilters[cb.dataset.facet];
       if (cb.checked) set.add(cb.value); else set.delete(cb.value);
       renderRankings();
     }));
-    stateWrap.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.addEventListener('change', () => {
-      const set = activeFilters[cb.dataset.facet];
-      if (cb.checked) set.add(cb.value); else set.delete(cb.value);
-      renderRankings();
-    }));
+    wireFacet(typeWrap);
+    wireFacet(stateWrap);
+    wireFacet(groupWrap);
   }
 
   function syncWeightLabels() {
@@ -1016,6 +1056,13 @@
     if (activeFilters.hist.has('fast') && (l.filled === 0 || avgDays(l) >= 3)) return false;
     if (activeFilters.hist.has('reliable') && fillRate(l) < 75) return false;
     if (activeFilters.hist.has('consistent') && l.monthsPresent < 3) return false;
+    if (activeFilters.group.size) {
+      const lenderGroups = symbolGroups.get(l.symbol);
+      if (!lenderGroups) return false;
+      let anyMatch = false;
+      activeFilters.group.forEach(g => { if (lenderGroups.has(g)) anyMatch = true; });
+      if (!anyMatch) return false;
+    }
     return true;
   }
 
@@ -1026,10 +1073,12 @@
     const chips = [];
     activeFilters.type.forEach(t => chips.push({ label: `Type: ${t}`, remove: () => activeFilters.type.delete(t) }));
     activeFilters.state.forEach(s => chips.push({ label: `State: ${s}`, remove: () => activeFilters.state.delete(s) }));
+    activeFilters.group.forEach(g => chips.push({ label: `Group: ${g}`, remove: () => activeFilters.group.delete(g) }));
     activeFilters.hist.forEach(h => chips.push({ label: histLabels[h] || h, remove: () => activeFilters.hist.delete(h) }));
     renderChips(wrap, chips, () => {
       activeFilters.type.clear();
       activeFilters.state.clear();
+      activeFilters.group.clear();
       activeFilters.hist.clear();
       rebuildFacetOptions();
       document.querySelectorAll('#rankings-view input[type="checkbox"][data-facet="hist"]').forEach(cb => cb.checked = false);
@@ -1839,10 +1888,15 @@
   }
 
   function renderDirectoryStats() {
-    const total = getMergedDirectory().length;
+    const merged = getMergedDirectory();
+    const total = merged.length;
+    const lvisCount = merged.filter(l => l._lvisOnly).length;
     const imported = importedDirectory.length;
     const stats = document.getElementById('dir-stats');
-    stats.textContent = `${total} entries (${bundledDirectory.length} bundled${imported > 0 ? `, ${imported} imported` : ''}).`;
+    const parts = [`${bundledDirectory.length} bundled`];
+    if (lvisCount > 0) parts.push(`${lvisCount} LVIS`);
+    if (imported > 0) parts.push(`${imported} imported`);
+    stats.textContent = `${total} entries (${parts.join(', ')}).`;
     document.getElementById('clear-imported-dir').hidden = imported === 0;
     document.getElementById('export-imported-dir').hidden = imported === 0;
   }
@@ -2178,6 +2232,7 @@
     syncHomeInputs();
     syncWeightLabels();
     renderMonthsList();
+    rebuildSymbolGroups();
     rebuildFacetOptions();
     renderSavedGroups();
     renderDirectoryStats();
@@ -2392,8 +2447,10 @@
       deduped.forEach(r => bySym.set(r.symbol, r));
       importedDirectory = Array.from(bySym.values());
       saveData();
+      rebuildSymbolGroups();
       renderDirectoryStats();
       buildDirFacetOptions();
+      rebuildFacetOptions();
       renderDiscover();
       closeModal();
       const status = document.getElementById('dir-upload-status');
@@ -2405,8 +2462,10 @@
         onAction: () => {
           importedDirectory = snapshot;
           saveData();
+          rebuildSymbolGroups();
           renderDirectoryStats();
           buildDirFacetOptions();
+          rebuildFacetOptions();
           renderDiscover();
         }
       });
@@ -2695,6 +2754,7 @@
       activeFilters.type.clear();
       activeFilters.state.clear();
       activeFilters.hist.clear();
+      activeFilters.group.clear();
       document.querySelectorAll('#rankings-view input[type="checkbox"][data-facet]').forEach(cb => cb.checked = false);
       selected.clear();
       expanded.clear();
@@ -2732,8 +2792,10 @@
       importedDirectory = [];
       dirSelected.clear();
       saveData();
+      rebuildSymbolGroups();
       renderDirectoryStats();
       buildDirFacetOptions();
+      rebuildFacetOptions();
       renderDiscover();
       showToast({
         message: `Cleared ${count} imported entr${count === 1 ? 'y' : 'ies'}.`,
@@ -2742,8 +2804,10 @@
           importedDirectory = snapshot.importedDirectory;
           snapshot.dirSelected.forEach(s => dirSelected.add(s));
           saveData();
+          rebuildSymbolGroups();
           renderDirectoryStats();
           buildDirFacetOptions();
+          rebuildFacetOptions();
           renderDiscover();
         }
       });
@@ -2937,6 +3001,7 @@
     switchTab(activeTab);
 
     await Promise.all([loadBundledDirectory(), loadLvisPolicies()]);
+    rebuildSymbolGroups();
     renderDirectoryStats();
     buildDirFacetOptions();
 
