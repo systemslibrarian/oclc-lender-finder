@@ -259,12 +259,19 @@
       <p class="hint">Click any card on the right to select it. When you're happy with the picks, hit <strong>Build holdings group</strong> in the toolbar to name, save, and export them.</p>
     </section>
 
-    <section class="facet-group">
-      <h3>OCLC policy lookup <span class="optional-pill">optional</span></h3>
-      <label style="display:block; font-size:13px; margin-bottom:4px;">Proxy backend URL</label>
-      <input type="text" id="backend-url" placeholder="https://your-proxy.onrender.com" autocomplete="off">
-      <p class="hint">Required to fetch fees, materials, hours, contact, and delivery methods from OCLC. Deploy the proxy from the <code>lender-finder-backend</code> companion project. Leave blank to disable lookup.</p>
+    <section class="facet-group" id="backend-section">
+      <h3>Live OCLC policy lookup <span class="optional-pill">optional</span></h3>
+      <p class="hint" style="margin-top:0;">Connect to the FastAPI proxy to load fees, hours, contact, materials, and delivery methods from OCLC on demand.</p>
+      <label style="display:block; font-size:13px; margin:8px 0 4px;">Proxy backend URL</label>
+      <input type="text" id="backend-url" placeholder="http://localhost:8000" autocomplete="off">
+      <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;">
+        <button class="link-btn" id="backend-use-localhost" type="button">Use http://localhost:8000</button>
+      </div>
       <p class="upload-status" id="backend-status" style="margin-top:6px;"></p>
+      <details style="margin-top:8px;">
+        <summary class="link-btn" style="display:inline-block;">How does this work? ▾</summary>
+        <p class="hint" style="margin-top:6px;">Run <code>uvicorn main:app --port 8000</code> from this repo and paste the URL above. Then click <strong>Load policies from OCLC ▾</strong> on any Discover card on the right to fetch live OCLC data for that library. Lookups need a one-time registryId pin per symbol — see <code>waitingonoclc.md</code>.</p>
+      </details>
     </section>
 
     <section class="facet-group">

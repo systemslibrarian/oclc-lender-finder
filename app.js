@@ -1848,6 +1848,13 @@
         togglePolicyPanel(btn.dataset.policy);
       });
     });
+    list.querySelectorAll('[data-policy-setup]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openSidebarIfNeeded('discover');
+        scrollFocus(document.getElementById('backend-url'));
+      });
+    });
     list.querySelectorAll('[data-note-toggle]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1877,7 +1884,7 @@
     const borrowedBadge = alreadyBorrowed ? '<span class="badge every-month">Borrowed before</span>' : '<span class="badge local">New candidate</span>';
     const policyBtn = backendUrl
       ? `<button class="policy-lookup-btn" data-policy="${escapeHtml(l.symbol)}" aria-expanded="${policyExpanded.has(l.symbol)}">${policyExpanded.has(l.symbol) ? 'Hide policies ▴' : 'Load policies from OCLC ▾'}</button>`
-      : '';
+      : `<button class="policy-lookup-btn policy-lookup-btn-disabled" data-policy-setup="1" type="button" title="Connect to your OCLC proxy in the sidebar first">⚙ Connect OCLC proxy to load policies</button>`;
     const policyHtml = policyExpanded.has(l.symbol) ? renderPolicyPanel(l.symbol) : '';
     const noteOpen = notesExpanded.has(l.symbol);
     const note = getNote(l.symbol);
@@ -2758,6 +2765,17 @@
         renderDiscover();
       }, 600);
     });
+    const useLocalhostBtn = document.getElementById('backend-use-localhost');
+    if (useLocalhostBtn) {
+      useLocalhostBtn.addEventListener('click', () => {
+        backendUrl = 'http://localhost:8000';
+        backendInput.value = backendUrl;
+        saveData();
+        updateBulkPolicyBtn();
+        checkBackendHealth();
+        renderDiscover();
+      });
+    }
 
     /* Filter toggle (mobile) */
     document.querySelectorAll('[data-filter-toggle]').forEach(btn => {
