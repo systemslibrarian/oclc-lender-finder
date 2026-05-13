@@ -1,96 +1,108 @@
-# Waiting on OCLC — context for resuming when the new WSKey arrives
+# OCLC integration — current state
 
-Status: **blocked on OCLC issuing a new WSKey with Library Profiles entitlement.**
+**You are no longer blocked on OCLC.** The proxy was refactored so it does
+not need the Library Profiles API. Everything works with the
+`policiesDirectoryAPI` scope your existing WSKey already has.
 
-## What happened
+## What changed
 
-Current `.env` WSKey works for the OAuth token exchange but the proxy can't get past the symbol → registryId step.
+`main.py` used to do a two-step call:
 
-```
-$ python scripts/probe_oclc.py FUG
-==> requesting token (scopes='policiesDirectoryAPI', context=8995)
-token status: 200
-...access_token obtained...
+1. Library Profiles → translate OCLC symbol → registryId (this hit a 403
+   on our scope, and Library Profiles is a paid add-on)
+2. Policies Directory → fetch fees, hours, contact, etc. by registryId
 
-==> brief-institutions: GET https://discovery.api.oclc.org/library-profiles/brief-institutions?oclcSymbol=FUG&limit=1
-status: 403 ct: application/json; charset=utf-8
-{"message":"Forbidden"}
+The refactor introduces a **local override map** (`symbol-registry.json`)
+that holds `OCLCSymbol → registryId` pairs. The proxy reads that file first
+and skips the Library Profiles call entirely. Look up registryIds for free
+on the OCLC ILL Policies Directory website
+([policies.oclc.org](https://policies.oclc.org/)) — no API key needed.
 
-==> registryId resolved: None
-Cannot resolve registryId; stopping.
-```
+The Policies Directory itself does **not** expose a symbol-search endpoint
+(we tried `/institutions`, `/institution`, `/serviceInstitution`,
+`/servicePolicyInstitution`, `/searchInstitutions`,
+`/institution/{symbol}`, and the Americas Discovery alias — all 404). So
+the local map is the only realistic bypass, and it's good enough: registryIds
+don't change, so seeding is a one-time cost per library.
 
-`curl http://localhost:8000/api/policies/FUG` returns `502 Bad Gateway` for the same reason — `main.py:489` calls `library-profiles/brief-institutions` to translate the OCLC symbol into a registryId before it can hit `ILL_POLICIES_BASE/servicePolicy/{rid}` at `main.py:497`.
+## Day-to-day workflow
 
-**Root cause:** the current WSKey is provisioned only with the `policiesDirectoryAPI` scope. The Library Profiles API lives in a different OCLC product family and the WSKey itself needs that entitlement — not just the requested token scope.
+1. **Discover candidate libraries:** Discover tab in the frontend already
+   works without any OCLC API call — it runs on `lenders-directory.json`
+   plus any CSV you import.
 
-## New WSKey request — answers to use on the OCLC form
+2. **When you want live OCLC policies for a specific lender:**
 
-### App type
-**Machine-to-Machine (M2M) App.** The FastAPI proxy in `main.py` is a non-interactive back-end service that holds the WSKey and gets tokens via `client_credentials`. The browser never sees the WSKey.
+   1. Go to <https://policies.oclc.org/>, search for the OCLC symbol
+      (e.g. `FUG`).
+   2. Open the institution page; its registryId appears in the URL
+      (e.g. `…/policies/INST/12345`).
+   3. Pin it locally:
+      ```bash
+      python scripts/add_registry.py FUG 12345
+      ```
+   4. Reload the policy panel in the frontend — it'll fetch fees, hours,
+      contact, materials, delivery from OCLC using just your
+      `policiesDirectoryAPI` scope.
 
-### Reason / application description (paste this)
-
-> Lender Finder is an internal ILL workflow tool for our library. Staff upload OCLC WorldShare Borrower Transaction-Level Detail reports to rank past suppliers by fill rate, turnaround, and consistency, and to discover new candidate lenders from a peer directory. A small FastAPI proxy (server-to-server, M2M) holds the WSKey and enriches selected lenders with policy data — fees, hours, contact info, materials supplied, delivery methods — from the OCLC ILL Policies Directory. The proxy resolves OCLC symbols to registry IDs via the Library Profiles API and then fetches policies; results are cached for 24 hours to minimize API load. The browser never holds the WSKey; it only talks to our proxy.
-
-### Services to tick
-
-**Required:**
-- Interlibrary Loan Policies Directory
-
-**Add in the "reason / additional notes" field, since it's not in the service checklist:**
-
-> Please also grant Library Profiles API access on this same WSKey for OCLC symbol → registryId resolution. The proxy needs both endpoints to translate symbols (e.g. `FUG`) into the registry IDs the Policies Directory requires.
-
-**Recommended headroom (only if your account allows multiple):**
-- ILL Fee Management API (IFM) — useful later if we want to read fee transactions
-
-**Skip:**
-- Article Exchange, Resource Request Sharing API, Availability Query, WorldCat Entity Data — not used by current code.
-
-### Grant config
-- Grant type: **Client Credentials (CCG)**
-- Context institution ID: **8995**
-
-## When the key arrives
-
-1. Update `.env` (do not commit — `.env` is gitignored):
-
-   ```
-   OCLC_WSKEY=<new key>
-   OCLC_SECRET=<new secret>
-   OCLC_CONTEXT_INSTITUTION_ID=8995
-   OCLC_SCOPES=policiesDirectoryAPI <whatever-scope-name-OCLC-issued-for-Library-Profiles>
-   ```
-
-   OCLC will name the second scope in the grant email — common labels are `WorldCatRegistry`, `library-profiles-discovery`, or `library-profile-search`. Use whatever they tell you.
-
-2. Re-run the probe — expect a real institution body, not 403:
-
+   You can pass multiple pairs at once:
    ```bash
-   cd /workspaces/oclc-lender-finder
-   python scripts/probe_oclc.py FUG
+   python scripts/add_registry.py FUG 12345 NTD 67890 CGU 24680
+   python scripts/add_registry.py --list           # see the current map
+   python scripts/add_registry.py --remove FUG     # delete an entry
    ```
 
-3. Start the proxy and verify the real endpoint:
-
-   ```bash
-   uvicorn main:app --reload --port 8000
-   curl http://localhost:8000/api/policies/FUG | jq
+3. **If you ever do get Library Profiles access** (paid), add the scope
+   to `.env`:
    ```
+   OCLC_SCOPES=policiesDirectoryAPI WorldCatRegistry
+   ```
+   The resolver will fall back to Library Profiles automatically whenever
+   a symbol isn't in `symbol-registry.json` — best of both worlds.
 
-   Expect a JSON bundle with `symbol`, `registry_id`, fees, hours, contact, etc. — not `{"detail": "OCLC API error: HTTP 403"}`.
+## Verifying
 
-4. If individual fields come back `null`, that's expected — the `_map_*` functions in `main.py` (search for `VERIFY ON FIRST REAL CALL` in the docstring) need their field paths adjusted once we see what OCLC actually returns. Save the probe output and adjust those mappings.
+```bash
+cd /workspaces/oclc-lender-finder
+uvicorn main:app --reload --port 8000 &
+curl -s "http://localhost:8000/api/policies/search?q=florida" | jq      # local fallback
+python scripts/add_registry.py FUG <registryId-from-policies.oclc.org>
+curl -s http://localhost:8000/api/policies/FUG | jq                     # live OCLC fetch
+```
 
-## Fallback if OCLC won't grant Library Profiles
+Expect every `servicePolicy/{rid}/*` call to return `HTTP 200`. If a field
+in the response is `null`, that's a mapping question, not an auth one —
+look at the raw probe output for that registryId and adjust the `_map_*`
+functions in `main.py`:
 
-If OCLC declines to add Library Profiles to the WSKey, ask Claude to refactor `main.py` to use the ILL Policies Directory's own `/institutions?oclcSymbol=…` lookup (in the same API family as the policies endpoint, so it only needs the `policiesDirectoryAPI` scope we already have). That avoids the `discovery.api.oclc.org/library-profiles/brief-institutions` hop entirely.
+```bash
+python scripts/probe_oclc.py FUG
+```
 
 ## Files involved
 
-- `main.py` — FastAPI proxy. `_oclc_get` at the top is the token+request helper; `_map_institution` / `_map_*` at the bottom do the field translation that needs tuning.
-- `scripts/probe_oclc.py` — one-shot CLI probe for raw OCLC responses. Useful for inspecting field names before tuning the mappers.
-- `requirements.txt` — pinned deps (FastAPI 0.115, uvicorn 0.30.6, httpx 0.27.2, pydantic 2.9.2, python-dotenv 1.0.1).
-- `.env.example` — template; copy to `.env` and fill in. `OCLC_SCOPES` defaults to `policiesDirectoryAPI` and needs the Library Profiles scope appended.
-- Front-end (`app.js` / `index.html`): the Discover tab's "OCLC policy lookup" section already accepts a backend URL and calls `GET /api/policies/{symbol}` — no changes needed once the proxy works.
+- `main.py` — `_resolve_registry_id` is the new entry point. It checks the
+  override file, then Policies Directory paths, then optionally Library
+  Profiles. `/api/policies/{symbol}` and `/api/policies/search` both use it.
+- `symbol-registry.json` — your local OCLCSymbol → registryId map.
+  Tracked but starts effectively empty (just a help comment).
+- `scripts/add_registry.py` — CLI to add/remove/list entries.
+- `scripts/probe_oclc.py` — raw response inspector, useful for tuning the
+  `_map_*` functions when an OCLC field comes back `null`.
+- `lenders-directory.json` — bundled local directory; powers Discover-tab
+  search and the proxy's `/api/policies/search` fallback. Extend by
+  importing a CSV through the frontend, or by editing this file directly.
+
+## Why NOT pay for Library Profiles
+
+- Discover-tab search runs entirely on local data — no OCLC call needed.
+- Policy fetches work as soon as you pin the lender's registryId locally,
+  which is a one-time free lookup at policies.oclc.org.
+- The set of libraries you actually ILL with is small (dozens, not
+  thousands). Seeding is cheap.
+
+If you find yourself needing to search OCLC's full registry of libraries by
+arbitrary name/state — i.e. discovery, not policy lookup — *that* is what
+Library Profiles is good for, and only then is it worth paying. But the
+app's Discover tab already covers that use case via local data + your
+imported CSVs.

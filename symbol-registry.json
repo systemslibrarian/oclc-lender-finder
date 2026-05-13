@@ -1,0 +1,3 @@
+{
+  "_comment": "OCLCSymbol -> registryId overrides used by main.py when the WSKey does NOT have Library Profiles access. Look up a registryId for a symbol at https://policies.oclc.org (free, no API key) and paste it below. The leading underscore key is ignored. Example: \"FUG\": \"58\" (replace 58 with the actual registryId)."
+}

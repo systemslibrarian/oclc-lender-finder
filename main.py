@@ -64,6 +64,12 @@ OCLC_CONTEXT_INSTITUTION_ID = os.environ.get("OCLC_CONTEXT_INSTITUTION_ID", "")
 OCLC_SCOPES = os.environ.get("OCLC_SCOPES", "policiesDirectoryAPI")
 ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "*")
 CACHE_TTL_SECONDS = int(os.environ.get("CACHE_TTL_SECONDS", "86400"))
+# Local file with hand-curated or pre-resolved OCLCSymbol -> registryId pairs.
+# Used so the proxy can work with only the policiesDirectoryAPI scope.
+SYMBOL_REGISTRY_PATH = os.environ.get("SYMBOL_REGISTRY_PATH", "symbol-registry.json")
+LENDERS_DIRECTORY_PATH = os.environ.get("LENDERS_DIRECTORY_PATH", "lenders-directory.json")
+# Set to false to skip the Library Profiles fallback even if the scope is granted.
+USE_LIBRARY_PROFILES = os.environ.get("USE_LIBRARY_PROFILES", "auto").lower()
 
 TOKEN_URL = "https://oauth.oclc.org/token"
 LIBRARY_PROFILES_BASE = "https://discovery.api.oclc.org/library-profiles"
@@ -145,6 +151,178 @@ async def _oclc_get(path: str, params: dict | None = None) -> Any:
         data = r.json()
         _cache_set(cache_key, data)
         return data
+
+
+async def _oclc_try_get(path: str, params: dict | None = None) -> Any:
+    """Like _oclc_get but returns None on any 4xx (used for probing fallback endpoints)."""
+    cache_key = f"try:{path}?{sorted((params or {}).items())}"
+    cached = _cached_get(cache_key)
+    if cached is not None:
+        return None if cached == "__none__" else cached
+    async with httpx.AsyncClient(timeout=30) as client:
+        token = await _get_token(client)
+        r = await client.get(
+            path,
+            params=params or {},
+            headers={"Authorization": f"Bearer {token}", "Accept": "application/json"},
+        )
+        if r.status_code >= 400:
+            log.info("Probe %s %s -> HTTP %d", path, params or {}, r.status_code)
+            _cache_set(cache_key, "__none__")
+            return None
+        try:
+            data = r.json()
+        except Exception:
+            return None
+        _cache_set(cache_key, data)
+        return data
+
+
+# ---------- Local overrides: symbol -> registryId, and bundled directory ----------
+
+_symbol_overrides: dict[str, Any] = {"mtime": 0.0, "map": {}}
+_bundled_directory: dict[str, dict] = {}
+
+
+def _load_symbol_overrides() -> dict[str, str]:
+    """Load (and hot-reload) SYMBOL_REGISTRY_PATH. Returns OCLCSymbol -> registryId."""
+    try:
+        st = os.stat(SYMBOL_REGISTRY_PATH)
+    except FileNotFoundError:
+        return _symbol_overrides["map"]
+    if st.st_mtime <= _symbol_overrides["mtime"]:
+        return _symbol_overrides["map"]
+    try:
+        import json as _json
+        with open(SYMBOL_REGISTRY_PATH) as f:
+            data = _json.load(f)
+        if not isinstance(data, dict):
+            return _symbol_overrides["map"]
+        norm: dict[str, str] = {}
+        for k, v in data.items():
+            if not k:
+                continue
+            sym = str(k).upper()
+            if isinstance(v, dict):
+                rid = v.get("registryId") or v.get("registry_id") or v.get("id")
+            else:
+                rid = v
+            if rid:
+                norm[sym] = str(rid)
+        _symbol_overrides["map"] = norm
+        _symbol_overrides["mtime"] = st.st_mtime
+        log.info("Loaded %d symbol→registryId overrides from %s", len(norm), SYMBOL_REGISTRY_PATH)
+        return norm
+    except Exception as e:
+        log.warning("Failed to load %s: %s", SYMBOL_REGISTRY_PATH, e)
+        return _symbol_overrides["map"]
+
+
+def _load_bundled_directory() -> dict[str, dict]:
+    """Index lenders-directory.json by symbol so we can backfill name/state/type."""
+    if _bundled_directory:
+        return _bundled_directory
+    try:
+        import json as _json
+        with open(LENDERS_DIRECTORY_PATH) as f:
+            data = _json.load(f)
+        lenders = data.get("lenders", []) if isinstance(data, dict) else (data if isinstance(data, list) else [])
+        for l in lenders:
+            sym = (l.get("symbol") or "").upper()
+            if sym:
+                _bundled_directory[sym] = l
+        log.info("Loaded %d bundled directory entries from %s", len(_bundled_directory), LENDERS_DIRECTORY_PATH)
+    except FileNotFoundError:
+        log.info("Bundled directory %s not found; skipping local enrichment", LENDERS_DIRECTORY_PATH)
+    except Exception as e:
+        log.warning("Failed to read %s: %s", LENDERS_DIRECTORY_PATH, e)
+    return _bundled_directory
+
+
+def _extract_registry_id(body: Any) -> str | None:
+    """Walk an OCLC JSON body looking for the first registryId-shaped field."""
+    if body is None:
+        return None
+    if isinstance(body, dict):
+        for key in ("registryId", "RegistryId", "registry_id"):
+            v = body.get(key)
+            if v not in (None, ""):
+                return str(v)
+        for container in ("entries", "institutions", "briefInstitutions", "institution", "data", "results"):
+            v = body.get(container)
+            if v is not None:
+                rid = _extract_registry_id(v)
+                if rid:
+                    return rid
+    elif isinstance(body, list):
+        for item in body:
+            rid = _extract_registry_id(item)
+            if rid:
+                return rid
+    return None
+
+
+def _scope_has_library_profiles() -> bool:
+    if USE_LIBRARY_PROFILES == "true":
+        return True
+    if USE_LIBRARY_PROFILES == "false":
+        return False
+    s = OCLC_SCOPES.lower()
+    return ("library-profile" in s) or ("worldcatregistry" in s) or ("library_profiles" in s)
+
+
+async def _resolve_registry_id(sym: str) -> tuple[str | None, str]:
+    """Return (registryId or None, source label) for an OCLC symbol.
+
+    Tries, in order:
+      1. Local SYMBOL_REGISTRY_PATH overrides — zero API calls.
+      2. ILL Policies Directory's own institution lookups (just policiesDirectoryAPI scope).
+      3. Library Profiles brief-institutions — only if the scope is granted.
+    """
+    sym = sym.upper().strip()
+    overrides = _load_symbol_overrides()
+    if sym in overrides:
+        return overrides[sym], "override"
+
+    # Policies Directory candidates. Different OCLC tenants have different
+    # paths exposed for symbol→registryId lookups, so we try a handful.
+    pd_candidates: list[tuple[str, dict]] = [
+        (f"{ILL_POLICIES_BASE}/institutions", {"oclcSymbol": sym}),
+        (f"{ILL_POLICIES_BASE}/institutions", {"oclcSymbol": sym, "limit": 1}),
+        (f"{ILL_POLICIES_BASE}/institution", {"oclcSymbol": sym}),
+        (f"{ILL_POLICIES_BASE}/serviceInstitution", {"oclcSymbol": sym}),
+        (f"{ILL_POLICIES_BASE}/servicePolicyInstitution", {"oclcSymbol": sym}),
+    ]
+    for path, params in pd_candidates:
+        body = await _oclc_try_get(path, params)
+        rid = _extract_registry_id(body)
+        if rid:
+            return rid, f"policies-directory:{path.rsplit('/', 1)[-1]}"
+
+    if _scope_has_library_profiles():
+        body = await _oclc_try_get(f"{LIBRARY_PROFILES_BASE}/brief-institutions", {"oclcSymbol": sym, "limit": 1})
+        rid = _extract_registry_id(body)
+        if rid:
+            return rid, "library-profiles"
+
+    return None, "not-found"
+
+
+def _institution_from_local(sym: str, rid: str | None) -> InstitutionBrief:
+    """Build an InstitutionBrief from bundled directory data when available."""
+    entry = _load_bundled_directory().get(sym.upper())
+    if not entry:
+        return InstitutionBrief(symbol=sym.upper(), registry_id=rid)
+    return InstitutionBrief(
+        symbol=sym.upper(),
+        registry_id=rid,
+        name=entry.get("name"),
+        state=entry.get("state"),
+        country=entry.get("country") or "US",
+        type=entry.get("type"),
+        lat=_to_float(entry.get("lat")),
+        lng=_to_float(entry.get("lng")),
+    )
 
 
 def _safe_get(obj: Any, *path: str, default: Any = None) -> Any:
@@ -452,48 +630,66 @@ async def search_institutions(
     q: str = Query(..., min_length=2, description="Symbol, name, or partial name"),
     limit: int = Query(20, ge=1, le=50),
 ) -> list[InstitutionBrief]:
-    """Search Library Profiles by name or symbol. Returns InstitutionBrief list.
+    """Search by symbol or name.
 
-    VERIFY: parameter name for the search field. The OpenAPI doc lists query
-    params on /library-profiles/brief-institutions — common names are `q`,
-    `name`, `oclcSymbol`.
+    When the Library Profiles scope is granted, hits that API for live search.
+    Otherwise (the typical, free path) searches the bundled directory locally —
+    which is what the frontend's Discover tab already uses.
     """
     looks_like_symbol = q.isalnum() and len(q) <= 8
-    params: dict[str, Any] = {"limit": limit}
-    if looks_like_symbol:
-        params["oclcSymbol"] = q.upper()
-    else:
-        params["name"] = q
-    body = await _oclc_get(f"{LIBRARY_PROFILES_BASE}/brief-institutions", params)
-    if not body:
-        return []
-    arr = (
-        body.get("briefInstitutions")
-        or body.get("institutions")
-        or body.get("entries")
-        or []
-    )
-    out: list[InstitutionBrief] = []
-    for inst in arr[:limit]:
-        if not isinstance(inst, dict):
-            continue
-        out.append(_map_institution({"briefInstitutions": [inst]}, inst.get("oclcSymbol", "")))
-    return out
+
+    if _scope_has_library_profiles():
+        params: dict[str, Any] = {"limit": limit}
+        if looks_like_symbol:
+            params["oclcSymbol"] = q.upper()
+        else:
+            params["name"] = q
+        body = await _oclc_try_get(f"{LIBRARY_PROFILES_BASE}/brief-institutions", params)
+        if body:
+            arr = (
+                body.get("briefInstitutions")
+                or body.get("institutions")
+                or body.get("entries")
+                or []
+            )
+            out: list[InstitutionBrief] = []
+            for inst in arr[:limit]:
+                if not isinstance(inst, dict):
+                    continue
+                out.append(_map_institution({"briefInstitutions": [inst]}, inst.get("oclcSymbol", "")))
+            if out:
+                return out
+
+    # Local fallback: scan the bundled directory.
+    directory = _load_bundled_directory()
+    needle = q.lower()
+    overrides = _load_symbol_overrides()
+    matches: list[InstitutionBrief] = []
+    for sym, entry in directory.items():
+        hay = f"{sym} {entry.get('name', '')}".lower()
+        if needle in hay:
+            matches.append(_institution_from_local(sym, overrides.get(sym)))
+        if len(matches) >= limit:
+            break
+    return matches
 
 
 @app.get("/api/policies/{symbol}", response_model=LenderPolicies)
 async def get_policies(symbol: str) -> LenderPolicies:
     """Fetch full policy bundle for one OCLC symbol."""
     sym = symbol.upper().strip()
-    profile = await _oclc_get(
-        f"{LIBRARY_PROFILES_BASE}/brief-institutions",
-        {"oclcSymbol": sym, "limit": 1},
-    )
-    inst = _map_institution(profile, sym)
-    if not inst.registry_id:
-        raise HTTPException(404, f"No registry entry found for symbol {sym}")
-
-    rid = inst.registry_id
+    rid, source = await _resolve_registry_id(sym)
+    if not rid:
+        raise HTTPException(
+            404,
+            (
+                f"Could not resolve registryId for {sym}. "
+                f"Add it to {SYMBOL_REGISTRY_PATH} as {{\"{sym}\": \"<registryId>\"}} "
+                f"(look up the registryId at https://policies.oclc.org by searching {sym})."
+            ),
+        )
+    log.info("Resolved %s -> registryId %s via %s", sym, rid, source)
+    inst = _institution_from_local(sym, rid)
     base = f"{ILL_POLICIES_BASE}/servicePolicy/{rid}"
 
     fees_body = await _oclc_get(f"{base}/servicePolicyAggregateFees")

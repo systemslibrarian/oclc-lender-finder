@@ -69,12 +69,24 @@ def main() -> None:
 
         # Fallbacks: a WSKey scoped only to policiesDirectoryAPI may 403 on
         # the Library Profiles call above. Try institution lookups exposed by
-        # the Policies Directory itself.
+        # the Policies Directory itself — these match what main.py attempts.
         if not rid:
             print("\n==> brief-institutions failed; trying Policies Directory institution lookups")
             for label, url, params in (
-                ("ipd-institution-by-symbol",
+                ("ipd-institutions-plural",
+                 f"{ILL_POLICIES_BASE}/institutions",
+                 {"oclcSymbol": symbol}),
+                ("ipd-institutions-limit",
+                 f"{ILL_POLICIES_BASE}/institutions",
+                 {"oclcSymbol": symbol, "limit": 1}),
+                ("ipd-institution-singular",
                  f"{ILL_POLICIES_BASE}/institution",
+                 {"oclcSymbol": symbol}),
+                ("ipd-service-institution",
+                 f"{ILL_POLICIES_BASE}/serviceInstitution",
+                 {"oclcSymbol": symbol}),
+                ("ipd-service-policy-institution",
+                 f"{ILL_POLICIES_BASE}/servicePolicyInstitution",
                  {"oclcSymbol": symbol}),
                 ("ipd-institution-symbol-path",
                  f"{ILL_POLICIES_BASE}/institution/{symbol}",
