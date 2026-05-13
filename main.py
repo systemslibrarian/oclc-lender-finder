@@ -55,6 +55,13 @@ log = logging.getLogger(__name__)
 
 OCLC_WSKEY = os.environ.get("OCLC_WSKEY", "")
 OCLC_SECRET = os.environ.get("OCLC_SECRET", "")
+# OCLC institution registry/symbol context for CCG. Required by OCLC's
+# client-credentials flow; for Leon County Public Library System this is 8995.
+OCLC_CONTEXT_INSTITUTION_ID = os.environ.get("OCLC_CONTEXT_INSTITUTION_ID", "")
+# Scopes granted on the WSKey. Space-separated. Default covers what the
+# Lender Finder needs (ILL Policies Directory). Add IFM/articleExchange
+# only if you actually call those endpoints.
+OCLC_SCOPES = os.environ.get("OCLC_SCOPES", "policiesDirectoryAPI")
 ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "*")
 CACHE_TTL_SECONDS = int(os.environ.get("CACHE_TTL_SECONDS", "86400"))
 
@@ -95,10 +102,18 @@ async def _get_token(client: httpx.AsyncClient) -> str:
         return _token_cache["token"]
     if not OCLC_WSKEY or not OCLC_SECRET:
         raise HTTPException(500, "OCLC_WSKEY and OCLC_SECRET must be set in the environment")
+    if not OCLC_CONTEXT_INSTITUTION_ID:
+        raise HTTPException(500, "OCLC_CONTEXT_INSTITUTION_ID must be set (your library's OCLC institution ID)")
+    data = {
+        "grant_type": "client_credentials",
+        "scope": OCLC_SCOPES,
+        "context_institution_id": OCLC_CONTEXT_INSTITUTION_ID,
+    }
     r = await client.post(
         TOKEN_URL,
-        data={"grant_type": "client_credentials", "scope": "wcapi"},
+        data=data,
         auth=(OCLC_WSKEY, OCLC_SECRET),
+        headers={"Accept": "application/json"},
     )
     if r.status_code != 200:
         log.error("Token request failed: %s %s", r.status_code, r.text[:300])
