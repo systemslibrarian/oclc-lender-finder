@@ -139,6 +139,26 @@
   </aside>
 
   <section class="results" id="main-content" aria-label="Lender results">
+    <div class="process-panel" id="rankings-process" aria-label="Rankings workflow">
+      <div class="process-head">
+        <span class="process-title" id="rankings-process-title">How Rankings works · 4 steps</span>
+        <button type="button" class="process-toggle" id="rankings-process-toggle" aria-expanded="true">Hide steps</button>
+      </div>
+      <ol class="process-steps">
+        <li id="rankings-step-1"><span class="step-circle">1</span><div class="step-text"><strong>Upload reports</strong><span>OCLC Borrower .xls</span></div></li>
+        <li id="rankings-step-2"><span class="step-circle">2</span><div class="step-text"><strong>Set your library</strong><span>State + coordinates</span></div></li>
+        <li id="rankings-step-3"><span class="step-circle">3</span><div class="step-text"><strong>Review &amp; tune</strong><span>Sort, filter, weight</span></div></li>
+        <li id="rankings-step-4"><span class="step-circle">4</span><div class="step-text"><strong>Build a group</strong><span>Pick &amp; export</span></div></li>
+      </ol>
+      <div class="process-next" id="rankings-next">
+        <div class="next-head"><span class="next-tag">Up next</span><span class="next-title" id="rankings-next-title"></span></div>
+        <p class="next-desc" id="rankings-next-desc"></p>
+        <div class="next-actions">
+          <button class="next-cta" id="rankings-next-cta" type="button"></button>
+          <button class="next-skip" id="rankings-next-skip" type="button" hidden>Skip for now</button>
+        </div>
+      </div>
+    </div>
     <div class="toolbar">
       <div class="result-count"><strong id="match-count">0</strong> match · <strong id="sel-count">0</strong> selected</div>
       <div class="toolbar-actions">
@@ -256,26 +276,25 @@
   </aside>
 
   <section class="results" aria-label="Discover results">
-    <div class="process-strip" id="discover-process" aria-label="Discover workflow">
-      <button type="button" class="process-close" id="discover-process-close" aria-label="Hide steps">×</button>
+    <div class="process-panel" id="discover-process" aria-label="Discover workflow">
+      <div class="process-head">
+        <span class="process-title" id="discover-process-title">How Discover works · 4 steps</span>
+        <button type="button" class="process-toggle" id="discover-process-toggle" aria-expanded="true">Hide steps</button>
+      </div>
       <ol class="process-steps">
-        <li data-step="1" id="process-step-1">
-          <span class="step-circle">1</span>
-          <div class="step-text"><strong>Load a directory</strong><span>Use the bundled list or import your own CSV.</span></div>
-        </li>
-        <li data-step="2" id="process-step-2">
-          <span class="step-circle">2</span>
-          <div class="step-text"><strong>Set your library</strong><span>Home state + lat/long enable distance &amp; local boost.</span></div>
-        </li>
-        <li data-step="3" id="process-step-3">
-          <span class="step-circle">3</span>
-          <div class="step-text"><strong>Narrow the list</strong><span>Search, distance, type, state, group affiliation.</span></div>
-        </li>
-        <li data-step="4" id="process-step-4">
-          <span class="step-circle">4</span>
-          <div class="step-text"><strong>Build a holdings group</strong><span>Click cards to select, then export or save the group.</span></div>
-        </li>
+        <li id="discover-step-1"><span class="step-circle">1</span><div class="step-text"><strong>Pick a directory</strong><span>Bundled or your own CSV</span></div></li>
+        <li id="discover-step-2"><span class="step-circle">2</span><div class="step-text"><strong>Set your library</strong><span>For distance &amp; local</span></div></li>
+        <li id="discover-step-3"><span class="step-circle">3</span><div class="step-text"><strong>Narrow the list</strong><span>Search, distance, filters</span></div></li>
+        <li id="discover-step-4"><span class="step-circle">4</span><div class="step-text"><strong>Build a group</strong><span>Pick &amp; export</span></div></li>
       </ol>
+      <div class="process-next" id="discover-next">
+        <div class="next-head"><span class="next-tag">Up next</span><span class="next-title" id="discover-next-title"></span></div>
+        <p class="next-desc" id="discover-next-desc"></p>
+        <div class="next-actions">
+          <button class="next-cta" id="discover-next-cta" type="button"></button>
+          <button class="next-skip" id="discover-next-skip" type="button" hidden>Skip for now</button>
+        </div>
+      </div>
     </div>
     <div class="toolbar">
       <div class="result-count">

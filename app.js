@@ -284,7 +284,7 @@
         if (settings.homeState) homeState = settings.homeState;
         if (typeof settings.homeLat === 'number') homeLat = settings.homeLat;
         if (typeof settings.homeLng === 'number') homeLng = settings.homeLng;
-        if (settings.weights) weights = { ...weights, ...settings.weights };
+        if (settings.weights) { weights = { ...weights, ...settings.weights }; weightsTouched = true; }
         if (typeof settings.backendUrl === 'string') backendUrl = settings.backendUrl;
       }
       const dir = localStorage.getItem(IMPORTED_DIR_KEY);
@@ -1071,6 +1071,7 @@
     document.getElementById('match-count').textContent = filtered.length;
     updateSelectionCounts();
     renderRankingsChips();
+    renderProcessPanel('rankings');
     const cmpBtn = document.getElementById('compare-btn');
     if (cmpBtn) cmpBtn.hidden = months.length < 2;
 
@@ -1272,7 +1273,8 @@
     if (isSelected) dirSelected.add(symbol); else dirSelected.delete(symbol);
     updateCardSelectionUI('dir-list', symbol, isSelected);
     updateSelectionCounts();
-    updateProcessStrip();
+    renderProcessPanel('discover');
+    renderProcessPanel('rankings');
   }
 
   function updateCardSelectionUI(listId, symbol, isSelected) {
@@ -1523,8 +1525,175 @@
 
   /* ---------- Discover tab rendering ---------- */
 
-  let processDismissed = false;
-  try { processDismissed = localStorage.getItem('lf-discover-process-dismissed') === '1'; } catch (_) {}
+  let processCollapsed = { rankings: false, discover: false };
+  let weightsTouched = false;
+  let stepSkipped = { 'rankings-3': false };
+  try {
+    processCollapsed.rankings = localStorage.getItem('lf-rankings-process-collapsed') === '1';
+    processCollapsed.discover = localStorage.getItem('lf-discover-process-collapsed') === '1';
+  } catch (_) {}
+
+  function isHomeSet() {
+    return !!homeState
+      && typeof homeLat === 'number' && !isNaN(homeLat)
+      && typeof homeLng === 'number' && !isNaN(homeLng);
+  }
+
+  function scrollFocus(el) {
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => {
+      if (el.focus) el.focus({ preventScroll: true });
+      el.classList.add('flash-highlight');
+      setTimeout(() => el.classList.remove('flash-highlight'), 1400);
+    }, 350);
+  }
+
+  function openSidebarIfNeeded(tab) {
+    if (window.innerWidth > 880) return;
+    const toggle = document.querySelector(`[data-filter-toggle="${tab}"]`);
+    const facets = document.getElementById(`${tab}-facets`);
+    if (toggle && facets && !facets.classList.contains('open')) toggle.click();
+  }
+
+  function rankingsStepConfigs() {
+    return [
+      {
+        done: months.length > 0,
+        title: 'Upload your monthly Borrower reports',
+        desc: 'Drop the .xls export from OCLC WorldShare Reports → "Borrower Transaction-Level Detail Report — Institution". Everything stays in your browser.',
+        cta: 'Choose a file',
+        action: () => {
+          openSidebarIfNeeded('rankings');
+          document.getElementById('csv-input').click();
+        }
+      },
+      {
+        done: isHomeSet(),
+        title: 'Tell us where your library is',
+        desc: 'Your state and coordinates power the same-state boost here, and the distance filter in Discover.',
+        cta: 'Set home location',
+        action: () => { openSidebarIfNeeded('rankings'); scrollFocus(document.getElementById('home-state')); }
+      },
+      {
+        done: weightsTouched || selected.size > 0 || activeFilters.type.size > 0 || activeFilters.state.size > 0 || activeFilters.hist.size > 0 || stepSkipped['rankings-3'],
+        skippable: true,
+        title: 'Review the rankings — sort, filter, or tune weights',
+        desc: 'Sort by score/speed/fill-rate, filter by type/state/history, or move the scoring sliders to favor what you care about.',
+        cta: 'Adjust scoring',
+        action: () => { openSidebarIfNeeded('rankings'); scrollFocus(document.querySelector('input[data-weight="speed"]')); }
+      },
+      {
+        done: selected.size > 0,
+        title: 'Pick lenders and build a holdings group',
+        desc: 'Click any card on the right to select it (or use "Select top 10"). Then name and export your group as an OCLC holdings list or CSV.',
+        cta: 'Select top 10 now',
+        action: () => document.getElementById('select-top-10').click()
+      }
+    ];
+  }
+
+  function discoverStepConfigs() {
+    return [
+      {
+        done: getMergedDirectory().length > 0,
+        title: 'Pick a directory of candidate libraries',
+        desc: 'A starter directory is already loaded. To add your own, import a CSV with symbol, name, state, type, groups and (optionally) lat/lng.',
+        cta: 'Import directory CSV',
+        action: () => { openSidebarIfNeeded('discover'); document.getElementById('dir-input').click(); }
+      },
+      {
+        done: isHomeSet(),
+        title: 'Tell us where your library is',
+        desc: 'Add your home state + coordinates so distance filtering and the same-state badge work. Use "Use my location" for one-click GPS.',
+        cta: 'Set home location',
+        action: () => { openSidebarIfNeeded('discover'); scrollFocus(document.getElementById('dir-home-state')); }
+      },
+      {
+        done: !!dirFilters.search || dirFilters.type.size > 0 || dirFilters.state.size > 0 || dirFilters.group.size > 0 || dirFilters.maxDist > 0,
+        title: 'Narrow the list to good candidates',
+        desc: 'Search by name/symbol, set a distance radius, or pick a library type, state, or consortium (ASERL, LVIS, etc.).',
+        cta: 'Focus the search box',
+        action: () => { openSidebarIfNeeded('discover'); scrollFocus(document.getElementById('dir-search')); }
+      },
+      {
+        done: dirSelected.size > 0,
+        title: 'Pick candidates and build a holdings group',
+        desc: 'Click any card on the right to select it. When you have a shortlist, hit "Build holdings group" to name and export it.',
+        cta: 'Select all visible',
+        action: () => document.getElementById('dir-select-all').click()
+      }
+    ];
+  }
+
+  function renderProcessPanel(tab) {
+    const panelId = `${tab}-process`;
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+    panel.dataset.collapsed = processCollapsed[tab] ? 'true' : 'false';
+    const configs = tab === 'rankings' ? rankingsStepConfigs() : discoverStepConfigs();
+
+    let activeIdx = -1;
+    for (let i = 0; i < configs.length; i++) {
+      const li = document.getElementById(`${tab}-step-${i + 1}`);
+      if (!li) continue;
+      li.classList.remove('active', 'done', 'pending');
+      if (configs[i].done) {
+        li.classList.add('done');
+      } else if (activeIdx === -1) {
+        li.classList.add('active');
+        activeIdx = i;
+      } else {
+        li.classList.add('pending');
+      }
+    }
+
+    const allDone = activeIdx === -1;
+    panel.classList.toggle('all-done', allDone);
+
+    const titleEl = document.getElementById(`${tab}-process-title`);
+    const toggleBtn = document.getElementById(`${tab}-process-toggle`);
+    if (toggleBtn) {
+      toggleBtn.textContent = processCollapsed[tab] ? 'Show steps' : 'Hide steps';
+      toggleBtn.setAttribute('aria-expanded', processCollapsed[tab] ? 'false' : 'true');
+    }
+    if (titleEl) {
+      if (allDone) {
+        titleEl.innerHTML = `<span class="check">✓</span> All steps complete — you're set`;
+      } else {
+        const label = tab === 'rankings' ? 'Rankings' : 'Discover';
+        titleEl.textContent = `${label} workflow · step ${activeIdx + 1} of ${configs.length}`;
+      }
+    }
+
+    if (!allDone) {
+      const cfg = configs[activeIdx];
+      const nextTitle = document.getElementById(`${tab}-next-title`);
+      const nextDesc = document.getElementById(`${tab}-next-desc`);
+      const cta = document.getElementById(`${tab}-next-cta`);
+      const skip = document.getElementById(`${tab}-next-skip`);
+      if (nextTitle) nextTitle.textContent = cfg.title;
+      if (nextDesc) nextDesc.textContent = cfg.desc;
+      if (cta) {
+        cta.textContent = `${cfg.cta} →`;
+        cta.onclick = cfg.action;
+      }
+      if (skip) {
+        skip.hidden = !cfg.skippable;
+        if (cfg.skippable) {
+          skip.onclick = () => {
+            stepSkipped[`${tab}-${activeIdx + 1}`] = true;
+            renderProcessPanel(tab);
+          };
+        }
+      }
+    }
+  }
+
+  function renderAllProcessPanels() {
+    renderProcessPanel('rankings');
+    renderProcessPanel('discover');
+  }
 
   function syncHomeInputs() {
     const set = (id, v) => {
@@ -1547,34 +1716,6 @@
         ? `Home: ${state} · ${homeLat.toFixed(2)}, ${homeLng.toFixed(2)}`
         : `Home state: ${state} — add coordinates to enable distance filtering.`;
     }
-  }
-
-  function updateProcessStrip() {
-    const strip = document.getElementById('discover-process');
-    if (!strip) return;
-    if (processDismissed) { strip.hidden = true; return; }
-    strip.hidden = false;
-
-    const hasDirectory = getMergedDirectory().length > 0;
-    const hasHome = !!homeState && typeof homeLat === 'number' && typeof homeLng === 'number'
-      && !isNaN(homeLat) && !isNaN(homeLng);
-    const hasFilters = !!dirFilters.search
-      || dirFilters.type.size > 0
-      || dirFilters.state.size > 0
-      || dirFilters.group.size > 0
-      || dirFilters.maxDist > 0;
-    const hasSelection = dirSelected.size > 0;
-
-    const setState = (n, state) => {
-      const li = document.getElementById(`process-step-${n}`);
-      if (!li) return;
-      li.classList.remove('done', 'active', 'pending');
-      li.classList.add(state);
-    };
-    setState(1, hasDirectory ? 'done' : 'active');
-    setState(2, hasHome ? 'done' : (hasDirectory ? 'active' : 'pending'));
-    setState(3, hasFilters ? 'done' : ((hasDirectory && hasHome) ? 'active' : 'pending'));
-    setState(4, hasSelection ? 'done' : (hasDirectory ? 'active' : 'pending'));
   }
 
   function getBorrowedSymbols() {
@@ -1673,7 +1814,7 @@
     }
     updateSelectionCounts();
     renderDiscoverChips();
-    updateProcessStrip();
+    renderProcessPanel('discover');
 
     const list = document.getElementById('dir-list');
     if (filtered.length === 0) {
@@ -2228,6 +2369,7 @@
     });
     document.getElementById('rankings-view').hidden = name !== 'rankings';
     document.getElementById('discover-view').hidden = name !== 'discover';
+    renderProcessPanel(name);
     saveData();
   }
 
@@ -2421,6 +2563,7 @@
     document.querySelectorAll('input[data-weight]').forEach(inp => {
       inp.addEventListener('input', () => {
         weights[inp.dataset.weight] = parseInt(inp.value);
+        weightsTouched = true;
         syncWeightLabels();
         debounce('weight', renderRankings, 50);
       });
@@ -2429,7 +2572,7 @@
     document.querySelectorAll('.preset').forEach(btn => {
       btn.addEventListener('click', () => {
         const p = presets[btn.dataset.preset];
-        if (p) { weights = { ...p }; syncWeightLabels(); renderRankings(); }
+        if (p) { weights = { ...p }; weightsTouched = true; syncWeightLabels(); renderRankings(); }
       });
     });
 
@@ -2475,17 +2618,18 @@
       renderRankings();
     });
 
-    /* Discover tab events */
-    const procClose = document.getElementById('discover-process-close');
-    if (procClose) {
-      procClose.addEventListener('click', () => {
-        processDismissed = true;
-        try { localStorage.setItem('lf-discover-process-dismissed', '1'); } catch (_) {}
-        const strip = document.getElementById('discover-process');
-        if (strip) strip.hidden = true;
+    /* Process panel toggle (both tabs) */
+    ['rankings', 'discover'].forEach(tab => {
+      const btn = document.getElementById(`${tab}-process-toggle`);
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        processCollapsed[tab] = !processCollapsed[tab];
+        try { localStorage.setItem(`lf-${tab}-process-collapsed`, processCollapsed[tab] ? '1' : '0'); } catch (_) {}
+        renderProcessPanel(tab);
       });
-    }
+    });
 
+    /* Discover tab events */
     document.getElementById('dir-input').addEventListener('change', e => {
       handleDirectorySelection(e.target.files);
       e.target.value = '';
