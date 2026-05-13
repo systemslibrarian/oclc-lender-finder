@@ -264,16 +264,6 @@
       <p class="hint">Click any card on the right to select it. When you're happy with the picks, hit <strong>Build holdings group</strong> in the toolbar to name, save, and export them.</p>
     </section>
 
-    <section class="facet-group" id="backend-section">
-      <details>
-        <summary class="advanced-summary">Advanced: live OCLC lookup</summary>
-        <p class="hint" style="margin-top:8px;">Power-user feature. Skip this unless you've set up the FastAPI proxy from this repo to fetch fees/hours/contact directly from OCLC.</p>
-        <label style="display:block; font-size:13px; margin:8px 0 4px;">Proxy URL</label>
-        <input type="text" id="backend-url" placeholder="http://localhost:8000" autocomplete="off">
-        <p class="upload-status" id="backend-status" style="margin-top:6px;"></p>
-      </details>
-    </section>
-
     <section class="facet-group">
       <h3>Saved holdings groups</h3>
       <div class="saved-groups-list" id="saved-groups-discover"></div>
@@ -319,7 +309,6 @@
           <option value="state">Sort: state</option>
         </select>
         <button class="ghost-btn" id="map-toggle" type="button" aria-pressed="false">Map view</button>
-        <button class="ghost-btn" id="bulk-policy-btn" type="button" hidden>Fetch policies (0)</button>
         <button id="dir-build-btn" class="primary-btn">Build holdings group</button>
       </div>
     </div>

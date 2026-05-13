@@ -1414,27 +1414,27 @@
 
   async function checkBackendHealth() {
     const statusEl = document.getElementById('backend-status');
+    const setStatus = (text, cls) => {
+      if (!statusEl) return;
+      statusEl.textContent = text;
+      statusEl.className = cls;
+    };
     if (!backendUrl) {
-      statusEl.textContent = '';
-      statusEl.className = 'upload-status';
+      setStatus('', 'upload-status');
       return;
     }
-    statusEl.textContent = 'Checking…';
-    statusEl.className = 'upload-status';
+    setStatus('Checking…', 'upload-status');
     try {
       const r = await fetch(`${backendUrl.replace(/\/+$/, '')}/api/health`);
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const body = await r.json();
       if (body.has_credentials) {
-        statusEl.textContent = '✓ Proxy reachable. OCLC credentials configured.';
-        statusEl.className = 'upload-status ok';
+        setStatus('✓ Proxy reachable. OCLC credentials configured.', 'upload-status ok');
       } else {
-        statusEl.textContent = '⚠ Proxy reachable but OCLC credentials missing.';
-        statusEl.className = 'upload-status err';
+        setStatus('⚠ Proxy reachable but OCLC credentials missing.', 'upload-status err');
       }
     } catch (e) {
-      statusEl.textContent = `Could not reach proxy: ${e.message}`;
-      statusEl.className = 'upload-status err';
+      setStatus(`Could not reach proxy: ${e.message}`, 'upload-status err');
     }
   }
 
@@ -1977,12 +1977,6 @@
       cb.addEventListener('click', (e) => e.stopPropagation());
       cb.addEventListener('change', () => toggleDiscoverSelection(cb.dataset.dirSelect, cb.checked));
     });
-    list.querySelectorAll('[data-policy]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        togglePolicyPanel(btn.dataset.policy);
-      });
-    });
     list.querySelectorAll('[data-note-toggle]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -2011,11 +2005,6 @@
     const importedBadge = l._imported ? '<span class="badge" style="background:var(--bg-info); color:var(--text-info);">Imported</span>' : '';
     const borrowedBadge = alreadyBorrowed ? '<span class="badge every-month">Borrowed before</span>' : '<span class="badge local">New candidate</span>';
     const policyLink = `<a class="policy-link" href="${oclcPolicyUrl(l.symbol)}" target="_blank" rel="noopener" title="Opens the OCLC ILL Policies Directory for ${escapeHtml(l.symbol)} in a new tab" onclick="event.stopPropagation()">📋 View OCLC policies ↗</a>`;
-    const hasInlinePolicy = backendUrl || lvisPolicies.has(l.symbol);
-    const policyBtn = hasInlinePolicy
-      ? `<button class="policy-lookup-btn" data-policy="${escapeHtml(l.symbol)}" aria-expanded="${policyExpanded.has(l.symbol)}">${policyExpanded.has(l.symbol) ? 'Hide policies ▴' : 'Load policies from OCLC ▾'}</button>`
-      : '';
-    const policyHtml = policyExpanded.has(l.symbol) ? renderPolicyPanel(l.symbol) : '';
     const noteOpen = notesExpanded.has(l.symbol);
     const note = getNote(l.symbol);
     const noteBadge = note ? '<span class="badge note-badge">📝 Note</span>' : '';
@@ -2043,10 +2032,8 @@
           ${importedBadge}
           ${noteBadge}
           ${policyLink}
-          ${policyBtn}
           ${noteBtn}
         </div>
-        ${policyHtml}
         ${noteOpen ? renderNoteEditor(l.symbol, note) : ''}
       </div>`;
   }
@@ -2857,15 +2844,6 @@
     document.getElementById('dir-sort-by').addEventListener('change', renderDiscover);
     document.getElementById('dir-build-btn').addEventListener('click', () => renderExportPanel('dir-export-panel', dirSelected, true));
     document.getElementById('map-toggle').addEventListener('click', toggleMapView);
-    document.getElementById('bulk-policy-btn').addEventListener('click', () => {
-      const syms = dirSelected.size > 0
-        ? [...dirSelected]
-        : lastFilteredDir.map(l => l.symbol);
-      if (syms.length === 0) return;
-      if (syms.length > 12 && !confirm(`Fetch policies for ${syms.length} lenders? This will make ${syms.length} requests to your proxy backend.`)) return;
-      bulkFetchPolicies(syms);
-    });
-
     document.getElementById('dir-select-all').addEventListener('click', () => {
       lastFilteredDir.forEach(l => dirSelected.add(l.symbol));
       renderDiscover();
@@ -2895,17 +2873,19 @@
       renderDiscover();
     });
 
-    /* Backend URL: debounced health check */
+    /* Backend URL: debounced health check (input only present if saved-session restore re-injects it) */
     const backendInput = document.getElementById('backend-url');
-    backendInput.addEventListener('input', e => {
-      backendUrl = e.target.value.trim();
-      saveData();
-      updateBulkPolicyBtn();
-      debounce('backend-check', () => {
-        checkBackendHealth();
-        renderDiscover();
-      }, 600);
-    });
+    if (backendInput) {
+      backendInput.addEventListener('input', e => {
+        backendUrl = e.target.value.trim();
+        saveData();
+        updateBulkPolicyBtn();
+        debounce('backend-check', () => {
+          checkBackendHealth();
+          renderDiscover();
+        }, 600);
+      });
+    }
 
     /* Filter toggle (mobile) */
     document.querySelectorAll('[data-filter-toggle]').forEach(btn => {
@@ -2990,13 +2970,40 @@
     });
   }
 
+  function initFacetCollapse() {
+    document.querySelectorAll('.facets .facet-group').forEach((group, i) => {
+      const headerH3 = group.querySelector(':scope > h3') || group.querySelector(':scope > .group-header > h3');
+      if (!headerH3) return;
+      const title = (headerH3.textContent || '').trim().toLowerCase().replace(/\s+/g, '-').slice(0, 40);
+      const key = `lf-facet-collapsed:${group.id || title || i}`;
+      let collapsed = false;
+      try { collapsed = localStorage.getItem(key) === '1'; } catch (_) {}
+      if (collapsed) group.classList.add('collapsed');
+      headerH3.classList.add('facet-toggle');
+      headerH3.setAttribute('role', 'button');
+      headerH3.setAttribute('tabindex', '0');
+      headerH3.setAttribute('aria-expanded', String(!collapsed));
+      const toggle = () => {
+        const nowCollapsed = group.classList.toggle('collapsed');
+        headerH3.setAttribute('aria-expanded', String(!nowCollapsed));
+        try { localStorage.setItem(key, nowCollapsed ? '1' : '0'); } catch (_) {}
+      };
+      headerH3.addEventListener('click', toggle);
+      headerH3.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+      });
+    });
+  }
+
   async function init() {
     loadData();
     syncHomeInputs();
-    document.getElementById('backend-url').value = backendUrl;
+    const backendInputEl = document.getElementById('backend-url');
+    if (backendInputEl) backendInputEl.value = backendUrl;
     syncWeightLabels();
     bindEvents();
     bindDropzones();
+    initFacetCollapse();
 
     switchTab(activeTab);
 

@@ -47,15 +47,23 @@ def parse_location(value):
     return {"city": None, "state": None, "country": None, "raw": raw}
 
 
+POLICY_URL_FMT = "https://illpolicies.oclc.org/dill-ui/InstitutionResults.do?start={institution_id}"
+
+
 def institution_id_from(url):
     if not url:
         return None
     try:
         qs = parse_qs(urlparse(url).query)
-        vals = qs.get("institutionId") or qs.get("institutionID")
+        # New-style URL exposes the institution # as `start`; old-style used `institutionId`.
+        vals = qs.get("start") or qs.get("institutionId") or qs.get("institutionID")
         return vals[0] if vals else None
     except Exception:
         return None
+
+
+def policy_url_for(institution_id):
+    return POLICY_URL_FMT.format(institution_id=institution_id) if institution_id else None
 
 
 def clean_fee(value):
@@ -83,7 +91,9 @@ def main():
             skipped += 1
             continue
 
-        policy_url = inst_cell.hyperlink.target if inst_cell.hyperlink else None
+        source_url = inst_cell.hyperlink.target if inst_cell.hyperlink else None
+        institution_id = institution_id_from(source_url)
+        policy_url = policy_url_for(institution_id)
         loc = parse_location(loc_cell.value)
 
         entry = {
@@ -99,7 +109,7 @@ def main():
             "copiesFees": clean_fee(cfees.value),
             "loansFees": clean_fee(lfees.value),
             "policyUrl": policy_url,
-            "institutionId": institution_id_from(policy_url),
+            "institutionId": institution_id,
             "group": "LVIS",
         }
 

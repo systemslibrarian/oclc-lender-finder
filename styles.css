@@ -363,6 +363,25 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   gap: 6px;
   flex-wrap: wrap;
 }
+.facet-group h3.facet-toggle {
+  cursor: pointer;
+  user-select: none;
+}
+.facet-group h3.facet-toggle::after {
+  content: '▾';
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--text-tertiary);
+  transition: transform 0.15s ease;
+}
+.facet-group.collapsed > h3.facet-toggle::after,
+.facet-group.collapsed > .group-header > h3.facet-toggle::after {
+  transform: rotate(-90deg);
+}
+.facet-group.collapsed > h3.facet-toggle ~ *,
+.facet-group.collapsed > .group-header ~ * {
+  display: none;
+}
 .step-num {
   display: inline-flex;
   align-items: center;
