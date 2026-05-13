@@ -1277,6 +1277,7 @@ select#sort-by, select#dir-sort-by {
   padding: 20px;
   animation: fadeIn 160ms ease;
 }
+.modal-backdrop[hidden] { display: none; }
 .modal {
   background: var(--bg);
   border: 0.5px solid var(--border);
