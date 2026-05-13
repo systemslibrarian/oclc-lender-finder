@@ -259,6 +259,8 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   align-items: start;
 }
 
+.layout[hidden] { display: none; }
+
 .filter-toggle {
   display: none;
   background: var(--bg);
