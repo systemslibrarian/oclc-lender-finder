@@ -1528,6 +1528,14 @@
   let processCollapsed = { rankings: false, discover: false };
   let weightsTouched = false;
   let stepSkipped = { 'rankings-3': false, 'discover-1': false };
+  let oclcBannerDismissed = false;
+  try { oclcBannerDismissed = localStorage.getItem('lf-oclc-banner-dismissed') === '1'; } catch (_) {}
+
+  function updateOclcBanner() {
+    const banner = document.getElementById('oclc-banner');
+    if (!banner) return;
+    banner.hidden = !!backendUrl || oclcBannerDismissed;
+  }
   try {
     processCollapsed.rankings = localStorage.getItem('lf-rankings-process-collapsed') === '1';
     processCollapsed.discover = localStorage.getItem('lf-discover-process-collapsed') === '1';
@@ -1818,6 +1826,7 @@
     updateSelectionCounts();
     renderDiscoverChips();
     renderProcessPanel('discover');
+    updateOclcBanner();
 
     const list = document.getElementById('dir-list');
     if (filtered.length === 0) {
@@ -2776,6 +2785,29 @@
         renderDiscover();
       });
     }
+
+    /* OCLC banner — show prominent prompt when no proxy is configured */
+    const banner = document.getElementById('oclc-banner');
+    if (banner) {
+      document.getElementById('oclc-banner-use-localhost').addEventListener('click', () => {
+        backendUrl = 'http://localhost:8000';
+        backendInput.value = backendUrl;
+        saveData();
+        updateBulkPolicyBtn();
+        checkBackendHealth();
+        renderDiscover();
+      });
+      document.getElementById('oclc-banner-configure').addEventListener('click', () => {
+        openSidebarIfNeeded('discover');
+        scrollFocus(document.getElementById('backend-url'));
+      });
+      document.getElementById('oclc-banner-dismiss').addEventListener('click', () => {
+        oclcBannerDismissed = true;
+        try { localStorage.setItem('lf-oclc-banner-dismissed', '1'); } catch (_) {}
+        updateOclcBanner();
+      });
+    }
+    updateOclcBanner();
 
     /* Filter toggle (mobile) */
     document.querySelectorAll('[data-filter-toggle]').forEach(btn => {
