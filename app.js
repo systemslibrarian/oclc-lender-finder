@@ -17,15 +17,11 @@
   let homeState = 'FL';
   let homeLat = 30.4383;
   let homeLng = -84.2807;
-  let backendUrl = '';
   let activeTab = 'rankings';
   let weights = { speed: 25, fill: 30, volume: 15, consistency: 20, local: 10 };
   const expanded = new Set();
   const selected = new Set();
   const dirSelected = new Set();
-  const policyCache = new Map();
-  const policyLoading = new Set();
-  const policyExpanded = new Set();
   const lvisPolicies = new Map();
   const activeFilters = { type: new Set(), state: new Set(), hist: new Set(), group: new Set() };
   const symbolGroups = new Map();
@@ -293,7 +289,7 @@
   function saveData() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(months));
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ homeState, homeLat, homeLng, weights, backendUrl }));
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ homeState, homeLat, homeLng, weights }));
       localStorage.setItem(IMPORTED_DIR_KEY, JSON.stringify(importedDirectory));
       localStorage.setItem(UI_KEY, JSON.stringify({ activeTab }));
       localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
@@ -317,7 +313,6 @@
         if (typeof settings.homeLat === 'number') homeLat = settings.homeLat;
         if (typeof settings.homeLng === 'number') homeLng = settings.homeLng;
         if (settings.weights) { weights = { ...weights, ...settings.weights }; weightsTouched = true; }
-        if (typeof settings.backendUrl === 'string') backendUrl = settings.backendUrl;
       }
       const dir = localStorage.getItem(IMPORTED_DIR_KEY);
       if (dir) {
@@ -479,58 +474,13 @@
     }
   }
 
-  function parseLvisFee(raw) {
-    if (!raw) return { min: null, max: null, raw: null };
-    // Take the first slash-separated segment (sheets use "domestic / international").
-    const first = String(raw).split('/')[0].trim();
-    const nums = first.match(/\d+(?:\.\d+)?/g);
-    if (!nums || nums.length === 0) return { min: null, max: null, raw };
-    const lo = parseFloat(nums[0]);
-    const hi = nums.length > 1 ? parseFloat(nums[1]) : lo;
-    return { min: lo, max: hi, raw };
-  }
-
-  function buildLvisPolicyData(entry) {
-    const loanFee = parseLvisFee(entry.loansFees);
-    const copyFee = parseLvisFee(entry.copiesFees);
-    return {
-      _lvisSource: true,
-      policyUrl: entry.policyUrl || null,
-      is_supplier: null,
-      fees: {
-        loan_min: loanFee.min,
-        loan_max: loanFee.max,
-        loan_raw: loanFee.raw,
-        copy_min: copyFee.min,
-        copy_max: copyFee.max,
-        copy_raw: copyFee.raw,
-        accepts_ifm: null
-      },
-      response_days: {
-        loan: entry.loansDaysToRespond ?? null,
-        copy: entry.copiesDaysToRespond ?? null
-      },
-      materials: [],
-      delivery: {},
-      contact: {},
-      hours: {},
-      loan_terms: {}
-    };
-  }
-
   async function loadLvisPolicies() {
     try {
       const r = await fetch('lvis-policies.json');
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const data = await r.json();
       const libs = data.libraries || {};
-      Object.keys(libs).forEach(sym => {
-        const entry = libs[sym];
-        lvisPolicies.set(sym, entry);
-        if (!policyCache.has(sym)) {
-          policyCache.set(sym, buildLvisPolicyData(entry));
-        }
-      });
+      Object.keys(libs).forEach(sym => lvisPolicies.set(sym, libs[sym]));
     } catch (e) {
       console.warn('Could not load LVIS policies:', e);
     }
@@ -1407,250 +1357,6 @@
     document.getElementById('dir-sel-count').textContent = dirSelected.size;
     document.getElementById('clear-selection').hidden = selected.size === 0;
     document.getElementById('dir-clear-selection').hidden = dirSelected.size === 0;
-    updateBulkPolicyBtn();
-  }
-
-  /* ---------- Policy lookup ---------- */
-
-  async function checkBackendHealth() {
-    const statusEl = document.getElementById('backend-status');
-    const setStatus = (text, cls) => {
-      if (!statusEl) return;
-      statusEl.textContent = text;
-      statusEl.className = cls;
-    };
-    if (!backendUrl) {
-      setStatus('', 'upload-status');
-      return;
-    }
-    setStatus('Checking…', 'upload-status');
-    try {
-      const r = await fetch(`${backendUrl.replace(/\/+$/, '')}/api/health`);
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const body = await r.json();
-      if (body.has_credentials) {
-        setStatus('✓ Proxy reachable. OCLC credentials configured.', 'upload-status ok');
-      } else {
-        setStatus('⚠ Proxy reachable but OCLC credentials missing.', 'upload-status err');
-      }
-    } catch (e) {
-      setStatus(`Could not reach proxy: ${e.message}`, 'upload-status err');
-    }
-  }
-
-  async function fetchPolicies(symbol) {
-    if (!backendUrl) return { error: 'No backend URL configured.' };
-    if (policyCache.has(symbol)) return policyCache.get(symbol);
-    if (policyLoading.has(symbol)) return { loading: true };
-    policyLoading.add(symbol);
-    try {
-      const url = `${backendUrl.replace(/\/+$/, '')}/api/policies/${encodeURIComponent(symbol)}`;
-      const r = await fetch(url);
-      if (r.status === 404) {
-        const result = { error: 'Not in OCLC Library Profiles directory.' };
-        policyCache.set(symbol, result);
-        return result;
-      }
-      if (!r.ok) {
-        const txt = await r.text();
-        const result = { error: `HTTP ${r.status}: ${txt.slice(0, 200)}` };
-        policyCache.set(symbol, result);
-        return result;
-      }
-      const data = await r.json();
-      policyCache.set(symbol, data);
-      return data;
-    } catch (e) {
-      const result = { error: `Network error: ${e.message}` };
-      return result;
-    } finally {
-      policyLoading.delete(symbol);
-    }
-  }
-
-  function renderPolicyPanel(symbol) {
-    const data = policyCache.get(symbol);
-    if (!data) {
-      if (policyLoading.has(symbol)) {
-        return '<div class="policy-panel loading">Loading policies…</div>';
-      }
-      return '';
-    }
-    if (data.error) {
-      return `<div class="policy-panel err">Could not load policies: ${escapeHtml(data.error)}</div>`;
-    }
-    const fmtFee = (lo, hi) => {
-      if (lo == null && hi == null) return '—';
-      if (lo === 0 && (hi === 0 || hi == null)) return 'Free';
-      if (lo != null && hi != null && lo === hi) return `$${lo}`;
-      if (lo != null && hi != null) return `$${lo}–$${hi}`;
-      if (lo != null) return `$${lo}+`;
-      return `up to $${hi}`;
-    };
-    const supplierLabel = data.is_supplier === true ? 'Active supplier'
-      : data.is_supplier === false ? 'Not currently supplying'
-      : 'Supplier status unknown';
-    const materialsHtml = (data.materials && data.materials.length > 0)
-      ? data.materials.map(m => `
-        <div class="policy-material-row">
-          <span class="material-name">${escapeHtml(m.material)}</span>
-          <span class="material-status">${m.will_lend === true ? 'Lends' : m.will_lend === false ? 'Does not lend' : 'Unknown'}${m.notes ? ' · ' + escapeHtml(m.notes) : ''}</span>
-        </div>`).join('')
-      : '<div class="material-status" style="color:var(--text-tertiary);">No per-material policy on file.</div>';
-    const delivery = [];
-    if (data.delivery) {
-      if (data.delivery.article_exchange) delivery.push('Article Exchange');
-      if (data.delivery.mail) delivery.push('Mail');
-      if (data.delivery.fax) delivery.push('Fax');
-      (data.delivery.other || []).forEach(o => delivery.push(o));
-    }
-    const contact = data.contact || {};
-    const hours = data.hours || {};
-    const loan = data.loan_terms || {};
-    const respond = data.response_days || {};
-    const warning = data.raw_warning ? `<div class="policy-panel err" style="margin-top:0;margin-bottom:8px;">${escapeHtml(data.raw_warning)}</div>` : '';
-    const respondHtml = (respond.loan != null || respond.copy != null) ? `
-        <div class="policy-section">
-          <div class="policy-section-label">Response time</div>
-          <dl class="policy-grid">
-            <dt>Loans</dt><dd>${respond.loan != null ? respond.loan + ' days' : '—'}</dd>
-            <dt>Copies</dt><dd>${respond.copy != null ? respond.copy + ' days' : '—'}</dd>
-          </dl>
-        </div>` : '';
-    const lvisFooter = data._lvisSource ? `
-        <div class="policy-section" style="border-top:1px solid var(--border); padding-top:8px; color:var(--text-secondary); font-size:0.85em;">
-          Source: LVIS Group export. ${data.policyUrl ? `<a href="${escapeHtml(data.policyUrl)}" target="_blank" rel="noopener">View full policy ↗</a>` : ''}
-        </div>` : '';
-
-    return `
-      <div class="policy-panel">
-        ${warning}
-        <div class="policy-section">
-          <div class="policy-section-label">Status</div>
-          <div>${escapeHtml(supplierLabel)}</div>
-        </div>
-        ${respondHtml}
-        <div class="policy-section">
-          <div class="policy-section-label">Fees</div>
-          <dl class="policy-grid">
-            <dt>Loan</dt><dd>${fmtFee(data.fees?.loan_min, data.fees?.loan_max)}</dd>
-            <dt>Copy</dt><dd>${fmtFee(data.fees?.copy_min, data.fees?.copy_max)}</dd>
-            <dt>IFM</dt><dd>${data.fees?.accepts_ifm === true ? 'Accepts IFM' : data.fees?.accepts_ifm === false ? 'No IFM' : '—'}</dd>
-          </dl>
-        </div>
-        <div class="policy-section">
-          <div class="policy-section-label">Materials lent</div>
-          ${materialsHtml}
-        </div>
-        <div class="policy-section">
-          <div class="policy-section-label">Delivery</div>
-          <div>${delivery.length ? delivery.map(escapeHtml).join(' · ') : '—'}</div>
-        </div>
-        <div class="policy-section">
-          <div class="policy-section-label">Loan terms</div>
-          <dl class="policy-grid">
-            <dt>Period</dt><dd>${loan.loan_period_days != null ? loan.loan_period_days + ' days' : '—'}</dd>
-            <dt>Renewable</dt><dd>${loan.renewable === true ? 'Yes' : loan.renewable === false ? 'No' : '—'}</dd>
-          </dl>
-          ${loan.notes ? `<div style="margin-top:4px; color:var(--text-secondary);">${escapeHtml(loan.notes)}</div>` : ''}
-        </div>
-        <div class="policy-section">
-          <div class="policy-section-label">Contact</div>
-          <dl class="policy-grid">
-            <dt>Email</dt><dd>${contact.email ? `<a href="mailto:${escapeHtml(contact.email)}">${escapeHtml(contact.email)}</a>` : '—'}</dd>
-            <dt>Phone</dt><dd>${contact.phone ? escapeHtml(contact.phone) : '—'}</dd>
-            <dt>Website</dt><dd>${contact.url ? `<a href="${escapeHtml(contact.url)}" target="_blank" rel="noopener">${escapeHtml(contact.url)}</a>` : '—'}</dd>
-          </dl>
-        </div>
-        <div class="policy-section">
-          <div class="policy-section-label">Hours</div>
-          <div>${hours.weekly_hours ? escapeHtml(hours.weekly_hours) : '—'}</div>
-          ${hours.closures && hours.closures.length ? `<div style="margin-top:4px; color:var(--text-secondary);">Closed: ${hours.closures.map(escapeHtml).join(', ')}</div>` : ''}
-        </div>
-        ${lvisFooter}
-      </div>`;
-  }
-
-  async function togglePolicyPanel(symbol) {
-    if (policyExpanded.has(symbol)) {
-      policyExpanded.delete(symbol);
-      renderDiscover();
-      return;
-    }
-    policyExpanded.add(symbol);
-    if (!policyCache.has(symbol)) {
-      renderDiscover();
-      await fetchPolicies(symbol);
-    }
-    renderDiscover();
-  }
-
-  async function bulkFetchPolicies(symbols) {
-    const todo = symbols.filter(s => !policyCache.has(s));
-    if (todo.length === 0) {
-      // Already cached (LVIS pre-seed or prior backend fetch) — just expand them all
-      symbols.forEach(s => policyExpanded.add(s));
-      renderDiscover();
-      showToast({ message: `Showed policies for ${symbols.length} lender${symbols.length === 1 ? '' : 's'}.`, kind: 'ok' });
-      return;
-    }
-    if (!backendUrl) {
-      showToast({ message: `${todo.length} lender${todo.length === 1 ? '' : 's'} need the proxy backend (not in LVIS export). Configure it first.`, kind: 'err' });
-      return;
-    }
-    const total = todo.length;
-    let done = 0, failed = 0;
-    const toast = showToast({
-      message: `Fetching policies… 0 / ${total}`,
-      duration: 1e9 // we'll dismiss manually
-    });
-    const updateProgress = () => {
-      const el = document.querySelector('.toast .toast-msg');
-      if (el && el.textContent.startsWith('Fetching policies')) {
-        el.textContent = `Fetching policies… ${done} / ${total}${failed ? ` · ${failed} failed` : ''}`;
-      }
-    };
-    const CONCURRENCY = 4;
-    let cursor = 0;
-    async function worker() {
-      while (cursor < todo.length) {
-        const idx = cursor++;
-        const sym = todo[idx];
-        try {
-          const result = await fetchPolicies(sym);
-          if (result && result.error) failed++;
-        } catch (e) { failed++; }
-        done++;
-        updateProgress();
-      }
-    }
-    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, todo.length) }, worker));
-    if (toast) toast.dismiss();
-    symbols.forEach(s => policyExpanded.add(s));
-    renderDiscover();
-    showToast({
-      message: `Loaded policies for ${symbols.length - failed} / ${symbols.length}${failed ? `. ${failed} failed.` : ''}`,
-      kind: failed > 0 ? 'err' : 'ok'
-    });
-  }
-
-  function updateBulkPolicyBtn() {
-    const btn = document.getElementById('bulk-policy-btn');
-    if (!btn) return;
-    const hasLvis = lvisPolicies.size > 0;
-    if (!backendUrl && !hasLvis) { btn.hidden = true; return; }
-    btn.hidden = false;
-    const n = dirSelected.size;
-    if (n > 0) {
-      btn.textContent = `Fetch policies (${n})`;
-      btn.disabled = false;
-      btn.title = `Fetch OCLC policies for ${n} selected lender${n === 1 ? '' : 's'}`;
-    } else {
-      const visible = lastFilteredDir.length;
-      btn.textContent = `Fetch policies (visible: ${visible})`;
-      btn.disabled = visible === 0;
-      btn.title = visible > 0 ? `No selection — fetch for all ${visible} visible candidates` : 'No candidates to fetch';
-    }
   }
 
   /* ---------- Discover tab rendering ---------- */
@@ -2873,20 +2579,6 @@
       renderDiscover();
     });
 
-    /* Backend URL: debounced health check (input only present if saved-session restore re-injects it) */
-    const backendInput = document.getElementById('backend-url');
-    if (backendInput) {
-      backendInput.addEventListener('input', e => {
-        backendUrl = e.target.value.trim();
-        saveData();
-        updateBulkPolicyBtn();
-        debounce('backend-check', () => {
-          checkBackendHealth();
-          renderDiscover();
-        }, 600);
-      });
-    }
-
     /* Filter toggle (mobile) */
     document.querySelectorAll('[data-filter-toggle]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -2998,8 +2690,6 @@
   async function init() {
     loadData();
     syncHomeInputs();
-    const backendInputEl = document.getElementById('backend-url');
-    if (backendInputEl) backendInputEl.value = backendUrl;
     syncWeightLabels();
     bindEvents();
     bindDropzones();
@@ -3017,10 +2707,6 @@
     renderSavedGroups();
     renderRankings();
     renderDiscover();
-
-    if (backendUrl) {
-      checkBackendHealth();
-    }
   }
 
   const inTestMode = typeof window !== 'undefined' && window.location && window.location.search.indexOf('test=1') >= 0;
