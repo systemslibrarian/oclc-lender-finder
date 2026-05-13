@@ -667,6 +667,25 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
+.facet > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+.facet-label-stack {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+.facet-label-main {
+  font-weight: 500;
+}
+.facet-sub {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
 
 .scroll-box {
   max-height: 220px;

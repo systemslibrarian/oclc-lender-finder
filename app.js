@@ -25,6 +25,19 @@
   const lvisPolicies = new Map();
   const activeFilters = { type: new Set(), state: new Set(), hist: new Set(), group: new Set() };
   const symbolGroups = new Map();
+  // Whitelist of group affiliations shown in the facet UI. Other tags (e.g. ARL,
+  // ASERL, BTAA) stay on the underlying directory data but are filtered out of
+  // the facet so users can't pick them.
+  const GROUP_NAMES = {
+    'LVIS': 'Libraries Very Interested in Sharing',
+    'FILM': 'Libraries supplying AV materials free of charge',
+    'FLIN': 'Florida Library Information Network',
+    'PL@A': 'Panhandle Library Access Network',
+    'SIXX': 'So6 Group Access (SOLINET, the Southeastern Library Network)',
+    'SL#N': 'Soline (SOLINET, the Southeastern Library Network)',
+    'LYRA': 'Lyrasis'
+  };
+  const ALLOWED_GROUPS = new Set(Object.keys(GROUP_NAMES));
   const dirFilters = { type: new Set(), state: new Set(), group: new Set(), search: '', maxDist: 0, onlyNew: true };
 
   // Last-rendered filtered lists, used by bulk actions
@@ -216,8 +229,8 @@
           state: entry.state || null,
           type: 'Other',
           groups: ['LVIS'],
-          lat: null,
-          lng: null,
+          lat: typeof entry.lat === 'number' ? entry.lat : null,
+          lng: typeof entry.lng === 'number' ? entry.lng : null,
           _imported: false,
           _lvisOnly: true
         });
@@ -945,6 +958,14 @@
     });
   }
 
+  function renderGroupFacet(symbol, count, dataAttr, isChecked) {
+    const fullName = GROUP_NAMES[symbol] || '';
+    const dataKey = dataAttr === 'dirfacet' ? 'data-dirfacet' : 'data-facet';
+    const sub = fullName ? `<span class="facet-sub">${escapeHtml(fullName)}</span>` : '';
+    const tooltip = fullName ? ` title="${escapeHtml(fullName)}"` : '';
+    return `<label class="facet"${tooltip}><span><input type="checkbox" ${dataKey}="group" value="${escapeHtml(symbol)}" ${isChecked ? 'checked' : ''}><span class="facet-label-stack"><span class="facet-label-main">${escapeHtml(symbol)}</span>${sub}</span></span><span class="count">${count}</span></label>`;
+  }
+
   function rebuildFacetOptions() {
     const merged = mergeMonths();
     const typeCounts = {}, stateCounts = {}, groupCounts = {};
@@ -952,7 +973,9 @@
       typeCounts[l.type] = (typeCounts[l.type] || 0) + 1;
       stateCounts[l.state] = (stateCounts[l.state] || 0) + 1;
       const groups = symbolGroups.get(l.symbol);
-      if (groups) groups.forEach(g => { groupCounts[g] = (groupCounts[g] || 0) + 1; });
+      if (groups) groups.forEach(g => {
+        if (ALLOWED_GROUPS.has(g)) groupCounts[g] = (groupCounts[g] || 0) + 1;
+      });
     });
     const types = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
     const states = Object.entries(stateCounts).sort((a, b) => b[1] - a[1]);
@@ -974,9 +997,7 @@
     if (groupWrap) {
       groupWrap.innerHTML = groups.length === 0
         ? '<p class="hint">No group affiliations among current rankings.</p>'
-        : groups.map(([g, c]) =>
-            `<label class="facet"><span><input type="checkbox" data-facet="group" value="${escapeHtml(g)}" ${activeFilters.group.has(g) ? 'checked' : ''}>${escapeHtml(g)}</span><span class="count">${c}</span></label>`
-          ).join('');
+        : groups.map(([g, c]) => renderGroupFacet(g, c, 'facet', activeFilters.group.has(g))).join('');
     }
 
     const wireFacet = wrap => wrap && wrap.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.addEventListener('change', () => {
@@ -1356,7 +1377,7 @@
 
   let processCollapsed = { rankings: false, discover: false };
   let weightsTouched = false;
-  let stepSkipped = { 'rankings-3': false, 'discover-1': false };
+  let stepSkipped = { 'rankings-3': false };
   try {
     processCollapsed.rankings = localStorage.getItem('lf-rankings-process-collapsed') === '1';
     processCollapsed.discover = localStorage.getItem('lf-discover-process-collapsed') === '1';
@@ -1424,15 +1445,6 @@
 
   function discoverStepConfigs() {
     return [
-      {
-        done: getMergedDirectory().length > 0 || stepSkipped['discover-1'],
-        skippable: true,
-        skipLabel: 'Use the starter directory',
-        title: '(Optional) Bring your own directory',
-        desc: 'A starter directory of US libraries is already loaded — you can skip this and dive in. Import a CSV (symbol, name, state, type, groups, lat/lng) only if you want to add your own candidates.',
-        cta: 'Import directory CSV',
-        action: () => { openSidebarIfNeeded('discover'); document.getElementById('dir-input').click(); }
-      },
       {
         done: isHomeSet(),
         title: 'Tell us where your library is',
@@ -1562,7 +1574,9 @@
     dir.forEach(l => {
       typeCounts[l.type || 'Other'] = (typeCounts[l.type || 'Other'] || 0) + 1;
       if (l.state) stateCounts[l.state] = (stateCounts[l.state] || 0) + 1;
-      (l.groups || []).forEach(g => { groupCounts[g] = (groupCounts[g] || 0) + 1; });
+      (l.groups || []).forEach(g => {
+        if (ALLOWED_GROUPS.has(g)) groupCounts[g] = (groupCounts[g] || 0) + 1;
+      });
     });
     document.getElementById('dir-type-facets').innerHTML =
       Object.entries(typeCounts).sort((a, b) => b[1] - a[1]).map(([t, c]) =>
@@ -1574,7 +1588,7 @@
       ).join('');
     document.getElementById('dir-group-facets').innerHTML =
       Object.entries(groupCounts).sort((a, b) => b[1] - a[1]).map(([g, c]) =>
-        `<label class="facet"><span><input type="checkbox" data-dirfacet="group" value="${escapeHtml(g)}" ${dirFilters.group.has(g) ? 'checked' : ''}>${escapeHtml(g)}</span><span class="count">${c}</span></label>`
+        renderGroupFacet(g, c, 'dirfacet', dirFilters.group.has(g))
       ).join('') || '<p class="hint">No groups recorded in directory.</p>';
 
     document.querySelectorAll('input[type="checkbox"][data-dirfacet]').forEach(cb => {
@@ -1584,20 +1598,6 @@
         renderDiscover();
       });
     });
-  }
-
-  function renderDirectoryStats() {
-    const merged = getMergedDirectory();
-    const total = merged.length;
-    const lvisCount = merged.filter(l => l._lvisOnly).length;
-    const imported = importedDirectory.length;
-    const stats = document.getElementById('dir-stats');
-    const parts = [`${bundledDirectory.length} bundled`];
-    if (lvisCount > 0) parts.push(`${lvisCount} LVIS`);
-    if (imported > 0) parts.push(`${imported} imported`);
-    stats.textContent = `${total} entries (${parts.join(', ')}).`;
-    document.getElementById('clear-imported-dir').hidden = imported === 0;
-    document.getElementById('export-imported-dir').hidden = imported === 0;
   }
 
   function renderDiscover() {
@@ -1919,7 +1919,6 @@
     rebuildSymbolGroups();
     rebuildFacetOptions();
     renderSavedGroups();
-    renderDirectoryStats();
     buildDirFacetOptions();
     renderRankings();
     renderDiscover();
@@ -2047,115 +2046,6 @@
     });
   }
 
-  function handleDirectorySelection(files) {
-    if (!files || files.length === 0) return;
-    const status = document.getElementById('dir-upload-status');
-    let pending = files.length;
-    const errors = [];
-    const parsedRows = [];
-    Array.from(files).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = ev => {
-        try {
-          const rows = parseDirectoryCSV(ev.target.result);
-          if (rows.length === 0) errors.push(`${file.name}: no entries`);
-          else rows.forEach(r => parsedRows.push(r));
-        } catch (err) {
-          errors.push(`${file.name}: ${err.message}`);
-        }
-        pending -= 1;
-        if (pending === 0) {
-          if (parsedRows.length === 0) {
-            status.className = 'upload-status err';
-            status.textContent = errors.join(' · ') || 'No entries found.';
-            return;
-          }
-          showDirectoryImportPreview(parsedRows, errors);
-        }
-      };
-      reader.onerror = () => {
-        errors.push(`${file.name}: read failed`);
-        pending -= 1;
-        if (pending === 0 && parsedRows.length === 0) {
-          status.className = 'upload-status err';
-          status.textContent = errors.join(' · ');
-        } else if (pending === 0) {
-          showDirectoryImportPreview(parsedRows, errors);
-        }
-      };
-      reader.readAsText(file);
-    });
-  }
-
-  function showDirectoryImportPreview(rows, errors) {
-    const bundledSyms = new Set(bundledDirectory.map(l => l.symbol));
-    const importedSyms = new Set(importedDirectory.map(l => l.symbol));
-    let isNew = 0, updates = 0, overridesBundled = 0;
-    const seen = new Set();
-    const deduped = [];
-    rows.forEach(r => {
-      if (seen.has(r.symbol)) return; // dedupe within import
-      seen.add(r.symbol);
-      deduped.push(r);
-      if (importedSyms.has(r.symbol)) updates++;
-      else if (bundledSyms.has(r.symbol)) overridesBundled++;
-      else isNew++;
-    });
-    const errHtml = errors.length > 0
-      ? `<div class="warning-panel" style="margin-bottom:12px;font-size:12px;">${errors.map(escapeHtml).join('<br>')}</div>`
-      : '';
-    openModal('Import directory CSV', `
-      ${errHtml}
-      <p>Parsed <strong>${deduped.length}</strong> unique entr${deduped.length === 1 ? 'y' : 'ies'}. Review before applying.</p>
-      <h3>Changes</h3>
-      <ul style="margin:6px 0 12px; padding-left: 18px; line-height: 1.7;">
-        <li><strong>${isNew}</strong> brand-new entr${isNew === 1 ? 'y' : 'ies'}</li>
-        <li><strong>${updates}</strong> update${updates === 1 ? '' : 's'} to existing imported entries</li>
-        <li><strong>${overridesBundled}</strong> override${overridesBundled === 1 ? '' : 's'} of bundled entries</li>
-      </ul>
-      <p class="hint">Imported entries always win over bundled ones with the same symbol. You can clear imports later from the Directory panel.</p>
-      <div style="display:flex; gap:8px; margin-top:16px; justify-content:flex-end; flex-wrap:wrap;">
-        <button class="ghost-btn" id="csv-cancel" type="button">Cancel</button>
-        <button class="primary-btn" id="csv-apply" type="button">Apply</button>
-      </div>
-    `);
-    document.getElementById('csv-cancel').addEventListener('click', () => {
-      closeModal();
-      const status = document.getElementById('dir-upload-status');
-      status.className = 'upload-status';
-      status.textContent = 'Import canceled.';
-    });
-    document.getElementById('csv-apply').addEventListener('click', () => {
-      const snapshot = JSON.parse(JSON.stringify(importedDirectory));
-      const bySym = new Map(importedDirectory.map(r => [r.symbol, r]));
-      deduped.forEach(r => bySym.set(r.symbol, r));
-      importedDirectory = Array.from(bySym.values());
-      saveData();
-      rebuildSymbolGroups();
-      renderDirectoryStats();
-      buildDirFacetOptions();
-      rebuildFacetOptions();
-      renderDiscover();
-      closeModal();
-      const status = document.getElementById('dir-upload-status');
-      status.className = 'upload-status ok';
-      status.textContent = `Imported ${deduped.length} entries. Total directory: ${getMergedDirectory().length}.`;
-      showToast({
-        message: `Imported ${deduped.length} entr${deduped.length === 1 ? 'y' : 'ies'}.`,
-        action: 'Undo',
-        onAction: () => {
-          importedDirectory = snapshot;
-          saveData();
-          rebuildSymbolGroups();
-          renderDirectoryStats();
-          buildDirFacetOptions();
-          rebuildFacetOptions();
-          renderDiscover();
-        }
-      });
-    });
-  }
-
   /* ---------- Drag & drop ---------- */
 
   function bindDropzones() {
@@ -2183,7 +2073,6 @@
         const files = e.dataTransfer && e.dataTransfer.files;
         if (!files || !files.length) return;
         if (kind === 'report') handleReportSelection(files);
-        else if (kind === 'directory') handleDirectorySelection(files);
       });
     });
   }
@@ -2461,58 +2350,6 @@
     });
 
     /* Discover tab events */
-    document.getElementById('dir-input').addEventListener('change', e => {
-      handleDirectorySelection(e.target.files);
-      e.target.value = '';
-    });
-    document.getElementById('show-dir-format-help').addEventListener('click', (e) => {
-      const h = document.getElementById('dir-format-help');
-      h.hidden = !h.hidden;
-      e.target.setAttribute('aria-expanded', !h.hidden);
-    });
-    document.getElementById('clear-imported-dir').addEventListener('click', () => {
-      const snapshot = { importedDirectory: JSON.parse(JSON.stringify(importedDirectory)), dirSelected: [...dirSelected] };
-      const count = importedDirectory.length;
-      importedDirectory = [];
-      dirSelected.clear();
-      saveData();
-      rebuildSymbolGroups();
-      renderDirectoryStats();
-      buildDirFacetOptions();
-      rebuildFacetOptions();
-      renderDiscover();
-      showToast({
-        message: `Cleared ${count} imported entr${count === 1 ? 'y' : 'ies'}.`,
-        action: 'Undo',
-        onAction: () => {
-          importedDirectory = snapshot.importedDirectory;
-          snapshot.dirSelected.forEach(s => dirSelected.add(s));
-          saveData();
-          rebuildSymbolGroups();
-          renderDirectoryStats();
-          buildDirFacetOptions();
-          rebuildFacetOptions();
-          renderDiscover();
-        }
-      });
-    });
-    document.getElementById('export-imported-dir').addEventListener('click', () => {
-      const rows = [['symbol', 'name', 'state', 'type', 'groups', 'lat', 'lng']];
-      importedDirectory.forEach(l => {
-        rows.push([
-          l.symbol,
-          '"' + (l.name || '').replace(/"/g, '""') + '"',
-          l.state || '',
-          l.type || 'Other',
-          (l.groups || []).join(';'),
-          l.lat != null ? l.lat : '',
-          l.lng != null ? l.lng : ''
-        ]);
-      });
-      const csv = rows.map(r => r.join(',')).join('\n');
-      downloadFile('imported-directory.csv', csv, 'text/csv');
-    });
-
     const searchInput = document.getElementById('dir-search');
     const searchClear = document.getElementById('dir-search-clear');
     searchInput.addEventListener('input', e => {
@@ -2690,7 +2527,6 @@
 
     await Promise.all([loadBundledDirectory(), loadLvisPolicies()]);
     rebuildSymbolGroups();
-    renderDirectoryStats();
     buildDirFacetOptions();
 
     renderMonthsList();

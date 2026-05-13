@@ -197,30 +197,7 @@
 
   <aside class="facets" id="discover-facets" aria-label="Discover filters">
     <section class="facet-group">
-      <h3><span class="step-num" aria-hidden="true">1</span>Pick a directory</h3>
-      <p class="hint" id="dir-stats">Loading directory…</p>
-      <div class="upload-box" data-dropzone="directory" style="margin-top:8px;">
-        <label class="upload-label" for="dir-input">
-          <span class="upload-icon" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 11V3M5 6l3-3 3 3M3 11v2.5h10V11"/></svg>
-          </span>
-          Import directory CSV
-        </label>
-        <input type="file" id="dir-input" accept=".csv,.tsv,.txt" multiple>
-        <p class="upload-status" id="dir-upload-status">Drop CSV files or click above. Merges with the starter list.</p>
-        <div class="dropzone-overlay" aria-hidden="true">Drop to import</div>
-        <button class="link-btn" id="show-dir-format-help" aria-expanded="false">CSV format ▾</button>
-        <div class="hint" id="dir-format-help" hidden>
-          Header row required: <code>symbol,name,state,type,groups,lat,lng</code>. Groups can be semicolon-separated (<code>ASERL;LVIS</code>). Lat/lng are optional but enable distance filtering.
-          <a href="directory-template.csv" download style="display:block;margin-top:6px;color:var(--text-info);">Download CSV template</a>
-        </div>
-        <button class="link-btn" id="export-imported-dir" hidden>Export imported entries as CSV</button>
-        <button class="link-btn" id="clear-imported-dir" hidden>Clear imported entries</button>
-      </div>
-    </section>
-
-    <section class="facet-group">
-      <h3><span class="step-num" aria-hidden="true">2</span>Your library</h3>
+      <h3><span class="step-num" aria-hidden="true">1</span>Your library</h3>
       <p class="hint" id="dir-home-summary">—</p>
       <label class="inline-field"><span>Home state</span><input type="text" id="dir-home-state" maxlength="2"></label>
       <label class="inline-field" style="margin-top:8px;"><span>Latitude</span><input type="text" id="dir-home-lat" style="width:90px;"></label>
@@ -230,37 +207,37 @@
     </section>
 
     <section class="facet-group">
-      <h3><span class="step-num" aria-hidden="true">3</span>Narrow the list</h3>
+      <h3><span class="step-num" aria-hidden="true">2</span>Narrow the list</h3>
       <label style="display:block; font-size:13px; margin-bottom:4px;">Search name or symbol</label>
       <div class="search-wrap">
         <input type="text" id="dir-search" placeholder="e.g. Florida, UCLA, FUG" autocomplete="off">
         <button type="button" class="search-clear" id="dir-search-clear" aria-label="Clear search" hidden>×</button>
       </div>
       <label class="facet" style="margin-top:10px;"><span><input type="checkbox" id="show-only-new" checked>Only libraries I haven't borrowed from</span></label>
-      <div class="sub-facet">
-        <div class="sub-facet-label">Distance from home</div>
-        <div class="weight-row">
-          <div class="weight-label"><span>Within</span><span id="dist-out">Any</span></div>
-          <input type="range" min="0" max="3000" value="0" step="50" id="max-dist" aria-label="Maximum distance in miles">
-        </div>
-        <p class="hint">Set to 0 to disable. Needs lat/long in directory entries.</p>
+      <div class="weight-row" style="margin-top:10px;">
+        <div class="weight-label"><span>Distance within</span><span id="dist-out">Any</span></div>
+        <input type="range" min="0" max="3000" value="0" step="50" id="max-dist" aria-label="Maximum distance in miles">
       </div>
-      <div class="sub-facet">
-        <div class="sub-facet-label">Library type</div>
-        <div id="dir-type-facets"></div>
-      </div>
-      <div class="sub-facet">
-        <div class="sub-facet-label">State</div>
-        <div id="dir-state-facets" class="scroll-box"></div>
-      </div>
-      <div class="sub-facet">
-        <div class="sub-facet-label">Group affiliation</div>
-        <div id="dir-group-facets"></div>
-      </div>
+      <p class="hint">Set distance to 0 to disable. Needs lat/long in directory entries.</p>
     </section>
 
     <section class="facet-group">
-      <h3><span class="step-num step-num-muted" aria-hidden="true">4</span>Select &amp; build a group</h3>
+      <h3>Library type</h3>
+      <div id="dir-type-facets"></div>
+    </section>
+
+    <section class="facet-group">
+      <h3>State</h3>
+      <div id="dir-state-facets" class="scroll-box"></div>
+    </section>
+
+    <section class="facet-group">
+      <h3>Group affiliation</h3>
+      <div id="dir-group-facets"></div>
+    </section>
+
+    <section class="facet-group">
+      <h3><span class="step-num step-num-muted" aria-hidden="true">3</span>Select &amp; build a group</h3>
       <p class="hint">Click any card on the right to select it. When you're happy with the picks, hit <strong>Build holdings group</strong> in the toolbar to name, save, and export them.</p>
     </section>
 
@@ -279,10 +256,9 @@
         <button type="button" class="process-toggle" id="discover-process-toggle" aria-expanded="true">Hide steps</button>
       </div>
       <ol class="process-steps">
-        <li id="discover-step-1"><span class="step-circle">1</span><div class="step-text"><strong>Directory (optional)</strong><span>Starter loaded — or import CSV</span></div></li>
-        <li id="discover-step-2"><span class="step-circle">2</span><div class="step-text"><strong>Set your library</strong><span>For distance &amp; local</span></div></li>
-        <li id="discover-step-3"><span class="step-circle">3</span><div class="step-text"><strong>Narrow the list</strong><span>Search, distance, filters</span></div></li>
-        <li id="discover-step-4"><span class="step-circle">4</span><div class="step-text"><strong>Build a group</strong><span>Pick &amp; export</span></div></li>
+        <li id="discover-step-1"><span class="step-circle">1</span><div class="step-text"><strong>Set your library</strong><span>For distance &amp; local</span></div></li>
+        <li id="discover-step-2"><span class="step-circle">2</span><div class="step-text"><strong>Narrow the list</strong><span>Search, distance, filters</span></div></li>
+        <li id="discover-step-3"><span class="step-circle">3</span><div class="step-text"><strong>Build a group</strong><span>Pick &amp; export</span></div></li>
       </ol>
       <div class="process-next" id="discover-next">
         <div class="next-head"><span class="next-tag">Up next</span><span class="next-title" id="discover-next-title"></span></div>

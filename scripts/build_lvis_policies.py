@@ -18,6 +18,11 @@ from urllib.parse import parse_qs, urlparse
 
 import openpyxl
 
+try:
+    import pgeocode  # type: ignore
+except ImportError:
+    pgeocode = None
+
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "OCLC_Libraries_Cleaned.xlsx"
 DST = ROOT / "lvis-policies.json"
@@ -73,6 +78,38 @@ def clean_fee(value):
     return s or None
 
 
+def build_geocoder():
+    """Return a (city_lower, state_code) -> (lat, lng) lookup and a state-only fallback,
+    using the pgeocode US postal-code dataset. Returns (None, None) if pgeocode is missing.
+    """
+    if pgeocode is None:
+        return None, None
+    nomi = pgeocode.Nominatim("us")
+    df = nomi._data
+    from collections import defaultdict
+    city_idx = defaultdict(list)
+    state_idx = defaultdict(list)
+    for place, state_code, lat, lng in zip(
+        df["place_name"], df["state_code"], df["latitude"], df["longitude"]
+    ):
+        if state_code is None or lat != lat or lng != lng:
+            continue
+        state_idx[state_code].append((float(lat), float(lng)))
+        if place:
+            city_idx[(re.sub(r"\s+", " ", str(place).strip().lower()), state_code)].append(
+                (float(lat), float(lng))
+            )
+    return city_idx, state_idx
+
+
+def avg_coords(coords):
+    if not coords:
+        return (None, None)
+    lat = sum(c[0] for c in coords) / len(coords)
+    lng = sum(c[1] for c in coords) / len(coords)
+    return (round(lat, 4), round(lng, 4))
+
+
 def main():
     if not SRC.exists():
         print(f"missing source: {SRC}", file=sys.stderr)
@@ -83,6 +120,10 @@ def main():
     libraries: dict[str, dict] = {}
     skipped = 0
     duplicates: list[str] = []
+
+    city_idx, state_idx = build_geocoder()
+    geocoded_city = 0
+    geocoded_state = 0
 
     for row in ws.iter_rows(min_row=2):
         inst_cell, branch_cell, sym_cell, cdays, ldays, cfees, lfees, loc_cell = row
@@ -95,6 +136,22 @@ def main():
         institution_id = institution_id_from(source_url)
         policy_url = policy_url_for(institution_id)
         loc = parse_location(loc_cell.value)
+
+        lat: float | None = None
+        lng: float | None = None
+        coords_from_state = False
+        if city_idx is not None and loc.get("state"):
+            city_key = (re.sub(r"\s+", " ", (loc["city"] or "").strip().lower()), loc["state"])
+            coords = city_idx.get(city_key)
+            if coords:
+                lat, lng = avg_coords(coords)
+                geocoded_city += 1
+            elif state_idx is not None:
+                coords = state_idx.get(loc["state"])
+                if coords:
+                    lat, lng = avg_coords(coords)
+                    coords_from_state = True
+                    geocoded_state += 1
 
         entry = {
             "symbol": symbol,
@@ -110,8 +167,12 @@ def main():
             "loansFees": clean_fee(lfees.value),
             "policyUrl": policy_url,
             "institutionId": institution_id,
+            "lat": lat,
+            "lng": lng,
             "group": "LVIS",
         }
+        if coords_from_state:
+            entry["_coordsFromState"] = True
 
         if symbol in libraries:
             duplicates.append(symbol)
@@ -144,6 +205,8 @@ def main():
                 "loansFees": "Fee string for loans",
                 "policyUrl": "Direct link to this institution in the OCLC ILL Policies Directory",
                 "institutionId": "OCLC DILL institutionId parsed from policyUrl",
+                "lat": "Approximate latitude (city centroid from US postal data)",
+                "lng": "Approximate longitude (city centroid from US postal data)",
                 "group": "Always 'LVIS' for this dataset",
             },
         },
@@ -152,6 +215,10 @@ def main():
 
     DST.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"wrote {DST.relative_to(ROOT)}: {len(libraries)} entries, skipped {skipped}, duplicates {len(duplicates)}")
+    if city_idx is None:
+        print("  geocoding skipped — install pgeocode for city centroid lat/lng")
+    else:
+        print(f"  geocoded: {geocoded_city} city-matched, {geocoded_state} state-fallback")
     if duplicates:
         print("  duplicate symbols (first kept):", duplicates[:10])
 
