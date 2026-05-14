@@ -106,10 +106,19 @@
         <h2 class="facet-heading">Scoring weights</h2>
         <button class="link-btn link-btn-inline" id="open-scoring-help" type="button" aria-label="How is the score calculated?">How is this calculated?</button>
       </div>
-      <div class="preset-btns">
-        <button class="preset" data-preset="balanced">Balanced</button>
-        <button class="preset" data-preset="speed">Speed first</button>
-        <button class="preset" data-preset="trusted">Trusted</button>
+      <div class="preset-btns" role="group" aria-label="Scoring presets">
+        <button class="preset" data-preset="balanced" type="button"
+          title="Even weights across speed, fill, volume, consistency, local — the safe default.">Balanced</button>
+        <button class="preset" data-preset="speed" type="button"
+          title="Fast turnaround matters most — good for rush articles and time-sensitive ILL.">Speed first</button>
+        <button class="preset" data-preset="trusted" type="button"
+          title="Track record over time — prioritizes lenders with high fill rate and consistent monthly presence.">Trusted</button>
+        <button class="preset" data-preset="samestate" type="button"
+          title="Maximizes the same-state boost — useful when you want regional partners first.">Same-state</button>
+        <button class="preset" data-preset="workhorses" type="button"
+          title="Volume and consistency — surfaces the big, dependable lenders that handle most of your traffic.">Workhorses</button>
+        <button class="preset" data-preset="newcomers" type="button"
+          title="Fill rate over consistency — won't penalize lenders you've only used a few months.">Newcomers OK</button>
       </div>
       <div class="weight-row"><div class="weight-label"><span>Speed</span><span data-weight-out="speed">25</span></div><input type="range" min="0" max="50" value="25" data-weight="speed" aria-label="Speed weight"></div>
       <div class="weight-row"><div class="weight-label"><span>Fill rate</span><span data-weight-out="fill">30</span></div><input type="range" min="0" max="50" value="30" data-weight="fill" aria-label="Fill rate weight"></div>

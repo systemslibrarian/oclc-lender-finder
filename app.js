@@ -84,9 +84,12 @@
   };
 
   const presets = {
-    balanced: { speed: 25, fill: 30, volume: 15, consistency: 20, local: 10 },
-    speed: { speed: 45, fill: 25, volume: 10, consistency: 15, local: 5 },
-    trusted: { speed: 15, fill: 30, volume: 20, consistency: 30, local: 5 }
+    balanced:  { speed: 25, fill: 30, volume: 15, consistency: 20, local: 10 },
+    speed:     { speed: 45, fill: 25, volume: 10, consistency: 15, local: 5 },
+    trusted:   { speed: 15, fill: 30, volume: 20, consistency: 30, local: 5 },
+    samestate: { speed: 25, fill: 15, volume: 5,  consistency: 5,  local: 50 },
+    workhorses:{ speed: 5,  fill: 20, volume: 40, consistency: 30, local: 5 },
+    newcomers: { speed: 30, fill: 40, volume: 10, consistency: 5,  local: 15 }
   };
 
   const histLabels = {
