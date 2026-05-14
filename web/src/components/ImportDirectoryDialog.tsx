@@ -13,6 +13,7 @@ import { Upload } from 'lucide-react';
 import { useAppState } from '@/app-state/AppContext';
 import { parseDirectoryCSV } from '@/lib/parsing';
 import type { DirectoryEntry } from '@/lib/types';
+import { useToast } from '@/components/Toast';
 
 interface Props {
   open: boolean;
@@ -23,6 +24,7 @@ const TEMPLATE = 'symbol,name,state,type,groups,lat,lng\nFUG,University of Flori
 
 export function ImportDirectoryDialog({ open, onOpenChange }: Props) {
   const { importedDirectory, setImportedDirectory } = useAppState();
+  const toast = useToast();
   const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [count, setCount] = useState<number | null>(null);
@@ -48,11 +50,12 @@ export function ImportDirectoryDialog({ open, onOpenChange }: Props) {
       rows.forEach((r) => bySym.set(r.symbol, r));
       setImportedDirectory(Array.from(bySym.values()));
       setCount(rows.length);
+      toast.success(`Imported ${rows.length} director${rows.length === 1 ? 'y row' : 'y rows'}.`);
       setTimeout(() => {
         onOpenChange(false);
         setText('');
         setCount(null);
-      }, 1200);
+      }, 800);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }

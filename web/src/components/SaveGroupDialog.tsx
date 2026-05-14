@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Copy } from 'lucide-react';
+import { useToast } from '@/components/Toast';
 
 interface Props {
   open: boolean;
@@ -23,6 +24,7 @@ interface Props {
 
 export function SaveGroupDialog({ open, onOpenChange, symbols, defaultName, onSave }: Props) {
   const [name, setName] = useState(defaultName);
+  const toast = useToast();
   useEffect(() => {
     if (open) setName(defaultName);
   }, [open, defaultName]);
@@ -54,7 +56,10 @@ export function SaveGroupDialog({ open, onOpenChange, symbols, defaultName, onSa
                 size="icon"
                 className="shrink-0"
                 aria-label="Copy comma list"
-                onClick={() => navigator.clipboard?.writeText(commaList)}
+                onClick={() => {
+                  navigator.clipboard?.writeText(commaList);
+                  toast.success('Comma list copied to clipboard.');
+                }}
               >
                 <Copy className="h-4 w-4" />
               </Button>
@@ -69,7 +74,10 @@ export function SaveGroupDialog({ open, onOpenChange, symbols, defaultName, onSa
                 size="icon"
                 className="shrink-0"
                 aria-label="Copy line list"
-                onClick={() => navigator.clipboard?.writeText(lineList)}
+                onClick={() => {
+                  navigator.clipboard?.writeText(lineList);
+                  toast.success('Line list copied to clipboard.');
+                }}
               >
                 <Copy className="h-4 w-4" />
               </Button>
@@ -82,6 +90,7 @@ export function SaveGroupDialog({ open, onOpenChange, symbols, defaultName, onSa
             disabled={!name.trim() || symbols.length === 0}
             onClick={() => {
               onSave(name.trim(), symbols);
+              toast.success(`Saved "${name.trim()}" — ${symbols.length} symbol${symbols.length === 1 ? '' : 's'}.`);
               onOpenChange(false);
             }}
           >

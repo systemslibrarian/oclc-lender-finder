@@ -8,6 +8,7 @@ import { DiscoverTab } from '@/tabs/Discover';
 import { AuditTab } from '@/tabs/Audit';
 import { AppProvider, useAppState } from '@/app-state/AppContext';
 import { HelpDialog } from '@/components/HelpDialog';
+import { ToastProvider, useToast } from '@/components/Toast';
 import type { TabName } from '@/lib/types';
 
 function AppShell() {
@@ -15,6 +16,7 @@ function AppShell() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
+  const toast = useToast();
 
   // Global keyboard shortcuts: 1/2/3 switch tabs, ? opens help. Skip when
   // the user is typing in a form field.
@@ -86,7 +88,10 @@ function AppShell() {
           <span aria-hidden="true">·</span>
           <button
             className="inline-flex items-center gap-1.5 text-primary hover:underline"
-            onClick={exportSession}
+            onClick={() => {
+              exportSession();
+              toast.success('Session exported — check your downloads.');
+            }}
           >
             <Download className="h-3.5 w-3.5" />
             Export session
@@ -129,7 +134,9 @@ function AppShell() {
 export function App() {
   return (
     <AppProvider>
-      <AppShell />
+      <ToastProvider>
+        <AppShell />
+      </ToastProvider>
     </AppProvider>
   );
 }
