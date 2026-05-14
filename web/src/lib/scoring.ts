@@ -128,3 +128,57 @@ export function haversineKm(lat1: number | null, lng1: number | null, lat2: numb
 export function kmToMiles(km: number): number {
   return km * 0.621371;
 }
+
+export interface RangeAggregate {
+  name: string;
+  state: string;
+  type: string;
+  requested: number;
+  filled: number;
+  unfilled: number;
+  weightedHours: number;
+  hoursFilledCount: number;
+  avgHours: number;
+}
+
+// Aggregate a subset of months into a per-symbol Map. Used by the
+// Compare-periods modal — separate from mergeMonths because it operates
+// on an arbitrary subset rather than the full loaded set.
+export function aggregateRangeStats(
+  months: MonthReport[],
+  monthIndices: number[]
+): Map<string, RangeAggregate> {
+  const bySym = new Map<string, RangeAggregate>();
+  monthIndices.forEach((idx) => {
+    const m = months[idx];
+    if (!m) return;
+    m.rows.forEach((r) => {
+      let agg = bySym.get(r.symbol);
+      if (!agg) {
+        agg = {
+          name: r.name,
+          state: r.state,
+          type: r.type,
+          requested: 0,
+          filled: 0,
+          unfilled: 0,
+          weightedHours: 0,
+          hoursFilledCount: 0,
+          avgHours: 0
+        };
+        bySym.set(r.symbol, agg);
+      }
+      agg.requested += r.requested;
+      agg.filled += r.filled;
+      agg.unfilled += r.unfilled;
+      if (r.avgHours > 0 && r.filled > 0) {
+        agg.weightedHours += r.avgHours * r.filled;
+        agg.hoursFilledCount += r.filled;
+      }
+    });
+  });
+  bySym.forEach((agg) => {
+    agg.avgHours = agg.hoursFilledCount > 0 ? agg.weightedHours / agg.hoursFilledCount : 0;
+  });
+  return bySym;
+}

@@ -17,6 +17,8 @@ import { StickyNote, Upload, X } from 'lucide-react';
 import { useAppState } from '@/app-state/AppContext';
 import { NoteEditor } from '@/components/NoteEditor';
 import { MonthDots, Sparkline } from '@/components/Sparkline';
+import { ComparePeriodsDialog } from '@/components/ComparePeriodsDialog';
+import { GitCompare } from 'lucide-react';
 import { parseOCLCReport } from '@/lib/parsing';
 import { mergeMonths, totalScore, subscores, fillRate, avgDays, PRESETS, PRESET_LABELS } from '@/lib/scoring';
 import { HIST_LABELS } from '@/lib/audit';
@@ -50,6 +52,7 @@ export function RankingsTab() {
   const [saveOpen, setSaveOpen] = useState(false);
   const [openNoteSym, setOpenNoteSym] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [compareOpen, setCompareOpen] = useState(false);
 
   const [filters, setFilters] = useState<ActiveFilters>({
     type: new Set(),
@@ -379,6 +382,11 @@ export function RankingsTab() {
               {selection.count > 0 && (
                 <Button size="sm" variant="ghost" onClick={selection.clear}>Clear</Button>
               )}
+              {months.length >= 2 && (
+                <Button size="sm" variant="outline" onClick={() => setCompareOpen(true)}>
+                  <GitCompare className="mr-1.5 h-3.5 w-3.5" />Compare periods
+                </Button>
+              )}
               <Button size="sm" disabled={selection.count === 0} onClick={() => setSaveOpen(true)}>
                 Build group ({selection.count})
               </Button>
@@ -457,6 +465,8 @@ export function RankingsTab() {
             ]);
           }}
         />
+
+        <ComparePeriodsDialog open={compareOpen} onOpenChange={setCompareOpen} />
       </div>
     </TooltipProvider>
   );
