@@ -13,7 +13,7 @@ import { Pagination, PageSizeSelect } from '@/components/Pagination';
 import { SavedGroupsCard } from '@/components/SavedGroupsCard';
 import { SaveGroupDialog } from '@/components/SaveGroupDialog';
 import { useSelection } from '@/lib/use-selection';
-import { StickyNote, Upload, X } from 'lucide-react';
+import { SlidersHorizontal, StickyNote, Upload, X } from 'lucide-react';
 import { useAppState } from '@/app-state/AppContext';
 import { NoteEditor } from '@/components/NoteEditor';
 import { MonthDots, Sparkline } from '@/components/Sparkline';
@@ -55,6 +55,7 @@ export function RankingsTab() {
   const [dragOver, setDragOver] = useState(false);
   const [compareOpen, setCompareOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'cards' | 'chart'>('cards');
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const [filters, setFilters] = useState<ActiveFilters>({
     type: new Set(),
@@ -162,7 +163,7 @@ export function RankingsTab() {
   return (
     <TooltipProvider>
       <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
-        <aside className="space-y-4">
+        <aside className={`space-y-4 ${mobileFiltersOpen ? '' : 'hidden lg:block'}`}>
           {/* Upload */}
           <Card>
             <CardHeader className="pb-3">
@@ -379,6 +380,16 @@ export function RankingsTab() {
         </aside>
 
         <section className="space-y-4">
+          <Button
+            variant="outline"
+            size="sm"
+            className="lg:hidden w-full justify-start"
+            onClick={() => setMobileFiltersOpen((o) => !o)}
+            aria-expanded={mobileFiltersOpen}
+          >
+            <SlidersHorizontal className="mr-2 h-4 w-4" />
+            {mobileFiltersOpen ? 'Hide' : 'Show'} filters & weights
+          </Button>
           {/* Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="text-sm">

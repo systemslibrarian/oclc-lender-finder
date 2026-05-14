@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Pagination, PageSizeSelect } from '@/components/Pagination';
-import { LayoutGrid, Wand2 } from 'lucide-react';
+import { LayoutGrid, SlidersHorizontal, Wand2 } from 'lucide-react';
 import { SmartSwap } from '@/components/SmartSwap';
 import { useAppState } from '@/app-state/AppContext';
 import { mergeMonths, totalScore } from '@/lib/scoring';
@@ -57,6 +57,7 @@ export function AuditTab() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(100);
   const [tierFilter, setTierFilter] = useState<AuditTier | null>(null);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   const directory = useMemo(
@@ -129,7 +130,7 @@ export function AuditTab() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
-      <aside className="space-y-4">
+      <aside className={`space-y-4 ${mobileFiltersOpen ? '' : 'hidden lg:block'}`}>
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Your current holdings</CardTitle>
@@ -180,6 +181,16 @@ export function AuditTab() {
       </aside>
 
       <section className="space-y-4">
+        <Button
+          variant="outline"
+          size="sm"
+          className="lg:hidden w-full justify-start"
+          onClick={() => setMobileFiltersOpen((o) => !o)}
+          aria-expanded={mobileFiltersOpen}
+        >
+          <SlidersHorizontal className="mr-2 h-4 w-4" />
+          {mobileFiltersOpen ? 'Hide' : 'Show'} holdings input
+        </Button>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Filter by tier">
             <TierPill active={tierFilter === null} onClick={() => setTierFilter(null)} count={rows.length} label="members" />

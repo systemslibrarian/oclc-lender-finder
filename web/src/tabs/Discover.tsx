@@ -12,7 +12,7 @@ import { SavedGroupsCard } from '@/components/SavedGroupsCard';
 import { SaveGroupDialog } from '@/components/SaveGroupDialog';
 import { Button } from '@/components/ui/button';
 import { useSelection } from '@/lib/use-selection';
-import { LayoutGrid, Map as MapIcon, Search, StickyNote, Upload, X } from 'lucide-react';
+import { LayoutGrid, Map as MapIcon, Search, SlidersHorizontal, StickyNote, Upload, X } from 'lucide-react';
 import { ImportDirectoryDialog } from '@/components/ImportDirectoryDialog';
 import { NoteEditor } from '@/components/NoteEditor';
 // Leaflet is heavy (~150 KB gzipped); lazy-load so only Map-view users pay.
@@ -70,6 +70,7 @@ export function DiscoverTab() {
   const [pageSize, setPageSize] = useState<number>(100);
   const [viewMode, setViewMode] = useState<'cards' | 'map'>('cards');
   const [importOpen, setImportOpen] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   const merged = useMemo(
@@ -198,7 +199,7 @@ export function DiscoverTab() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
-      <aside className="space-y-4">
+      <aside className={`space-y-4 ${mobileFiltersOpen ? '' : 'hidden lg:block'}`}>
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Your library</CardTitle>
@@ -392,6 +393,16 @@ export function DiscoverTab() {
       </aside>
 
       <section className="space-y-4">
+        <Button
+          variant="outline"
+          size="sm"
+          className="lg:hidden w-full justify-start"
+          onClick={() => setMobileFiltersOpen((o) => !o)}
+          aria-expanded={mobileFiltersOpen}
+        >
+          <SlidersHorizontal className="mr-2 h-4 w-4" />
+          {mobileFiltersOpen ? 'Hide' : 'Show'} filters
+        </Button>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="text-sm">
             <strong>{filtered.length}</strong> candidate{filtered.length === 1 ? '' : 's'}
