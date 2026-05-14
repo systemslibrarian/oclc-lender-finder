@@ -23,6 +23,7 @@
   const selected = new Set();
   const dirSelected = new Set();
   const lvisPolicies = new Map();
+  const filmPolicies = new Map();
   const activeFilters = { type: new Set(), state: new Set(), hist: new Set(), group: new Set() };
   const symbolGroups = new Map();
   // Whitelist of group affiliations shown in the facet UI. Other tags (e.g. ARL,
@@ -218,24 +219,30 @@
     const map = new Map();
     bundledDirectory.forEach(l => map.set(l.symbol, { ...l, groups: [...(l.groups || [])], _imported: false }));
     importedDirectory.forEach(l => map.set(l.symbol, { ...l, groups: [...(l.groups || [])], _imported: true }));
-    lvisPolicies.forEach((entry, sym) => {
-      if (map.has(sym)) {
-        const existing = map.get(sym);
-        if (!existing.groups.includes('LVIS')) existing.groups.push('LVIS');
-      } else {
-        map.set(sym, {
-          symbol: sym,
-          name: entry.institution || sym,
-          state: entry.state || null,
-          type: 'Other',
-          groups: ['LVIS'],
-          lat: typeof entry.lat === 'number' ? entry.lat : null,
-          lng: typeof entry.lng === 'number' ? entry.lng : null,
-          _imported: false,
-          _lvisOnly: true
-        });
-      }
-    });
+    const mergePolicies = (policies, groupCode) => {
+      policies.forEach((entry, sym) => {
+        if (map.has(sym)) {
+          const existing = map.get(sym);
+          if (!existing.groups.includes(groupCode)) existing.groups.push(groupCode);
+          if (existing.lat == null && typeof entry.lat === 'number') existing.lat = entry.lat;
+          if (existing.lng == null && typeof entry.lng === 'number') existing.lng = entry.lng;
+        } else {
+          map.set(sym, {
+            symbol: sym,
+            name: entry.institution || sym,
+            state: entry.state || null,
+            type: 'Other',
+            groups: [groupCode],
+            lat: typeof entry.lat === 'number' ? entry.lat : null,
+            lng: typeof entry.lng === 'number' ? entry.lng : null,
+            _imported: false,
+            _policyOnly: true
+          });
+        }
+      });
+    };
+    mergePolicies(lvisPolicies, 'LVIS');
+    mergePolicies(filmPolicies, 'FILM');
     return Array.from(map.values());
   }
 
@@ -249,6 +256,7 @@
     bundledDirectory.forEach(l => (l.groups || []).forEach(g => add(l.symbol, g)));
     importedDirectory.forEach(l => (l.groups || []).forEach(g => add(l.symbol, g)));
     lvisPolicies.forEach((_, sym) => add(sym, 'LVIS'));
+    filmPolicies.forEach((_, sym) => add(sym, 'FILM'));
   }
 
   function haversineKm(lat1, lng1, lat2, lng2) {
@@ -496,6 +504,18 @@
       Object.keys(libs).forEach(sym => lvisPolicies.set(sym, libs[sym]));
     } catch (e) {
       console.warn('Could not load LVIS policies:', e);
+    }
+  }
+
+  async function loadFilmPolicies() {
+    try {
+      const r = await fetch('film-policies.json');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const data = await r.json();
+      const libs = data.libraries || {};
+      Object.keys(libs).forEach(sym => filmPolicies.set(sym, libs[sym]));
+    } catch (e) {
+      console.warn('Could not load FILM policies:', e);
     }
   }
 
@@ -2525,7 +2545,7 @@
 
     switchTab(activeTab);
 
-    await Promise.all([loadBundledDirectory(), loadLvisPolicies()]);
+    await Promise.all([loadBundledDirectory(), loadLvisPolicies(), loadFilmPolicies()]);
     rebuildSymbolGroups();
     buildDirFacetOptions();
 
