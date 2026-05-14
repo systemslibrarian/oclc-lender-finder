@@ -53,6 +53,7 @@ export function AuditTab() {
   const [sortBy, setSortBy] = useState<SortKey>('score');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(100);
+  const [tierFilter, setTierFilter] = useState<AuditTier | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   const directory = useMemo(
@@ -109,10 +110,11 @@ export function AuditTab() {
       },
       speed: (a, b) => (a.filled > 0 ? a.avgHours : 1e9) - (b.filled > 0 ? b.avgHours : 1e9)
     };
-    return [...rows].sort(fns[sortBy]);
-  }, [rows, sortBy]);
+    const base = tierFilter ? rows.filter((r) => r.tier === tierFilter) : rows;
+    return [...base].sort(fns[sortBy]);
+  }, [rows, sortBy, tierFilter]);
 
-  useEffect(() => setPage(1), [auditHoldings, sortBy, pageSize]);
+  useEffect(() => setPage(1), [auditHoldings, sortBy, pageSize, tierFilter]);
 
   const visibleSlice = useMemo(() => {
     if (pageSize === 0) return sorted;
@@ -176,14 +178,12 @@ export function AuditTab() {
 
       <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="text-sm">
-            <strong>{rows.length}</strong> member{rows.length === 1 ? '' : 's'}
-            <span className="ml-3 text-muted-foreground">
-              · <strong className="text-foreground">{counts.top}</strong> top
-              · <strong className="text-foreground">{counts.strong}</strong> strong
-              · <strong className="text-foreground">{counts.weak}</strong> weak
-              · <strong className="text-foreground">{counts.unused}</strong> unused
-            </span>
+          <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Filter by tier">
+            <TierPill active={tierFilter === null} onClick={() => setTierFilter(null)} count={rows.length} label="members" />
+            <TierPill active={tierFilter === 'top'} onClick={() => setTierFilter('top')} count={counts.top} label="top" tier="top" />
+            <TierPill active={tierFilter === 'strong'} onClick={() => setTierFilter('strong')} count={counts.strong} label="strong" tier="strong" />
+            <TierPill active={tierFilter === 'weak'} onClick={() => setTierFilter('weak')} count={counts.weak} label="weak" tier="weak" />
+            <TierPill active={tierFilter === 'unused'} onClick={() => setTierFilter('unused')} count={counts.unused} label="unused" tier="unused" />
           </div>
           <div className="flex gap-2">
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
@@ -211,6 +211,13 @@ export function AuditTab() {
               </p>
             </CardContent>
           </Card>
+        ) : sorted.length === 0 ? (
+          <Card>
+            <CardContent className="py-10 text-center text-sm text-muted-foreground">
+              <p className="font-medium text-foreground">No members in this tier</p>
+              <p className="mt-2">Click <em>members</em> above to clear the filter.</p>
+            </CardContent>
+          </Card>
         ) : (
           <>
             <ScrollArea className="h-[calc(100vh-320px)] pr-3">
@@ -231,6 +238,41 @@ export function AuditTab() {
         )}
       </section>
     </div>
+  );
+}
+
+const TIER_PILL_STYLES: Record<AuditTier, string> = {
+  top:    'bg-green-100 text-green-800 border-green-600 dark:bg-green-900/40 dark:text-green-300 dark:border-green-700',
+  strong: 'bg-blue-100  text-blue-800  border-blue-600  dark:bg-blue-900/40  dark:text-blue-300  dark:border-blue-700',
+  weak:   'bg-amber-100 text-amber-800 border-amber-600 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-700',
+  unused: 'bg-muted text-muted-foreground border-border'
+};
+
+function TierPill({
+  active,
+  onClick,
+  count,
+  label,
+  tier
+}: {
+  active: boolean;
+  onClick: () => void;
+  count: number;
+  label: string;
+  tier?: AuditTier;
+}) {
+  const activeStyle = tier ? TIER_PILL_STYLES[tier] : 'bg-primary/10 text-primary border-primary';
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-baseline gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors ${
+        active ? `${activeStyle} font-semibold` : 'border-border hover:bg-muted'
+      }`}
+    >
+      <strong className="tabular-nums">{count}</strong>
+      <span className={active ? '' : 'text-muted-foreground'}>{label}</span>
+    </button>
   );
 }
 

@@ -15,6 +15,7 @@
   let notes = {};
   let savedGroups = [];
   let auditHoldings = [];          // Symbols pasted/uploaded for Audit
+  let auditTierFilter = null;      // null = all, otherwise 'top' | 'strong' | 'weak' | 'unused'
   const notesExpanded = new Set();
   let homeState = 'FL';
   let homeLat = 30.4383;
@@ -2403,7 +2404,7 @@
     const dir = getMergedDirectory();
     const dirBySym = new Map(dir.map(l => [l.symbol, l]));
 
-    const rows = auditHoldings.map(sym => {
+    let rows = auditHoldings.map(sym => {
       const r = reportBySym.get(sym);
       const d = dirBySym.get(sym);
       const inReport = !!r;
@@ -2434,6 +2435,12 @@
     document.getElementById('audit-strong').textContent = counts.strong;
     document.getElementById('audit-weak').textContent = counts.weak;
     document.getElementById('audit-unused').textContent = counts.unused;
+    document.querySelectorAll('.audit-tier-pill').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tier === (auditTierFilter || 'all'));
+    });
+    // Apply the tier filter to the rendered rows (counts above always reflect
+    // the full set so the user can see how many would match each tier).
+    if (auditTierFilter) rows = rows.filter(r => r.tier === auditTierFilter);
 
     const sortSel = document.getElementById('audit-sort-by');
     const sortBy = (sortSel && sortSel.value) || 'score';
@@ -2454,10 +2461,17 @@
 
     const list = document.getElementById('audit-list');
     if (rows.length === 0) {
-      list.innerHTML = `<div class="empty-state">
-        <strong>Paste your custom holdings group to audit it</strong>
-        Enter OCLC symbols on the left and click <em>Audit holdings</em>. Each member gets bucketed by how it has performed for you in the loaded Borrower reports.
-      </div>`;
+      if (auditHoldings.length === 0) {
+        list.innerHTML = `<div class="empty-state">
+          <strong>Paste your custom holdings group to audit it</strong>
+          Enter OCLC symbols on the left and click <em>Audit holdings</em>. Each member gets bucketed by how it has performed for you in the loaded Borrower reports.
+        </div>`;
+      } else {
+        list.innerHTML = `<div class="empty-state">
+          <strong>No members in this tier</strong>
+          Click <em>members</em> at the top to clear the filter.
+        </div>`;
+      }
       return;
     }
     list.innerHTML = rows.map(renderAuditCard).join('');
@@ -2905,6 +2919,13 @@
     }
     const auditSort = document.getElementById('audit-sort-by');
     if (auditSort) auditSort.addEventListener('change', renderAudit);
+    document.querySelectorAll('.audit-tier-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const t = btn.dataset.tier;
+        auditTierFilter = t === 'all' ? null : t;
+        renderAudit();
+      });
+    });
 
     /* Filter toggle (mobile) */
     document.querySelectorAll('[data-filter-toggle]').forEach(btn => {

@@ -342,7 +342,7 @@
   <aside class="facets" id="audit-facets" aria-label="Audit input">
     <section class="facet-group">
       <h2 class="facet-heading">Your current holdings</h2>
-      <p class="hint">Paste your custom holdings group — OCLC symbols separated by commas, spaces, or newlines. Each symbol is cross-referenced against your loaded Borrower reports.</p>
+      <p class="hint" style="margin-bottom: 12px;">Paste your custom holdings group — OCLC symbols separated by commas, spaces, or newlines. Each symbol is cross-referenced against your loaded Borrower reports.</p>
       <label for="audit-input" class="sr-only">Custom holdings symbols</label>
       <textarea id="audit-input" rows="8" placeholder="FUG, FDA, SFU&#10;FOC, FJV, NYP" aria-describedby="audit-count" style="width:100%; font-family: var(--font-mono); font-size: 13px; padding: 8px; border: 0.5px solid var(--border); border-radius: var(--radius-sm); resize: vertical;"></textarea>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; gap:8px; flex-wrap:wrap;">
@@ -366,12 +366,22 @@
 
   <section class="results" aria-label="Audit results">
     <div class="toolbar">
-      <div class="result-count">
-        <strong id="audit-total">0</strong> members ·
-        <strong id="audit-top">0</strong> top ·
-        <strong id="audit-strong">0</strong> strong ·
-        <strong id="audit-weak">0</strong> weak ·
-        <strong id="audit-unused">0</strong> unused
+      <div class="result-count audit-tiers" role="group" aria-label="Filter audit by tier">
+        <button class="audit-tier-pill active" data-tier="all" type="button" title="Show all members">
+          <strong id="audit-total">0</strong> members
+        </button>
+        <button class="audit-tier-pill" data-tier="top" type="button" title="Show only Top tier">
+          <strong id="audit-top">0</strong> top
+        </button>
+        <button class="audit-tier-pill" data-tier="strong" type="button" title="Show only Strong tier">
+          <strong id="audit-strong">0</strong> strong
+        </button>
+        <button class="audit-tier-pill" data-tier="weak" type="button" title="Show only Weak tier">
+          <strong id="audit-weak">0</strong> weak
+        </button>
+        <button class="audit-tier-pill" data-tier="unused" type="button" title="Show only Unused (never borrowed from)">
+          <strong id="audit-unused">0</strong> unused
+        </button>
       </div>
       <div class="toolbar-actions">
         <select id="audit-sort-by" aria-label="Sort audit by">

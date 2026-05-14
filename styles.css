@@ -1011,6 +1011,37 @@ input[type="range"] {
   color: var(--text-tertiary);
 }
 
+/* Clickable Audit tier filter pills */
+.audit-tiers { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.audit-tier-pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 999px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+.audit-tier-pill strong { font-variant-numeric: tabular-nums; }
+.audit-tier-pill:hover:not(.active) {
+  background: var(--bg-secondary);
+  border-color: var(--border-strong);
+}
+.audit-tier-pill.active {
+  background: var(--bg-info);
+  border-color: var(--border-info);
+  color: var(--text-info);
+  font-weight: 600;
+}
+.audit-tier-pill[data-tier="top"].active     { background: var(--bg-success); color: var(--text-success); border-color: var(--text-success); }
+.audit-tier-pill[data-tier="weak"].active    { background: var(--bg-warning); color: var(--text-warning); border-color: var(--text-warning); }
+.audit-tier-pill[data-tier="unused"].active  { background: var(--bg-secondary); color: var(--text-tertiary); border-color: var(--border-strong); }
+
 .toolbar {
   background: var(--bg);
   border: 0.5px solid var(--border);
