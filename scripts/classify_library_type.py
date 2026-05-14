@@ -210,6 +210,12 @@ CORPORATE_MARKERS = (
     " corp library",
     " inc. library",
     " inc library",
+    " inc.",
+    " inc ",
+    " corp.",
+    " corp ",
+    "associates inc",
+    "ocean sciences",
     "cdm smith",
 )
 

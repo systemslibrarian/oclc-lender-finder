@@ -25,6 +25,7 @@
   const dirSelected = new Set();
   const lvisPolicies = new Map();
   const filmPolicies = new Map();
+  const flinPolicies = new Map();
   const activeFilters = { type: new Set(), state: new Set(), hist: new Set(), group: new Set() };
   const symbolGroups = new Map();
   // Whitelist of group affiliations shown in the facet UI. Other tags (e.g. ARL,
@@ -269,6 +270,7 @@
     };
     mergePolicies(lvisPolicies, 'LVIS');
     mergePolicies(filmPolicies, 'FILM');
+    mergePolicies(flinPolicies, 'FLIN');
     return Array.from(map.values());
   }
 
@@ -283,6 +285,7 @@
     importedDirectory.forEach(l => (l.groups || []).forEach(g => add(l.symbol, g)));
     lvisPolicies.forEach((_, sym) => add(sym, 'LVIS'));
     filmPolicies.forEach((_, sym) => add(sym, 'FILM'));
+    flinPolicies.forEach((_, sym) => add(sym, 'FLIN'));
   }
 
   function haversineKm(lat1, lng1, lat2, lng2) {
@@ -546,6 +549,18 @@
     }
   }
 
+  async function loadFlinPolicies() {
+    try {
+      const r = await fetch('flin-policies.json');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const data = await r.json();
+      const libs = data.libraries || {};
+      Object.keys(libs).forEach(sym => flinPolicies.set(sym, libs[sym]));
+    } catch (e) {
+      console.warn('Could not load FLIN policies:', e);
+    }
+  }
+
   function sortMonthsByPeriod() {
     months.sort((a, b) => (a.period || '').localeCompare(b.period || ''));
   }
@@ -581,7 +596,7 @@
     [
       'type-facets', 'state-facets',
       'dir-type-facets', 'dir-state-facets'
-    ].forEach(id => clampFacetToRows(document.getElementById(id), 7));
+    ].forEach(id => clampFacetToRows(document.getElementById(id), 5));
   }
 
   /* ---------- Period-over-period comparison ---------- */
@@ -1083,8 +1098,8 @@
     wireFacet(typeWrap);
     wireFacet(stateWrap);
     wireFacet(groupWrap);
-    clampFacetToRows(typeWrap, 7);
-    clampFacetToRows(stateWrap, 7);
+    clampFacetToRows(typeWrap, 5);
+    clampFacetToRows(stateWrap, 5);
   }
 
   function syncWeightLabels() {
@@ -1677,8 +1692,8 @@
       Object.entries(groupCounts).sort((a, b) => b[1] - a[1]).map(([g, c]) =>
         renderGroupFacet(g, c, 'dirfacet', dirFilters.group.has(g))
       ).join('') || '<p class="hint">No groups recorded in directory.</p>';
-    clampFacetToRows(document.getElementById('dir-type-facets'), 7);
-    clampFacetToRows(document.getElementById('dir-state-facets'), 7);
+    clampFacetToRows(document.getElementById('dir-type-facets'), 5);
+    clampFacetToRows(document.getElementById('dir-state-facets'), 5);
 
     document.querySelectorAll('input[type="checkbox"][data-dirfacet]').forEach(cb => {
       cb.addEventListener('change', () => {
@@ -2629,7 +2644,7 @@
 
     switchTab(activeTab);
 
-    await Promise.all([loadBundledDirectory(), loadLvisPolicies(), loadFilmPolicies()]);
+    await Promise.all([loadBundledDirectory(), loadLvisPolicies(), loadFilmPolicies(), loadFlinPolicies()]);
     rebuildSymbolGroups();
     buildDirFacetOptions();
 
