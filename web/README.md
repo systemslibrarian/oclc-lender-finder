@@ -14,14 +14,16 @@ GitHub Pages workflow to deploy `web/dist/` instead.
 | Vite + TS + Tailwind scaffold | done |
 | Shadcn theme tokens + base CSS | done |
 | Shell: Header / Tabs / Footer | done |
-| Core UI primitives (Button, Card, Tabs, Input, Label, Badge, Separator) | done |
-| Rankings tab           | placeholder |
-| Discover tab           | placeholder |
-| Audit tab              | placeholder |
-| OCLC report parser       | not ported |
-| Scoring engine          | not ported |
-| State persistence       | not ported |
-| Service worker / PWA    | not ported |
+| Core UI primitives (Button, Card, Tabs, Input, Label, Badge, Separator, Slider, Checkbox, Select, Textarea, Tooltip, ScrollArea) | done |
+| OCLC report parser, scoring engine, audit tier rules (pure TS) | done |
+| State + persistence (React context, same localStorage keys) | done |
+| Rankings tab — upload, weights, presets, filters, sort, cards | done |
+| Discover tab — directory merge, distance, facets, candidate cards | done |
+| Audit tab — paste symbols → tiered cards | done |
+| PWA (vite-plugin-pwa, Workbox SW, manifest, runtime data caching) | done |
+| Deployed at `/preview/` alongside the vanilla app | done |
+| Notes per lender, saved holdings groups, compare-periods modal, map view, CSV export/import, sparklines, drag-drop upload, help modal, bulk-select, pagination | not yet ported |
+| Workflow flip to deploy `web/dist/` at the root | deferred until parity |
 
 ## Run
 

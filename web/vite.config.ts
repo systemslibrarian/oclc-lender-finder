@@ -6,7 +6,10 @@ import path from 'path';
 // Serves a normal `web/public/` directory. Data files (lvis-policies.json
 // etc.) live at the repo root; web/public/ holds symlinks to them so they
 // stay in one place during the migration. See web/README.md.
+// Relative-path build so the bundle works whether it's served at the
+// site root, /preview/, or anywhere else.
 export default defineConfig({
+  base: './',
   plugins: [
     react(),
     VitePWA({
