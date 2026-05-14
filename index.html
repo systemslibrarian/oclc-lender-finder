@@ -79,6 +79,10 @@
     <section class="facet-group">
       <h3>Your library</h3>
       <label class="inline-field">
+        <span>Home symbol</span>
+        <input type="text" id="home-symbol" maxlength="10" placeholder="e.g. FTL" style="width:90px;">
+      </label>
+      <label class="inline-field" style="margin-top:8px;">
         <span>Home state</span>
         <input type="text" id="home-state" maxlength="2" value="FL">
       </label>
@@ -199,7 +203,8 @@
     <section class="facet-group">
       <h3><span class="step-num" aria-hidden="true">1</span>Your library</h3>
       <p class="hint" id="dir-home-summary">—</p>
-      <label class="inline-field"><span>Home state</span><input type="text" id="dir-home-state" maxlength="2"></label>
+      <label class="inline-field"><span>Home symbol</span><input type="text" id="dir-home-symbol" maxlength="10" placeholder="e.g. FTL" style="width:90px;"></label>
+      <label class="inline-field" style="margin-top:8px;"><span>Home state</span><input type="text" id="dir-home-state" maxlength="2"></label>
       <label class="inline-field" style="margin-top:8px;"><span>Latitude</span><input type="text" id="dir-home-lat" style="width:90px;"></label>
       <label class="inline-field" style="margin-top:8px;"><span>Longitude</span><input type="text" id="dir-home-lng" style="width:90px;"></label>
       <button class="link-btn" id="dir-use-location" type="button">📍 Use my location</button>

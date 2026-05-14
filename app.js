@@ -17,6 +17,7 @@
   let homeState = 'FL';
   let homeLat = 30.4383;
   let homeLng = -84.2807;
+  let homeSymbol = '';
   let activeTab = 'rankings';
   let weights = { speed: 25, fill: 30, volume: 15, consistency: 20, local: 10 };
   const expanded = new Set();
@@ -310,7 +311,7 @@
   function saveData() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(months));
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ homeState, homeLat, homeLng, weights }));
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({ homeState, homeLat, homeLng, homeSymbol, weights }));
       localStorage.setItem(IMPORTED_DIR_KEY, JSON.stringify(importedDirectory));
       localStorage.setItem(UI_KEY, JSON.stringify({ activeTab }));
       localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
@@ -333,6 +334,7 @@
         if (settings.homeState) homeState = settings.homeState;
         if (typeof settings.homeLat === 'number') homeLat = settings.homeLat;
         if (typeof settings.homeLng === 'number') homeLng = settings.homeLng;
+        if (typeof settings.homeSymbol === 'string') homeSymbol = settings.homeSymbol.toUpperCase();
         if (settings.weights) { weights = { ...weights, ...settings.weights }; weightsTouched = true; }
       }
       const dir = localStorage.getItem(IMPORTED_DIR_KEY);
@@ -1572,13 +1574,16 @@
     set('dir-home-state', homeState);
     set('dir-home-lat', homeLat);
     set('dir-home-lng', homeLng);
+    set('home-symbol', homeSymbol);
+    set('dir-home-symbol', homeSymbol);
     const summary = document.getElementById('dir-home-summary');
     if (summary) {
       const state = homeState || '—';
+      const sym = homeSymbol ? `${homeSymbol} · ` : '';
       const hasCoords = typeof homeLat === 'number' && typeof homeLng === 'number' && !isNaN(homeLat) && !isNaN(homeLng);
       summary.textContent = hasCoords
-        ? `Home: ${state} · ${homeLat.toFixed(2)}, ${homeLng.toFixed(2)}`
-        : `Home state: ${state} — add coordinates to enable distance filtering.`;
+        ? `Home: ${sym}${state} · ${homeLat.toFixed(2)}, ${homeLng.toFixed(2)}`
+        : `Home: ${sym}${state} — add coordinates to enable distance filtering.`;
     }
   }
 
@@ -1590,8 +1595,15 @@
 
   function buildDirFacetOptions() {
     const dir = getMergedDirectory();
+    const borrowedSyms = dirFilters.onlyNew ? getBorrowedSymbols() : null;
     const typeCounts = {}, stateCounts = {}, groupCounts = {};
     dir.forEach(l => {
+      // Never count the user's own library as a candidate.
+      if (homeSymbol && l.symbol === homeSymbol) return;
+      // Keep facet counts consistent with the candidate list: when
+      // "Only libraries I haven't borrowed from" is on, exclude borrowed
+      // libraries here too so the sidebar totals match the visible count.
+      if (borrowedSyms && borrowedSyms.has(l.symbol)) return;
       typeCounts[l.type || 'Other'] = (typeCounts[l.type || 'Other'] || 0) + 1;
       if (l.state) stateCounts[l.state] = (stateCounts[l.state] || 0) + 1;
       (l.groups || []).forEach(g => {
@@ -1628,6 +1640,7 @@
     const search = dirFilters.search.toLowerCase().trim();
 
     let filtered = dir.filter(l => {
+      if (homeSymbol && l.symbol === homeSymbol) return false;
       if (dirFilters.onlyNew && borrowedSyms.has(l.symbol)) return false;
       if (dirFilters.type.size && !dirFilters.type.has(l.type || 'Other')) return false;
       if (dirFilters.state.size && !dirFilters.state.has(l.state)) return false;
@@ -2296,6 +2309,17 @@
     wireHomeState('home-state'); wireHomeState('dir-home-state');
     wireHomeLat('home-lat');     wireHomeLat('dir-home-lat');
     wireHomeLng('home-lng');     wireHomeLng('dir-home-lng');
+    const wireHomeSymbol = (id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', e => {
+        homeSymbol = (e.target.value || '').toUpperCase().trim();
+        e.target.value = homeSymbol;
+        syncHomeInputs();
+        debounce('home-symbol', () => { buildDirFacetOptions(); renderDiscover(); }, 200);
+      });
+    };
+    wireHomeSymbol('home-symbol'); wireHomeSymbol('dir-home-symbol');
     document.getElementById('use-location').addEventListener('click', useMyLocation);
     document.getElementById('dir-use-location').addEventListener('click', useMyLocation);
 
@@ -2387,6 +2411,7 @@
 
     document.getElementById('show-only-new').addEventListener('change', e => {
       dirFilters.onlyNew = e.target.checked;
+      buildDirFacetOptions();
       renderDiscover();
     });
     document.getElementById('max-dist').addEventListener('input', e => {
