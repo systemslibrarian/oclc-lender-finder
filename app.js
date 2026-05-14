@@ -66,7 +66,7 @@
     return name ? `${name} (${code})` : (code || '—');
   };
   const stateSort = (a, b) => stateLabel(a[0]).localeCompare(stateLabel(b[0]));
-  const dirFilters = { type: new Set(), state: new Set(), group: new Set(), search: '', maxDist: 0, onlyNew: true };
+  const dirFilters = { type: new Set(), state: new Set(), group: new Set(), loanDays: new Set(), search: '', maxDist: 0, onlyNew: true };
 
   // Last-rendered filtered lists, used by bulk actions
   let lastFilteredRankings = [];
@@ -1163,6 +1163,7 @@
     dirFilters.type.forEach(t => chips.push({ label: `Type: ${t}`, remove: () => dirFilters.type.delete(t) }));
     dirFilters.state.forEach(s => chips.push({ label: `State: ${s}`, remove: () => dirFilters.state.delete(s) }));
     dirFilters.group.forEach(g => chips.push({ label: `Group: ${g}`, remove: () => dirFilters.group.delete(g) }));
+    dirFilters.loanDays.forEach(d => chips.push({ label: `Loans: ${d === '1' ? '1 day' : d + ' days'}`, remove: () => dirFilters.loanDays.delete(d) }));
     if (dirFilters.search) chips.push({ label: `"${dirFilters.search}"`, remove: () => {
       dirFilters.search = '';
       const inp = document.getElementById('dir-search');
@@ -1182,6 +1183,7 @@
       dirFilters.type.clear();
       dirFilters.state.clear();
       dirFilters.group.clear();
+      dirFilters.loanDays.clear();
       dirFilters.search = '';
       dirFilters.maxDist = 0;
       dirFilters.onlyNew = true;
@@ -1553,7 +1555,7 @@
         action: () => { openSidebarIfNeeded('discover'); scrollFocus(document.getElementById('dir-home-state')); }
       },
       {
-        done: !!dirFilters.search || dirFilters.type.size > 0 || dirFilters.state.size > 0 || dirFilters.group.size > 0 || dirFilters.maxDist > 0,
+        done: !!dirFilters.search || dirFilters.type.size > 0 || dirFilters.state.size > 0 || dirFilters.group.size > 0 || dirFilters.loanDays.size > 0 || dirFilters.maxDist > 0,
         title: 'Narrow the list to good candidates',
         desc: 'Search by name/symbol, set a distance radius, or pick a library type, state, or consortium (ASERL, LVIS, etc.).',
         cta: 'Focus the search box',
@@ -1674,7 +1676,7 @@
   function buildDirFacetOptions() {
     const dir = getMergedDirectory();
     const borrowedSyms = dirFilters.onlyNew ? getBorrowedSymbols() : null;
-    const typeCounts = {}, stateCounts = {}, groupCounts = {};
+    const typeCounts = {}, stateCounts = {}, groupCounts = {}, loanDaysCounts = {};
     dir.forEach(l => {
       // Never count the user's own library as a candidate.
       if (homeSymbol && l.symbol === homeSymbol) return;
@@ -1687,6 +1689,10 @@
       (l.groups || []).forEach(g => {
         if (ALLOWED_GROUPS.has(g)) groupCounts[g] = (groupCounts[g] || 0) + 1;
       });
+      if (typeof l.loansDaysToRespond === 'number') {
+        const k = String(l.loansDaysToRespond);
+        loanDaysCounts[k] = (loanDaysCounts[k] || 0) + 1;
+      }
     });
     document.getElementById('dir-type-facets').innerHTML =
       Object.entries(typeCounts).sort((a, b) => a[0].localeCompare(b[0])).map(([t, c]) =>
@@ -1700,6 +1706,16 @@
       Object.entries(groupCounts).sort((a, b) => b[1] - a[1]).map(([g, c]) =>
         renderGroupFacet(g, c, 'dirfacet', dirFilters.group.has(g))
       ).join('') || '<p class="hint">No groups recorded in directory.</p>';
+    const loanDaysWrap = document.getElementById('dir-loandays-facets');
+    if (loanDaysWrap) {
+      const loanDays = Object.entries(loanDaysCounts).sort((a, b) => Number(a[0]) - Number(b[0]));
+      loanDaysWrap.innerHTML = loanDays.length === 0
+        ? '<p class="hint">No loan-response data available.</p>'
+        : loanDays.map(([d, c]) => {
+            const label = d === '1' ? '1 day' : `${d} days`;
+            return `<label class="facet"><span><input type="checkbox" data-dirfacet="loanDays" value="${escapeHtml(d)}" ${dirFilters.loanDays.has(d) ? 'checked' : ''}>${escapeHtml(label)}</span><span class="count">${c}</span></label>`;
+          }).join('');
+    }
     clampFacetToRows(document.getElementById('dir-type-facets'), 5);
     clampFacetToRows(document.getElementById('dir-state-facets'), 5);
 
@@ -1729,6 +1745,10 @@
         let anyMatch = false;
         dirFilters.group.forEach(g => { if (lenderGroups.has(g)) anyMatch = true; });
         if (!anyMatch) return false;
+      }
+      if (dirFilters.loanDays.size) {
+        if (typeof l.loansDaysToRespond !== 'number') return false;
+        if (!dirFilters.loanDays.has(String(l.loansDaysToRespond))) return false;
       }
       if (search) {
         const hay = `${l.symbol} ${l.name}`.toLowerCase();
@@ -2527,6 +2547,7 @@
       dirFilters.type.clear();
       dirFilters.state.clear();
       dirFilters.group.clear();
+      dirFilters.loanDays.clear();
       dirFilters.search = '';
       dirFilters.maxDist = 0;
       dirFilters.onlyNew = true;
