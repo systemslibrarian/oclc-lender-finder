@@ -18,7 +18,8 @@ import { useAppState } from '@/app-state/AppContext';
 import { NoteEditor } from '@/components/NoteEditor';
 import { MonthDots, Sparkline } from '@/components/Sparkline';
 import { ComparePeriodsDialog } from '@/components/ComparePeriodsDialog';
-import { GitCompare } from 'lucide-react';
+import { RankingsChart } from '@/components/RankingsChart';
+import { GitCompare, LayoutGrid, ScatterChart } from 'lucide-react';
 import { parseOCLCReport } from '@/lib/parsing';
 import { mergeMonths, totalScore, subscores, fillRate, avgDays, PRESETS, PRESET_LABELS } from '@/lib/scoring';
 import { HIST_LABELS } from '@/lib/audit';
@@ -53,6 +54,7 @@ export function RankingsTab() {
   const [openNoteSym, setOpenNoteSym] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [compareOpen, setCompareOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'cards' | 'chart'>('cards');
 
   const [filters, setFilters] = useState<ActiveFilters>({
     type: new Set(),
@@ -373,6 +375,26 @@ export function RankingsTab() {
               )}
             </div>
             <div className="flex flex-wrap gap-2">
+              <div className="inline-flex rounded-md border bg-background p-0.5" role="group" aria-label="View mode">
+                <Button
+                  size="sm"
+                  variant={viewMode === 'cards' ? 'default' : 'ghost'}
+                  className="h-7 px-2"
+                  onClick={() => setViewMode('cards')}
+                  aria-pressed={viewMode === 'cards'}
+                >
+                  <LayoutGrid className="mr-1.5 h-3.5 w-3.5" />Cards
+                </Button>
+                <Button
+                  size="sm"
+                  variant={viewMode === 'chart' ? 'default' : 'ghost'}
+                  className="h-7 px-2"
+                  onClick={() => setViewMode('chart')}
+                  aria-pressed={viewMode === 'chart'}
+                >
+                  <ScatterChart className="mr-1.5 h-3.5 w-3.5" />Chart
+                </Button>
+              </div>
               <Button size="sm" variant="outline" onClick={() => selection.selectTop(filtered, 10)} disabled={filtered.length === 0}>
                 Top 10
               </Button>
@@ -422,6 +444,14 @@ export function RankingsTab() {
                 No lenders match these filters.
               </CardContent>
             </Card>
+          ) : viewMode === 'chart' ? (
+            <RankingsChart
+              rows={filtered}
+              weights={settings.weights}
+              homeState={settings.homeState}
+              selected={selection.selected}
+              onToggle={(sym) => selection.toggle(sym)}
+            />
           ) : (
             <>
               <ScrollArea className="h-[calc(100vh-320px)] pr-3">
