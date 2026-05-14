@@ -12,7 +12,8 @@ import { SavedGroupsCard } from '@/components/SavedGroupsCard';
 import { SaveGroupDialog } from '@/components/SaveGroupDialog';
 import { Button } from '@/components/ui/button';
 import { useSelection } from '@/lib/use-selection';
-import { Search, X } from 'lucide-react';
+import { Search, StickyNote, X } from 'lucide-react';
+import { NoteEditor } from '@/components/NoteEditor';
 import { useAppState } from '@/app-state/AppContext';
 import { mergeDirectory } from '@/lib/directory';
 import { haversineKm, kmToMiles, mergeMonths } from '@/lib/scoring';
@@ -42,10 +43,12 @@ export function DiscoverTab() {
     isLoadingDirectory,
     months,
     savedGroups,
-    setSavedGroups
+    setSavedGroups,
+    notes
   } = useAppState();
   const selection = useSelection();
   const [saveOpen, setSaveOpen] = useState(false);
+  const [openNoteSym, setOpenNoteSym] = useState<string | null>(null);
 
   const [filters, setFilters] = useState<DiscoverFilters>({
     type: new Set(),
@@ -384,6 +387,9 @@ export function DiscoverTab() {
                     homeState={settings.homeState}
                     selected={selection.isSelected(l.symbol)}
                     onToggle={() => selection.toggle(l.symbol)}
+                    hasNote={!!notes[l.symbol]}
+                    noteOpen={openNoteSym === l.symbol}
+                    onToggleNote={() => setOpenNoteSym((cur) => (cur === l.symbol ? null : l.symbol))}
                   />
                 ))}
               </div>
@@ -520,13 +526,19 @@ function CandidateCard({
   borrowed,
   homeState,
   selected,
-  onToggle
+  onToggle,
+  hasNote,
+  noteOpen,
+  onToggleNote
 }: {
   l: DirectoryEntry & { _mi?: number | null };
   borrowed: boolean;
   homeState: string;
   selected: boolean;
   onToggle: () => void;
+  hasNote: boolean;
+  noteOpen: boolean;
+  onToggleNote: () => void;
 }) {
   const dist = l._mi != null ? `${Math.round(l._mi)} mi` : '—';
   const loans = typeof l.loansDaysToRespond === 'number' ? `${l.loansDaysToRespond} day${l.loansDaysToRespond === 1 ? '' : 's'}` : '—';
@@ -558,13 +570,18 @@ function CandidateCard({
           <Stat label="Copies" value={copies} muted={l.copiesDaysToRespond == null} />
           <Stat label="Groups" value={(l.groups || []).length || '—'} muted={(l.groups || []).length === 0} />
         </div>
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap items-center gap-2">
           {borrowed ? <Badge variant="secondary">Borrowed before</Badge> : <Badge>New candidate</Badge>}
           {l.state === homeState && <Badge variant="secondary">Same state</Badge>}
           {(l.groups || []).map((g) => (
             <Badge key={g} variant="outline" className="font-normal">{g}</Badge>
           ))}
+          {hasNote && <Badge variant="outline" className="gap-1"><StickyNote className="h-3 w-3" />Note</Badge>}
+          <Button size="sm" variant="ghost" className="ml-auto h-7 px-2 text-xs" onClick={onToggleNote}>
+            {noteOpen ? 'Hide note' : hasNote ? 'Edit note' : 'Add note'}
+          </Button>
         </div>
+        {noteOpen && <NoteEditor symbol={l.symbol} onClose={onToggleNote} />}
       </CardContent>
     </Card>
   );

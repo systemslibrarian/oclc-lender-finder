@@ -13,8 +13,9 @@ import { Pagination, PageSizeSelect } from '@/components/Pagination';
 import { SavedGroupsCard } from '@/components/SavedGroupsCard';
 import { SaveGroupDialog } from '@/components/SaveGroupDialog';
 import { useSelection } from '@/lib/use-selection';
-import { Upload, X } from 'lucide-react';
+import { StickyNote, Upload, X } from 'lucide-react';
 import { useAppState } from '@/app-state/AppContext';
+import { NoteEditor } from '@/components/NoteEditor';
 import { parseOCLCReport } from '@/lib/parsing';
 import { mergeMonths, totalScore, subscores, fillRate, avgDays, PRESETS, PRESET_LABELS } from '@/lib/scoring';
 import { HIST_LABELS } from '@/lib/audit';
@@ -43,9 +44,11 @@ function passesFilter(l: MergedLender, f: ActiveFilters): boolean {
 }
 
 export function RankingsTab() {
-  const { months, setMonths, settings, updateSettings, updateWeights, savedGroups, setSavedGroups } = useAppState();
+  const { months, setMonths, settings, updateSettings, updateWeights, savedGroups, setSavedGroups, notes } = useAppState();
   const selection = useSelection();
   const [saveOpen, setSaveOpen] = useState(false);
+  const [openNoteSym, setOpenNoteSym] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
 
   const [filters, setFilters] = useState<ActiveFilters>({
     type: new Set(),
@@ -161,6 +164,20 @@ export function RankingsTab() {
               <CardDescription>OCLC Borrower Transaction-Level Detail report (.xls)</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 pt-0">
+              <div
+                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDragOver(false);
+                  if (e.dataTransfer.files) handleUpload(e.dataTransfer.files);
+                }}
+                className={`rounded-md border border-dashed p-3 text-center text-xs transition ${
+                  dragOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/30 text-muted-foreground'
+                }`}
+              >
+                {dragOver ? 'Drop to import' : 'Drag .xls / .tsv files here'}
+              </div>
               <Button
                 variant="outline"
                 size="sm"
@@ -408,6 +425,9 @@ export function RankingsTab() {
                       homeState={settings.homeState}
                       selected={selection.isSelected(l.symbol)}
                       onToggle={() => selection.toggle(l.symbol)}
+                      hasNote={!!notes[l.symbol]}
+                      noteOpen={openNoteSym === l.symbol}
+                      onToggleNote={() => setOpenNoteSym((cur) => (cur === l.symbol ? null : l.symbol))}
                     />
                   ))}
                 </div>
@@ -531,13 +551,19 @@ function LenderCard({
   weights,
   homeState,
   selected,
-  onToggle
+  onToggle,
+  hasNote,
+  noteOpen,
+  onToggleNote
 }: {
   l: MergedLender;
   weights: Weights;
   homeState: string;
   selected: boolean;
   onToggle: () => void;
+  hasNote: boolean;
+  noteOpen: boolean;
+  onToggleNote: () => void;
 }) {
   const score = totalScore(l, weights, homeState);
   const subs = subscores(l, homeState);
@@ -589,10 +615,15 @@ function LenderCard({
           <Sub label="Consist" v={subs.consistency} />
           <Sub label="Local" v={subs.local} />
         </div>
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap items-center gap-2">
           {l.state === homeState && <Badge variant="secondary">Same state</Badge>}
           {l.monthsPresent === l.monthsSpan && l.monthsSpan > 1 && <Badge variant="secondary">Every month</Badge>}
+          {hasNote && <Badge variant="outline" className="gap-1"><StickyNote className="h-3 w-3" />Note</Badge>}
+          <Button size="sm" variant="ghost" className="ml-auto h-7 px-2 text-xs" onClick={onToggleNote}>
+            {noteOpen ? 'Hide note' : hasNote ? 'Edit note' : 'Add note'}
+          </Button>
         </div>
+        {noteOpen && <NoteEditor symbol={l.symbol} onClose={onToggleNote} />}
       </CardContent>
     </Card>
   );
