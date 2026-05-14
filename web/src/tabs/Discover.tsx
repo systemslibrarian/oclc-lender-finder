@@ -31,6 +31,7 @@ interface DiscoverFilters {
   search: string;
   maxDist: number;
   onlyNew: boolean;
+  excludeHoldings: boolean;
 }
 
 export function DiscoverTab() {
@@ -44,7 +45,8 @@ export function DiscoverTab() {
     months,
     savedGroups,
     setSavedGroups,
-    notes
+    notes,
+    auditHoldings
   } = useAppState();
   const selection = useSelection();
   const [saveOpen, setSaveOpen] = useState(false);
@@ -57,7 +59,8 @@ export function DiscoverTab() {
     loanDays: new Set(),
     search: '',
     maxDist: 0,
-    onlyNew: true
+    onlyNew: true,
+    excludeHoldings: true
   });
   const [sortBy, setSortBy] = useState<SortKey>('distance');
   const [page, setPage] = useState(1);
@@ -77,17 +80,23 @@ export function DiscoverTab() {
     return s;
   }, [months]);
 
+  const holdingsSet = useMemo(
+    () => (filters.excludeHoldings && auditHoldings.length > 0 ? new Set(auditHoldings) : null),
+    [filters.excludeHoldings, auditHoldings]
+  );
+
   // Compute facet counts on the (almost) full directory, but respect the
-  // homeSymbol exclusion and the "only new" toggle so totals match what
+  // homeSymbol / onlyNew / excludeHoldings exclusions so totals match what
   // the user actually sees.
   const facetSource = useMemo(() => {
     const home = (settings.homeSymbol || '').toUpperCase();
     return merged.filter((l) => {
       if (home && l.symbol === home) return false;
       if (filters.onlyNew && borrowedSyms.has(l.symbol)) return false;
+      if (holdingsSet && holdingsSet.has(l.symbol)) return false;
       return true;
     });
-  }, [merged, settings.homeSymbol, filters.onlyNew, borrowedSyms]);
+  }, [merged, settings.homeSymbol, filters.onlyNew, borrowedSyms, holdingsSet]);
 
   const { typeCounts, stateCounts, groupCounts, loanDaysCounts } = useMemo(() => {
     const t: Record<string, number> = {};
@@ -115,6 +124,7 @@ export function DiscoverTab() {
       .filter((l) => {
         if (home && l.symbol === home) return false;
         if (filters.onlyNew && borrowedSyms.has(l.symbol)) return false;
+        if (holdingsSet && holdingsSet.has(l.symbol)) return false;
         if (filters.type.size && !filters.type.has(l.type || 'Other')) return false;
         if (filters.state.size && !filters.state.has(l.state)) return false;
         if (filters.group.size) {
@@ -146,7 +156,7 @@ export function DiscoverTab() {
       copies: (a, b) => (a.copiesDaysToRespond ?? 1e9) - (b.copiesDaysToRespond ?? 1e9)
     };
     return final.sort(sortFns[sortBy]);
-  }, [merged, filters, settings.homeSymbol, settings.homeLat, settings.homeLng, sortBy, borrowedSyms]);
+  }, [merged, filters, settings.homeSymbol, settings.homeLat, settings.homeLng, sortBy, borrowedSyms, holdingsSet]);
 
   useEffect(() => setPage(1), [filters, sortBy, pageSize]);
 
@@ -173,7 +183,8 @@ export function DiscoverTab() {
       loanDays: new Set(),
       search: '',
       maxDist: 0,
-      onlyNew: true
+      onlyNew: true,
+      excludeHoldings: true
     });
 
   const activeCount =
@@ -264,6 +275,17 @@ export function DiscoverTab() {
                 onCheckedChange={(v) => setFilters((prev) => ({ ...prev, onlyNew: Boolean(v) }))}
               />
               Only libraries I haven't borrowed from
+            </label>
+            <label className={`flex items-center gap-2 text-sm ${auditHoldings.length === 0 ? 'opacity-50' : ''}`}>
+              <Checkbox
+                checked={filters.excludeHoldings}
+                disabled={auditHoldings.length === 0}
+                onCheckedChange={(v) => setFilters((prev) => ({ ...prev, excludeHoldings: Boolean(v) }))}
+              />
+              Hide libraries already in my Audit list
+              {auditHoldings.length > 0 && (
+                <span className="text-xs text-muted-foreground">({auditHoldings.length})</span>
+              )}
             </label>
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">

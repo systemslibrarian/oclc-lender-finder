@@ -76,7 +76,7 @@ function loadInitialTab(): TabName {
   if (raw && raw.activeTab && (['rankings', 'discover', 'audit'] as string[]).includes(raw.activeTab)) {
     return raw.activeTab as TabName;
   }
-  return 'rankings';
+  return 'audit';
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {

@@ -22,9 +22,9 @@ function AppShell() {
         t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
       if (editable) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
-      if (e.key === '1') { setActiveTab('rankings'); e.preventDefault(); }
-      else if (e.key === '2') { setActiveTab('discover'); e.preventDefault(); }
-      else if (e.key === '3') { setActiveTab('audit'); e.preventDefault(); }
+      if (e.key === '1') { setActiveTab('audit'); e.preventDefault(); }
+      else if (e.key === '2') { setActiveTab('rankings'); e.preventDefault(); }
+      else if (e.key === '3') { setActiveTab('discover'); e.preventDefault(); }
       else if (e.key === '?') { setHelpOpen(true); e.preventDefault(); }
     };
     window.addEventListener('keydown', onKey);
@@ -41,14 +41,14 @@ function AppShell() {
           </div>
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabName)} className="ml-2">
             <TabsList>
+              <TabsTrigger value="audit" className="gap-2">
+                <span className="text-xs text-muted-foreground">1</span>Audit
+              </TabsTrigger>
               <TabsTrigger value="rankings" className="gap-2">
-                <span className="text-xs text-muted-foreground">1</span>Rankings
+                <span className="text-xs text-muted-foreground">2</span>Rankings
               </TabsTrigger>
               <TabsTrigger value="discover" className="gap-2">
-                <span className="text-xs text-muted-foreground">2</span>Discover
-              </TabsTrigger>
-              <TabsTrigger value="audit" className="gap-2">
-                <span className="text-xs text-muted-foreground">3</span>Audit
+                <span className="text-xs text-muted-foreground">3</span>Discover
               </TabsTrigger>
             </TabsList>
           </Tabs>

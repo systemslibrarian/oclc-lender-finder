@@ -21,7 +21,7 @@
   let homeLat = 30.4383;
   let homeLng = -84.2807;
   let homeSymbol = '';
-  let activeTab = 'rankings';
+  let activeTab = 'audit';
   let weights = { speed: 25, fill: 30, volume: 15, consistency: 20, local: 10 };
   const expanded = new Set();
   const selected = new Set();
@@ -71,7 +71,7 @@
     return name ? `${name} (${code})` : (code || '—');
   };
   const stateSort = (a, b) => stateLabel(a[0]).localeCompare(stateLabel(b[0]));
-  const dirFilters = { type: new Set(), state: new Set(), group: new Set(), loanDays: new Set(), search: '', maxDist: 0, onlyNew: true };
+  const dirFilters = { type: new Set(), state: new Set(), group: new Set(), loanDays: new Set(), search: '', maxDist: 0, onlyNew: true, excludeHoldings: true };
   // Pagination state — page-size choices: 50/100/250/All. Page resets to 1
   // whenever filters or sort change (see resetDirPage / resetRankPage).
   let dirPage = 1, dirPageSize = 100;
@@ -1783,6 +1783,9 @@
   function buildDirFacetOptions() {
     const dir = getMergedDirectory();
     const borrowedSyms = dirFilters.onlyNew ? getBorrowedSymbols() : null;
+    const holdingsSet = dirFilters.excludeHoldings && auditHoldings.length > 0
+      ? new Set(auditHoldings)
+      : null;
     const typeCounts = {}, stateCounts = {}, groupCounts = {}, loanDaysCounts = {};
     dir.forEach(l => {
       // Never count the user's own library as a candidate.
@@ -1791,6 +1794,7 @@
       // "Only libraries I haven't borrowed from" is on, exclude borrowed
       // libraries here too so the sidebar totals match the visible count.
       if (borrowedSyms && borrowedSyms.has(l.symbol)) return;
+      if (holdingsSet && holdingsSet.has(l.symbol)) return;
       typeCounts[l.type || 'Other'] = (typeCounts[l.type || 'Other'] || 0) + 1;
       if (l.state) stateCounts[l.state] = (stateCounts[l.state] || 0) + 1;
       (l.groups || []).forEach(g => {
@@ -1843,9 +1847,13 @@
     const sortBy = document.getElementById('dir-sort-by').value;
     const search = dirFilters.search.toLowerCase().trim();
 
+    const holdingsSet = dirFilters.excludeHoldings && auditHoldings.length > 0
+      ? new Set(auditHoldings)
+      : null;
     let filtered = dir.filter(l => {
       if (homeSymbol && l.symbol === homeSymbol) return false;
       if (dirFilters.onlyNew && borrowedSyms.has(l.symbol)) return false;
+      if (holdingsSet && holdingsSet.has(l.symbol)) return false;
       if (dirFilters.type.size && !dirFilters.type.has(l.type || 'Other')) return false;
       if (dirFilters.state.size && !dirFilters.state.has(l.state)) return false;
       if (dirFilters.group.size) {
@@ -2841,6 +2849,15 @@
       buildDirFacetOptions();
       renderDiscover();
     });
+    const excludeHoldingsEl = document.getElementById('exclude-holdings');
+    if (excludeHoldingsEl) {
+      excludeHoldingsEl.addEventListener('change', e => {
+        dirFilters.excludeHoldings = e.target.checked;
+        resetDirPage();
+        buildDirFacetOptions();
+        renderDiscover();
+      });
+    }
     document.getElementById('max-dist').addEventListener('input', e => {
       dirFilters.maxDist = parseInt(e.target.value);
       const out = document.getElementById('dist-out');
@@ -2905,6 +2922,10 @@
       auditRun.addEventListener('click', () => {
         auditHoldings = parseAuditInput(auditTa ? auditTa.value : '');
         renderAudit();
+        // Keep Discover in sync — it can be configured to hide audit-list
+        // symbols, and its facet counts need to refresh too.
+        buildDirFacetOptions();
+        renderDiscover();
         saveData();
       });
     }
@@ -2914,6 +2935,8 @@
         auditHoldings = [];
         if (auditTa) auditTa.value = '';
         renderAudit();
+        buildDirFacetOptions();
+        renderDiscover();
         saveData();
       });
     }
@@ -2984,9 +3007,9 @@
 
       if (inEditable) return;
 
-      if (e.key === '1') { switchTab('rankings'); e.preventDefault(); }
-      else if (e.key === '2') { switchTab('discover'); e.preventDefault(); }
-      else if (e.key === '3') { switchTab('audit'); e.preventDefault(); }
+      if (e.key === '1') { switchTab('audit'); e.preventDefault(); }
+      else if (e.key === '2') { switchTab('rankings'); e.preventDefault(); }
+      else if (e.key === '3') { switchTab('discover'); e.preventDefault(); }
       else if (e.key === '/') {
         if (activeTab !== 'discover') switchTab('discover');
         const inp = document.getElementById('dir-search');

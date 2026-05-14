@@ -21,9 +21,9 @@ export function HelpDialog({ open, onOpenChange }: Props) {
           <section>
             <h3 className="mb-2 font-semibold">Keyboard shortcuts</h3>
             <ul className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-              <Shortcut keys="1" desc="Switch to Rankings" />
-              <Shortcut keys="2" desc="Switch to Discover" />
-              <Shortcut keys="3" desc="Switch to Audit" />
+              <Shortcut keys="1" desc="Switch to Audit" />
+              <Shortcut keys="2" desc="Switch to Rankings" />
+              <Shortcut keys="3" desc="Switch to Discover" />
               <Shortcut keys="?" desc="Open this help" />
               <Shortcut keys="Esc" desc="Close any open dialog" />
             </ul>

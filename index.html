@@ -29,14 +29,14 @@
       <h1>Lender Finder</h1>
     </div>
     <nav class="tabs" role="tablist" aria-label="Views">
-      <button role="tab" class="tab active" data-tab="rankings" aria-selected="true" aria-controls="rankings-view">
-        <span class="tab-num">1</span>Rankings
+      <button role="tab" class="tab active" data-tab="audit" aria-selected="true" aria-controls="audit-view">
+        <span class="tab-num">1</span>Audit
+      </button>
+      <button role="tab" class="tab" data-tab="rankings" aria-selected="false" aria-controls="rankings-view">
+        <span class="tab-num">2</span>Rankings
       </button>
       <button role="tab" class="tab" data-tab="discover" aria-selected="false" aria-controls="discover-view">
-        <span class="tab-num">2</span>Discover
-      </button>
-      <button role="tab" class="tab" data-tab="audit" aria-selected="false" aria-controls="audit-view">
-        <span class="tab-num">3</span>Audit
+        <span class="tab-num">3</span>Discover
       </button>
     </nav>
     <div class="header-right">
@@ -238,6 +238,7 @@
         <button type="button" class="search-clear" id="dir-search-clear" aria-label="Clear search" hidden>×</button>
       </div>
       <label class="facet" style="margin-top:10px;"><span><input type="checkbox" id="show-only-new" checked>Only libraries I haven't borrowed from</span></label>
+      <label class="facet"><span><input type="checkbox" id="exclude-holdings" checked>Hide libraries already in my Audit list</span></label>
       <div class="weight-row" style="margin-top:10px;">
         <div class="weight-label"><span id="dist-label">Distance within</span><span id="dist-out" aria-live="polite">Any</span></div>
         <input type="range" min="0" max="3000" value="0" step="50" id="max-dist" aria-labelledby="dist-label dist-out">
