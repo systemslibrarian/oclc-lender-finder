@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,6 +7,7 @@ import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Pagination, PageSizeSelect } from '@/components/Pagination';
 import { Search, X } from 'lucide-react';
 import { useAppState } from '@/app-state/AppContext';
 import { mergeDirectory } from '@/lib/directory';
@@ -48,6 +49,9 @@ export function DiscoverTab() {
     onlyNew: true
   });
   const [sortBy, setSortBy] = useState<SortKey>('distance');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>(100);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const merged = useMemo(
     () => mergeDirectory({ bundled: bundledDirectory, imported: importedDirectory, policies }),
@@ -132,6 +136,14 @@ export function DiscoverTab() {
     };
     return final.sort(sortFns[sortBy]);
   }, [merged, filters, settings.homeSymbol, settings.homeLat, settings.homeLng, sortBy, borrowedSyms]);
+
+  useEffect(() => setPage(1), [filters, sortBy, pageSize]);
+
+  const visibleSlice = useMemo(() => {
+    if (pageSize === 0) return filtered;
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
 
   const toggleFilter = (bucket: keyof Pick<DiscoverFilters, 'type' | 'state' | 'group' | 'loanDays'>, value: string) => {
     setFilters((prev) => {
@@ -313,18 +325,21 @@ export function DiscoverTab() {
             <strong>{filtered.length}</strong> candidate{filtered.length === 1 ? '' : 's'}
             {isLoadingDirectory && <span className="ml-2 text-muted-foreground">· loading directory…</span>}
           </div>
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
-            <SelectTrigger className="w-[220px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="distance">Sort: distance</SelectItem>
-              <SelectItem value="name">Sort: name</SelectItem>
-              <SelectItem value="state">Sort: state</SelectItem>
-              <SelectItem value="loans">Sort: fastest loans</SelectItem>
-              <SelectItem value="copies">Sort: fastest copies</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex gap-2">
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
+              <SelectTrigger className="w-[220px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="distance">Sort: distance</SelectItem>
+                <SelectItem value="name">Sort: name</SelectItem>
+                <SelectItem value="state">Sort: state</SelectItem>
+                <SelectItem value="loans">Sort: fastest loans</SelectItem>
+                <SelectItem value="copies">Sort: fastest copies</SelectItem>
+              </SelectContent>
+            </Select>
+            <PageSizeSelect value={pageSize} onChange={setPageSize} />
+          </div>
         </div>
 
         {activeCount > 0 && (
@@ -338,18 +353,27 @@ export function DiscoverTab() {
             </CardContent>
           </Card>
         ) : (
-          <ScrollArea className="h-[calc(100vh-260px)] pr-3">
-            <div className="space-y-3" role="list">
-              {filtered.map((l) => (
-                <CandidateCard
-                  key={l.symbol}
-                  l={l}
-                  borrowed={borrowedSyms.has(l.symbol)}
-                  homeState={settings.homeState}
-                />
-              ))}
-            </div>
-          </ScrollArea>
+          <>
+            <ScrollArea className="h-[calc(100vh-320px)] pr-3">
+              <div className="space-y-3" role="list" ref={listRef}>
+                {visibleSlice.map((l) => (
+                  <CandidateCard
+                    key={l.symbol}
+                    l={l}
+                    borrowed={borrowedSyms.has(l.symbol)}
+                    homeState={settings.homeState}
+                  />
+                ))}
+              </div>
+            </ScrollArea>
+            <Pagination
+              total={filtered.length}
+              pageSize={pageSize}
+              page={page}
+              onPage={setPage}
+              scrollToRef={listRef}
+            />
+          </>
         )}
       </section>
     </div>

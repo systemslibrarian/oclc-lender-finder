@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Pagination, PageSizeSelect } from '@/components/Pagination';
 import { useAppState } from '@/app-state/AppContext';
 import { mergeMonths, totalScore } from '@/lib/scoring';
 import { mergeDirectory } from '@/lib/directory';
@@ -50,6 +51,9 @@ export function AuditTab() {
     useAppState();
   const [draft, setDraft] = useState(() => auditHoldings.join(', '));
   const [sortBy, setSortBy] = useState<SortKey>('score');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>(100);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const directory = useMemo(
     () => mergeDirectory({ bundled: bundledDirectory, imported: importedDirectory, policies }),
@@ -107,6 +111,14 @@ export function AuditTab() {
     };
     return [...rows].sort(fns[sortBy]);
   }, [rows, sortBy]);
+
+  useEffect(() => setPage(1), [auditHoldings, sortBy, pageSize]);
+
+  const visibleSlice = useMemo(() => {
+    if (pageSize === 0) return sorted;
+    const start = (page - 1) * pageSize;
+    return sorted.slice(start, start + pageSize);
+  }, [sorted, page, pageSize]);
 
   const draftCount = parseAuditInput(draft).length;
 
@@ -173,17 +185,20 @@ export function AuditTab() {
               · <strong className="text-foreground">{counts.unused}</strong> unused
             </span>
           </div>
-          <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
-            <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="score">Sort: best match</SelectItem>
-              <SelectItem value="tier">Sort: tier</SelectItem>
-              <SelectItem value="name">Sort: name</SelectItem>
-              <SelectItem value="filled">Sort: most filled</SelectItem>
-              <SelectItem value="fill">Sort: fill rate</SelectItem>
-              <SelectItem value="speed">Sort: turnaround</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex gap-2">
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
+              <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="score">Sort: best match</SelectItem>
+                <SelectItem value="tier">Sort: tier</SelectItem>
+                <SelectItem value="name">Sort: name</SelectItem>
+                <SelectItem value="filled">Sort: most filled</SelectItem>
+                <SelectItem value="fill">Sort: fill rate</SelectItem>
+                <SelectItem value="speed">Sort: turnaround</SelectItem>
+              </SelectContent>
+            </Select>
+            <PageSizeSelect value={pageSize} onChange={setPageSize} />
+          </div>
         </div>
 
         {rows.length === 0 ? (
@@ -197,13 +212,22 @@ export function AuditTab() {
             </CardContent>
           </Card>
         ) : (
-          <ScrollArea className="h-[calc(100vh-260px)] pr-3">
-            <div className="space-y-3" role="list">
-              {sorted.map((r) => (
-                <AuditCard key={r.symbol} r={r} />
-              ))}
-            </div>
-          </ScrollArea>
+          <>
+            <ScrollArea className="h-[calc(100vh-320px)] pr-3">
+              <div className="space-y-3" role="list" ref={listRef}>
+                {visibleSlice.map((r) => (
+                  <AuditCard key={r.symbol} r={r} />
+                ))}
+              </div>
+            </ScrollArea>
+            <Pagination
+              total={sorted.length}
+              pageSize={pageSize}
+              page={page}
+              onPage={setPage}
+              scrollToRef={listRef}
+            />
+          </>
         )}
       </section>
     </div>

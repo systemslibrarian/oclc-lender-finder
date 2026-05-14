@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Pagination, PageSizeSelect } from '@/components/Pagination';
 import { Upload, X } from 'lucide-react';
 import { useAppState } from '@/app-state/AppContext';
 import { parseOCLCReport } from '@/lib/parsing';
@@ -48,6 +49,9 @@ export function RankingsTab() {
     hist: new Set()
   });
   const [sortBy, setSortBy] = useState<SortKey>('score');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>(100);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadError, setUploadError] = useState<string>('');
@@ -69,6 +73,15 @@ export function RankingsTab() {
     };
     return list.sort(sortFns[sortBy]);
   }, [merged, filters, settings.weights, settings.homeState, sortBy]);
+
+  // Reset to page 1 whenever filters / sort / size change.
+  useEffect(() => setPage(1), [filters, sortBy, pageSize]);
+
+  const visibleSlice = useMemo(() => {
+    if (pageSize === 0) return filtered;
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
 
   // Facet counts come from the unfiltered merged set so they don't shift as
   // the user clicks (well-known UX gotcha for faceted search).
@@ -328,18 +341,21 @@ export function RankingsTab() {
                 </span>
               )}
             </div>
-            <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="score">Sort: best match</SelectItem>
-                <SelectItem value="speed">Sort: turnaround time</SelectItem>
-                <SelectItem value="fill">Sort: fill rate</SelectItem>
-                <SelectItem value="volume">Sort: volume</SelectItem>
-                <SelectItem value="consistency">Sort: consistency</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2">
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="score">Sort: best match</SelectItem>
+                  <SelectItem value="speed">Sort: turnaround time</SelectItem>
+                  <SelectItem value="fill">Sort: fill rate</SelectItem>
+                  <SelectItem value="volume">Sort: volume</SelectItem>
+                  <SelectItem value="consistency">Sort: consistency</SelectItem>
+                </SelectContent>
+              </Select>
+              <PageSizeSelect value={pageSize} onChange={setPageSize} />
+            </div>
           </div>
 
           {/* Active filter chips */}
@@ -359,13 +375,22 @@ export function RankingsTab() {
               </CardContent>
             </Card>
           ) : (
-            <ScrollArea className="h-[calc(100vh-260px)] pr-3">
-              <div className="space-y-3" role="list">
-                {filtered.map((l) => (
-                  <LenderCard key={l.symbol} l={l} weights={settings.weights} homeState={settings.homeState} />
-                ))}
-              </div>
-            </ScrollArea>
+            <>
+              <ScrollArea className="h-[calc(100vh-320px)] pr-3">
+                <div className="space-y-3" role="list" ref={listRef}>
+                  {visibleSlice.map((l) => (
+                    <LenderCard key={l.symbol} l={l} weights={settings.weights} homeState={settings.homeState} />
+                  ))}
+                </div>
+              </ScrollArea>
+              <Pagination
+                total={filtered.length}
+                pageSize={pageSize}
+                page={page}
+                onPage={setPage}
+                scrollToRef={listRef}
+              />
+            </>
           )}
         </section>
       </div>
