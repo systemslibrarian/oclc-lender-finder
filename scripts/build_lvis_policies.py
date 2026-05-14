@@ -23,6 +23,8 @@ try:
 except ImportError:
     pgeocode = None
 
+from classify_library_type import classify_type
+
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "OCLC_Libraries_Cleaned.xlsx"
 DST = ROOT / "lvis-policies.json"
@@ -153,10 +155,12 @@ def main():
                     coords_from_state = True
                     geocoded_state += 1
 
+        institution_name = (inst_cell.value or "").strip() or None
+        branch_name = (branch_cell.value or "").strip() if branch_cell.value else None
         entry = {
             "symbol": symbol,
-            "institution": (inst_cell.value or "").strip() or None,
-            "branch": (branch_cell.value or "").strip() if branch_cell.value else None,
+            "institution": institution_name,
+            "branch": branch_name,
             "city": loc["city"],
             "state": loc["state"],
             "country": loc["country"],
@@ -169,6 +173,7 @@ def main():
             "institutionId": institution_id,
             "lat": lat,
             "lng": lng,
+            "type": classify_type(institution_name, branch_name),
             "group": "LVIS",
         }
         if coords_from_state:
@@ -207,6 +212,7 @@ def main():
                 "institutionId": "OCLC DILL institutionId parsed from policyUrl",
                 "lat": "Approximate latitude (city centroid from US postal data)",
                 "lng": "Approximate longitude (city centroid from US postal data)",
+                "type": "Best-guess library type (Academic/Public/Special/Federal/Natl Government/Other) inferred from name",
                 "group": "Always 'LVIS' for this dataset",
             },
         },

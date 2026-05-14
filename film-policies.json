@@ -21,7 +21,8 @@
       "institutionId": "OCLC DILL institutionId parsed from policyUrl",
       "lat": "Approximate latitude (city centroid from US postal data)",
       "lng": "Approximate longitude (city centroid from US postal data)",
-      "group": "Always 'FILM' for this dataset"
+      "group": "Always 'FILM' for this dataset",
+      "type": "Best-guess library type (Academic/Public/Special/Federal/Natl Government/Other) inferred from name"
     }
   },
   "libraries": {
@@ -41,7 +42,8 @@
       "institutionId": "9718",
       "lat": 41.6077,
       "lng": -87.7542,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "CLZ": {
       "symbol": "CLZ",
@@ -59,7 +61,8 @@
       "institutionId": "453",
       "lat": 37.4732,
       "lng": -105.8802,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KRU": {
       "symbol": "KRU",
@@ -77,7 +80,8 @@
       "institutionId": "52898",
       "lat": 34.7773,
       "lng": -96.6853,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JVK": {
       "symbol": "JVK",
@@ -95,7 +99,8 @@
       "institutionId": "9719",
       "lat": 41.9335,
       "lng": -88.0054,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TSL": {
       "symbol": "TSL",
@@ -113,7 +118,8 @@
       "institutionId": "65253",
       "lat": 36.5959,
       "lng": -121.8805,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Federal/Natl Government"
     },
     "KZZ": {
       "symbol": "KZZ",
@@ -131,7 +137,8 @@
       "institutionId": "12521",
       "lat": 36.0694,
       "lng": -79.46,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "W8A": {
       "symbol": "W8A",
@@ -149,7 +156,8 @@
       "institutionId": "16888",
       "lat": 41.3706,
       "lng": -105.6237,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ABY": {
       "symbol": "ABY",
@@ -167,7 +175,8 @@
       "institutionId": "14620",
       "lat": 44.639,
       "lng": -123.0952,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "QUE": {
       "symbol": "QUE",
@@ -185,7 +194,8 @@
       "institutionId": "13349",
       "lat": 35.0773,
       "lng": -106.6448,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "YAH": {
       "symbol": "YAH",
@@ -203,7 +213,8 @@
       "institutionId": "1846",
       "lat": 42.2534,
       "lng": -77.7893,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "AVL": {
       "symbol": "AVL",
@@ -221,7 +232,8 @@
       "institutionId": "2450",
       "lat": 41.6467,
       "lng": -80.1532,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "AYP": {
       "symbol": "AYP",
@@ -239,7 +251,8 @@
       "institutionId": "14922",
       "lat": 40.6015,
       "lng": -75.5101,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "CDO": {
       "symbol": "CDO",
@@ -257,7 +270,8 @@
       "institutionId": "10054",
       "lat": 40.0263,
       "lng": -88.5686,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "EZA": {
       "symbol": "EZA",
@@ -275,7 +289,8 @@
       "institutionId": "1419",
       "lat": 43.3809,
       "lng": -84.6635,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ISF": {
       "symbol": "ISF",
@@ -294,7 +309,8 @@
       "lat": 40.4333,
       "lng": -88.9811,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "AYU": {
       "symbol": "AYU",
@@ -312,7 +328,8 @@
       "institutionId": "40406",
       "lat": 34.5982,
       "lng": -99.4408,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Federal/Natl Government"
     },
     "GZA": {
       "symbol": "GZA",
@@ -330,7 +347,8 @@
       "institutionId": "3157",
       "lat": 43.0498,
       "lng": -87.9529,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TAP": {
       "symbol": "TAP",
@@ -348,7 +366,8 @@
       "institutionId": "15893",
       "lat": 35.2535,
       "lng": -101.8657,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "UIB": {
       "symbol": "UIB",
@@ -366,7 +385,8 @@
       "institutionId": "9128",
       "lat": 42.0339,
       "lng": -93.6099,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "AMH": {
       "symbol": "AMH",
@@ -384,7 +404,8 @@
       "institutionId": "1309",
       "lat": 42.3812,
       "lng": -72.5009,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "SAL": {
       "symbol": "SAL",
@@ -402,7 +423,8 @@
       "institutionId": "15152",
       "lat": 34.4819,
       "lng": -82.7018,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IAM": {
       "symbol": "IAM",
@@ -420,7 +442,8 @@
       "institutionId": "105441",
       "lat": 40.1122,
       "lng": -85.681,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "YGO": {
       "symbol": "YGO",
@@ -438,7 +461,8 @@
       "institutionId": "9795",
       "lat": 37.7748,
       "lng": -89.0978,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "BYV": {
       "symbol": "BYV",
@@ -457,7 +481,8 @@
       "lat": 39.2639,
       "lng": -105.3172,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "EXQ": {
       "symbol": "EXQ",
@@ -475,7 +500,8 @@
       "institutionId": "1422",
       "lat": 42.9795,
       "lng": -85.6133,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IB0": {
       "symbol": "IB0",
@@ -493,7 +519,8 @@
       "institutionId": "9731",
       "lat": 39.687,
       "lng": -88.3037,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ASU": {
       "symbol": "ASU",
@@ -511,7 +538,8 @@
       "institutionId": "125",
       "lat": 35.8061,
       "lng": -90.7171,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "RG5": {
       "symbol": "RG5",
@@ -529,7 +557,8 @@
       "institutionId": "61624",
       "lat": 34.3557,
       "lng": -92.8292,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ANM": {
       "symbol": "ANM",
@@ -547,7 +576,8 @@
       "institutionId": "13350",
       "lat": 32.796,
       "lng": -104.3678,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "AJM": {
       "symbol": "AJM",
@@ -565,7 +595,8 @@
       "institutionId": "13371",
       "lat": 36.8952,
       "lng": -104.4349,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ACN": {
       "symbol": "ACN",
@@ -583,7 +614,8 @@
       "institutionId": "13117",
       "lat": 39.432,
       "lng": -74.6962,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ICY": {
       "symbol": "ICY",
@@ -601,7 +633,8 @@
       "institutionId": "786",
       "lat": 41.5222,
       "lng": -90.5741,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "SDA": {
       "symbol": "SDA",
@@ -619,7 +652,8 @@
       "institutionId": "2704",
       "lat": 43.59,
       "lng": -96.7507,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZGO": {
       "symbol": "ZGO",
@@ -637,7 +671,8 @@
       "institutionId": "9069",
       "lat": 33.433,
       "lng": -82.0751,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JSE": {
       "symbol": "JSE",
@@ -655,7 +690,8 @@
       "institutionId": "9743",
       "lat": 41.7715,
       "lng": -88.267,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ICA": {
       "symbol": "ICA",
@@ -673,7 +709,8 @@
       "institutionId": "787",
       "lat": 41.7715,
       "lng": -88.267,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TPA": {
       "symbol": "TPA",
@@ -691,7 +728,8 @@
       "institutionId": "2728",
       "lat": 36.5254,
       "lng": -87.3547,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ISG": {
       "symbol": "ISG",
@@ -709,7 +747,8 @@
       "institutionId": "9847",
       "lat": 40.369,
       "lng": -89.5321,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IBS": {
       "symbol": "IBS",
@@ -727,7 +766,8 @@
       "institutionId": "931",
       "lat": 40.1976,
       "lng": -85.4032,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "BYN": {
       "symbol": "BYN",
@@ -745,7 +785,8 @@
       "institutionId": "11470",
       "lat": 44.8127,
       "lng": -68.7848,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "FYL": {
       "symbol": "FYL",
@@ -763,7 +804,8 @@
       "institutionId": "6609",
       "lat": 27.8662,
       "lng": -82.7162,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "RLN": {
       "symbol": "RLN",
@@ -782,7 +824,8 @@
       "lat": 41.1913,
       "lng": -98.1534,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "INB": {
       "symbol": "INB",
@@ -800,7 +843,8 @@
       "institutionId": "10546",
       "lat": 39.2123,
       "lng": -85.9129,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "O2H": {
       "symbol": "O2H",
@@ -818,7 +862,8 @@
       "institutionId": "14427",
       "lat": 36.7348,
       "lng": -95.948,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JSQ": {
       "symbol": "JSQ",
@@ -836,7 +881,8 @@
       "institutionId": "9748",
       "lat": 41.9794,
       "lng": -88.2063,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "BTS": {
       "symbol": "BTS",
@@ -854,7 +900,8 @@
       "institutionId": "1228",
       "lat": 44.1642,
       "lng": -70.2235,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IYU": {
       "symbol": "IYU",
@@ -872,7 +919,8 @@
       "institutionId": "2811",
       "lat": 31.5545,
       "lng": -97.1627,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NKB": {
       "symbol": "NKB",
@@ -890,7 +938,8 @@
       "institutionId": "1316",
       "lat": 42.1107,
       "lng": -72.5862,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "BLN": {
       "symbol": "BLN",
@@ -908,7 +957,8 @@
       "institutionId": "12668",
       "lat": 40.2705,
       "lng": -96.7435,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TW7": {
       "symbol": "TW7",
@@ -926,7 +976,8 @@
       "institutionId": "9751",
       "lat": 41.8119,
       "lng": -87.6873,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JN3": {
       "symbol": "JN3",
@@ -944,7 +995,8 @@
       "institutionId": "9752",
       "lat": 38.5146,
       "lng": -89.993,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "BLL": {
       "symbol": "BLL",
@@ -962,7 +1014,8 @@
       "institutionId": "12672",
       "lat": 41.147,
       "lng": -95.9348,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "BLP": {
       "symbol": "BLP",
@@ -980,7 +1033,8 @@
       "institutionId": "41234",
       "lat": 48.7522,
       "lng": -122.4645,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TW9": {
       "symbol": "TW9",
@@ -998,7 +1052,8 @@
       "institutionId": "9753",
       "lat": 41.8825,
       "lng": -87.8786,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "WII": {
       "symbol": "WII",
@@ -1016,7 +1071,8 @@
       "institutionId": "3160",
       "lat": 42.5352,
       "lng": -89.0589,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "BNT": {
       "symbol": "BNT",
@@ -1034,7 +1090,8 @@
       "institutionId": "2977",
       "lat": 42.8827,
       "lng": -73.1923,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JOY": {
       "symbol": "JOY",
@@ -1052,7 +1109,8 @@
       "institutionId": "9756",
       "lat": 41.9526,
       "lng": -87.9425,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "BET": {
       "symbol": "BET",
@@ -1070,7 +1128,8 @@
       "institutionId": "1319",
       "lat": 42.3787,
       "lng": -71.2363,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZMI": {
       "symbol": "ZMI",
@@ -1088,7 +1147,8 @@
       "institutionId": "9757",
       "lat": 38.0,
       "lng": -88.9227,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TV3": {
       "symbol": "TV3",
@@ -1106,7 +1166,8 @@
       "institutionId": "9758",
       "lat": 41.8888,
       "lng": -87.909,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LD2": {
       "symbol": "LD2",
@@ -1124,7 +1185,8 @@
       "institutionId": "9759",
       "lat": 42.1532,
       "lng": -89.3959,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IH3": {
       "symbol": "IH3",
@@ -1142,7 +1204,8 @@
       "institutionId": "9761",
       "lat": 38.9074,
       "lng": -90.0344,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MBE": {
       "symbol": "MBE",
@@ -1160,7 +1223,8 @@
       "institutionId": "1511",
       "lat": 44.1767,
       "lng": -94.0331,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "YPK": {
       "symbol": "YPK",
@@ -1178,7 +1242,8 @@
       "institutionId": "7301",
       "lat": 45.9344,
       "lng": -106.6368,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Other"
     },
     "YFY": {
       "symbol": "YFY",
@@ -1196,7 +1261,8 @@
       "institutionId": "12471",
       "lat": 45.7498,
       "lng": -107.6075,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "Y46": {
       "symbol": "Y46",
@@ -1214,7 +1280,8 @@
       "institutionId": "12470",
       "lat": 46.2395,
       "lng": -114.1679,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "BHS": {
       "symbol": "BHS",
@@ -1232,7 +1299,8 @@
       "institutionId": "2705",
       "lat": 44.4952,
       "lng": -103.8676,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "B9F": {
       "symbol": "B9F",
@@ -1250,7 +1318,8 @@
       "institutionId": "12675",
       "lat": 41.5418,
       "lng": -96.172,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JYQ": {
       "symbol": "JYQ",
@@ -1268,7 +1337,8 @@
       "institutionId": "9762",
       "lat": 40.5516,
       "lng": -90.8595,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JOZ": {
       "symbol": "JOZ",
@@ -1286,7 +1356,8 @@
       "institutionId": "9763",
       "lat": 41.894,
       "lng": -88.0834,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JCH": {
       "symbol": "JCH",
@@ -1304,7 +1375,8 @@
       "institutionId": "9764",
       "lat": 40.4819,
       "lng": -88.9469,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TU2": {
       "symbol": "TU2",
@@ -1322,7 +1394,8 @@
       "institutionId": "9765",
       "lat": 41.6582,
       "lng": -87.6795,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "SGB": {
       "symbol": "SGB",
@@ -1340,7 +1413,8 @@
       "institutionId": "4078",
       "lat": 34.8551,
       "lng": -82.4125,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "CX5": {
       "symbol": "CX5",
@@ -1358,7 +1432,8 @@
       "institutionId": "10694",
       "lat": 39.0672,
       "lng": -94.9227,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MQ4": {
       "symbol": "MQ4",
@@ -1376,7 +1451,8 @@
       "institutionId": "12262",
       "lat": 38.7003,
       "lng": -93.2303,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "PBJ": {
       "symbol": "PBJ",
@@ -1394,7 +1470,8 @@
       "institutionId": "16087",
       "lat": 37.2837,
       "lng": -79.9516,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "BLQ": {
       "symbol": "BLQ",
@@ -1412,7 +1489,8 @@
       "institutionId": "12443",
       "lat": 46.2306,
       "lng": -112.1138,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OD9": {
       "symbol": "OD9",
@@ -1430,7 +1508,8 @@
       "institutionId": "9768",
       "lat": 41.1661,
       "lng": -87.879,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "KB2": {
       "symbol": "KB2",
@@ -1448,7 +1527,8 @@
       "institutionId": "10906",
       "lat": 38.4087,
       "lng": -82.6882,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TU5": {
       "symbol": "TU5",
@@ -1466,7 +1546,8 @@
       "institutionId": "9772",
       "lat": 41.7431,
       "lng": -87.8066,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "VBC": {
       "symbol": "VBC",
@@ -1484,7 +1565,8 @@
       "institutionId": "3002",
       "lat": 38.3859,
       "lng": -78.9937,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "PZN": {
       "symbol": "PZN",
@@ -1502,7 +1584,8 @@
       "institutionId": "60454",
       "lat": 37.3452,
       "lng": -77.3771,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JWS": {
       "symbol": "JWS",
@@ -1520,7 +1603,8 @@
       "institutionId": "9773",
       "lat": 40.8407,
       "lng": -89.897,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TU6": {
       "symbol": "TU6",
@@ -1538,7 +1622,8 @@
       "institutionId": "9774",
       "lat": 41.8577,
       "lng": -87.8562,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "SBR": {
       "symbol": "SBR",
@@ -1556,7 +1641,8 @@
       "institutionId": "15193",
       "lat": 44.3376,
       "lng": -96.791,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JGI": {
       "symbol": "JGI",
@@ -1575,7 +1661,8 @@
       "lat": 40.4333,
       "lng": -88.9811,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "SUR": {
       "symbol": "SUR",
@@ -1593,7 +1680,8 @@
       "institutionId": "2916",
       "lat": 30.311,
       "lng": -103.6595,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "PBU": {
       "symbol": "PBU",
@@ -1611,7 +1699,8 @@
       "institutionId": "2463",
       "lat": 40.9702,
       "lng": -76.9099,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IOE": {
       "symbol": "IOE",
@@ -1629,7 +1718,8 @@
       "institutionId": "1008",
       "lat": 42.6474,
       "lng": -95.1961,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MZE": {
       "symbol": "MZE",
@@ -1647,7 +1737,8 @@
       "institutionId": "12447",
       "lat": 45.9631,
       "lng": -112.625,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JX6": {
       "symbol": "JX6",
@@ -1665,7 +1756,8 @@
       "institutionId": "9780",
       "lat": 42.1292,
       "lng": -89.2659,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "CTU": {
       "symbol": "CTU",
@@ -1683,7 +1775,8 @@
       "institutionId": "193",
       "lat": 37.504,
       "lng": -120.8493,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "CHU": {
       "symbol": "CHU",
@@ -1701,7 +1794,8 @@
       "institutionId": "285",
       "lat": 40.8713,
       "lng": -124.0811,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IK1": {
       "symbol": "IK1",
@@ -1719,7 +1813,8 @@
       "institutionId": "10251",
       "lat": 39.8687,
       "lng": -88.1616,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JYS": {
       "symbol": "JYS",
@@ -1737,7 +1832,8 @@
       "institutionId": "9785",
       "lat": 41.3114,
       "lng": -90.1805,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NCL": {
       "symbol": "NCL",
@@ -1755,7 +1851,8 @@
       "institutionId": "13180",
       "lat": 39.8504,
       "lng": -74.9646,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "WYG": {
       "symbol": "WYG",
@@ -1773,7 +1870,8 @@
       "institutionId": "16889",
       "lat": 44.1716,
       "lng": -105.5142,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MQ9": {
       "symbol": "MQ9",
@@ -1791,7 +1889,8 @@
       "institutionId": "12315",
       "lat": 40.1437,
       "lng": -91.548,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NQI": {
       "symbol": "NQI",
@@ -1809,7 +1908,8 @@
       "institutionId": "57763",
       "lat": 34.1998,
       "lng": -77.8864,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MQS": {
       "symbol": "MQS",
@@ -1827,7 +1927,8 @@
       "institutionId": "12270",
       "lat": 37.3245,
       "lng": -89.5245,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "XL4": {
       "symbol": "XL4",
@@ -1845,7 +1946,8 @@
       "institutionId": "9788",
       "lat": 37.6847,
       "lng": -89.2036,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MNN": {
       "symbol": "MNN",
@@ -1863,7 +1965,8 @@
       "institutionId": "1515",
       "lat": 44.4587,
       "lng": -93.1668,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IH5": {
       "symbol": "IH5",
@@ -1881,7 +1984,8 @@
       "institutionId": "9789",
       "lat": 39.2885,
       "lng": -89.8661,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IHR": {
       "symbol": "IHR",
@@ -1899,7 +2003,8 @@
       "institutionId": "50653",
       "lat": 40.95,
       "lng": -90.3705,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "DU3": {
       "symbol": "DU3",
@@ -1917,7 +2022,8 @@
       "institutionId": "13353",
       "lat": 32.377,
       "lng": -104.2666,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "KAY": {
       "symbol": "KAY",
@@ -1935,7 +2041,8 @@
       "institutionId": "9229",
       "lat": 42.4987,
       "lng": -90.6865,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "GZB": {
       "symbol": "GZB",
@@ -1953,7 +2060,8 @@
       "institutionId": "3163",
       "lat": 42.9938,
       "lng": -88.2545,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JGN": {
       "symbol": "JGN",
@@ -1971,7 +2079,8 @@
       "institutionId": "9796",
       "lat": 40.4129,
       "lng": -91.1005,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LJW": {
       "symbol": "LJW",
@@ -1989,7 +2098,8 @@
       "institutionId": "9399",
       "lat": 42.4969,
       "lng": -92.3796,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "CDC": {
       "symbol": "CDC",
@@ -2007,7 +2117,8 @@
       "institutionId": "2230",
       "lat": 39.7484,
       "lng": -83.8013,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "AKD": {
       "symbol": "AKD",
@@ -2025,7 +2136,8 @@
       "institutionId": "8333",
       "lat": 34.7594,
       "lng": -92.3447,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IOP": {
       "symbol": "IOP",
@@ -2043,7 +2155,8 @@
       "institutionId": "1009",
       "lat": 41.4082,
       "lng": -92.9172,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "CEO": {
       "symbol": "CEO",
@@ -2061,7 +2174,8 @@
       "institutionId": "42944",
       "lat": 44.0277,
       "lng": -121.3677,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VCG": {
       "symbol": "VCG",
@@ -2079,7 +2193,8 @@
       "institutionId": "66781",
       "lat": 37.3752,
       "lng": -79.1585,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "CWU": {
       "symbol": "CWU",
@@ -2097,7 +2212,8 @@
       "institutionId": "3078",
       "lat": 46.9996,
       "lng": -120.5163,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KCC": {
       "symbol": "KCC",
@@ -2115,7 +2231,8 @@
       "institutionId": "1133",
       "lat": 37.6461,
       "lng": -84.7734,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OIN": {
       "symbol": "OIN",
@@ -2133,7 +2250,8 @@
       "institutionId": "5733",
       "lat": 47.6647,
       "lng": -117.3985,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "HHC": {
       "symbol": "HHC",
@@ -2151,7 +2269,8 @@
       "institutionId": "2472",
       "lat": 40.4413,
       "lng": -80.0038,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ENM": {
       "symbol": "ENM",
@@ -2169,7 +2288,8 @@
       "institutionId": "11779",
       "lat": 45.608,
       "lng": -84.4867,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "CHF": {
       "symbol": "CHF",
@@ -2187,7 +2307,8 @@
       "institutionId": "13183",
       "lat": 39.9062,
       "lng": -74.9963,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JX9": {
       "symbol": "JX9",
@@ -2205,7 +2326,8 @@
       "institutionId": "9810",
       "lat": 42.2206,
       "lng": -88.9619,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TS6": {
       "symbol": "TS6",
@@ -2223,7 +2345,8 @@
       "institutionId": "9814",
       "lat": 41.7017,
       "lng": -87.7774,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "PYY": {
       "symbol": "PYY",
@@ -2241,7 +2364,8 @@
       "institutionId": "4018",
       "lat": 38.9268,
       "lng": -78.1796,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VCN": {
       "symbol": "VCN",
@@ -2259,7 +2383,8 @@
       "institutionId": "3006",
       "lat": 37.1189,
       "lng": -76.5024,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TS8": {
       "symbol": "TS8",
@@ -2277,7 +2402,8 @@
       "institutionId": "9818",
       "lat": 41.8378,
       "lng": -87.7602,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "CCZ": {
       "symbol": "CCZ",
@@ -2296,7 +2422,8 @@
       "lat": 36.1713,
       "lng": -119.7938,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "TR9": {
       "symbol": "TR9",
@@ -2314,7 +2441,8 @@
       "institutionId": "9820",
       "lat": 41.7965,
       "lng": -87.9569,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "V7L": {
       "symbol": "V7L",
@@ -2332,7 +2460,8 @@
       "institutionId": "10327",
       "lat": 40.9394,
       "lng": -87.9202,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OF9": {
       "symbol": "OF9",
@@ -2350,7 +2479,8 @@
       "institutionId": "9823",
       "lat": 41.2908,
       "lng": -88.2823,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ZKJ": {
       "symbol": "ZKJ",
@@ -2368,7 +2498,8 @@
       "institutionId": "2690",
       "lat": 33.8639,
       "lng": -79.0407,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ION": {
       "symbol": "ION",
@@ -2386,7 +2517,8 @@
       "institutionId": "1011",
       "lat": 42.0374,
       "lng": -91.6359,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZVR": {
       "symbol": "ZVR",
@@ -2404,7 +2536,8 @@
       "institutionId": "9626",
       "lat": 47.6984,
       "lng": -116.7848,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "KC#": {
       "symbol": "KC#",
@@ -2422,7 +2555,8 @@
       "institutionId": "52540",
       "lat": 38.2363,
       "lng": -95.7336,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IMV": {
       "symbol": "IMV",
@@ -2441,7 +2575,8 @@
       "lat": 42.0222,
       "lng": -93.3339,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Other"
     },
     "FO9": {
       "symbol": "FO9",
@@ -2459,7 +2594,8 @@
       "institutionId": "47576",
       "lat": 29.1703,
       "lng": -82.1489,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZFT": {
       "symbol": "ZFT",
@@ -2477,7 +2613,8 @@
       "institutionId": "776",
       "lat": 43.6687,
       "lng": -116.7497,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MNJ": {
       "symbol": "MNJ",
@@ -2495,7 +2632,8 @@
       "institutionId": "1579",
       "lat": 45.5783,
       "lng": -94.4199,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "STM": {
       "symbol": "STM",
@@ -2513,7 +2651,8 @@
       "institutionId": "64094",
       "lat": 41.2563,
       "lng": -96.0062,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NVA": {
       "symbol": "NVA",
@@ -2531,7 +2670,8 @@
       "institutionId": "57917",
       "lat": 36.16,
       "lng": -115.1875,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MNS": {
       "symbol": "MNS",
@@ -2549,7 +2689,8 @@
       "institutionId": "1583",
       "lat": 46.7864,
       "lng": -92.1266,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "COM": {
       "symbol": "COM",
@@ -2567,7 +2708,8 @@
       "institutionId": "483",
       "lat": 39.0617,
       "lng": -108.5305,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JN8": {
       "symbol": "JN8",
@@ -2585,7 +2727,8 @@
       "institutionId": "9827",
       "lat": 38.4325,
       "lng": -90.2027,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "CPK": {
       "symbol": "CPK",
@@ -2603,7 +2746,8 @@
       "institutionId": "12697",
       "lat": 41.4297,
       "lng": -97.3684,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LQS": {
       "symbol": "LQS",
@@ -2621,7 +2765,8 @@
       "institutionId": "2529",
       "lat": 41.1425,
       "lng": -77.4436,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "PBB": {
       "symbol": "PBB",
@@ -2639,7 +2784,8 @@
       "institutionId": "3944",
       "lat": 41.0115,
       "lng": -76.4384,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "CAT": {
       "symbol": "CAT",
@@ -2657,7 +2803,8 @@
       "institutionId": "42254",
       "lat": 39.3019,
       "lng": -76.621,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "K#T": {
       "symbol": "K#T",
@@ -2675,7 +2822,8 @@
       "institutionId": "9713",
       "lat": 47.7989,
       "lng": -116.7423,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "BIC": {
       "symbol": "BIC",
@@ -2693,7 +2841,8 @@
       "institutionId": "1651",
       "lat": 40.2428,
       "lng": -94.6869,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "WCN": {
       "symbol": "WCN",
@@ -2711,7 +2860,8 @@
       "institutionId": "3136",
       "lat": 37.4323,
       "lng": -80.9974,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OLR": {
       "symbol": "OLR",
@@ -2729,7 +2879,8 @@
       "institutionId": "58777",
       "lat": 35.4945,
       "lng": -95.3064,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "WYCCL": {
       "symbol": "WYCCL",
@@ -2747,7 +2898,8 @@
       "institutionId": "102604",
       "lat": 42.7803,
       "lng": -105.8719,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LX#": {
       "symbol": "LX#",
@@ -2765,7 +2917,8 @@
       "institutionId": "9139",
       "lat": 41.6937,
       "lng": -91.5906,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ZCV": {
       "symbol": "ZCV",
@@ -2783,7 +2936,8 @@
       "institutionId": "9829",
       "lat": 41.6928,
       "lng": -90.3071,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "O3C": {
       "symbol": "O3C",
@@ -2801,7 +2955,8 @@
       "institutionId": "10321",
       "lat": 41.92,
       "lng": -88.6887,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IWB": {
       "symbol": "IWB",
@@ -2819,7 +2974,8 @@
       "institutionId": "9518",
       "lat": 41.252,
       "lng": -95.8537,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TQ6": {
       "symbol": "TQ6",
@@ -2837,7 +2993,8 @@
       "institutionId": "10315",
       "lat": 41.6446,
       "lng": -87.7415,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TQ7": {
       "symbol": "TQ7",
@@ -2855,7 +3012,8 @@
       "institutionId": "9833",
       "lat": 41.439,
       "lng": -87.6027,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "SPB": {
       "symbol": "SPB",
@@ -2873,7 +3031,8 @@
       "institutionId": "1582",
       "lat": 44.9041,
       "lng": -93.749,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MHH": {
       "symbol": "MHH",
@@ -2891,7 +3050,8 @@
       "institutionId": "55082",
       "lat": 41.7815,
       "lng": -72.5242,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MHG": {
       "symbol": "MHG",
@@ -2909,7 +3069,8 @@
       "institutionId": "55081",
       "lat": 41.5371,
       "lng": -72.0849,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TNX": {
       "symbol": "TNX",
@@ -2927,7 +3088,8 @@
       "institutionId": "65069",
       "lat": 41.7707,
       "lng": -72.7597,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VWB": {
       "symbol": "VWB",
@@ -2945,7 +3107,8 @@
       "institutionId": "67329",
       "lat": 40.849,
       "lng": -73.8781,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZGM": {
       "symbol": "ZGM",
@@ -2963,7 +3126,8 @@
       "institutionId": "1892",
       "lat": 40.7592,
       "lng": -73.9817,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "CUM": {
       "symbol": "CUM",
@@ -2981,7 +3145,8 @@
       "institutionId": "1335",
       "lat": 42.2537,
       "lng": -71.0771,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "CCJ": {
       "symbol": "CCJ",
@@ -2999,7 +3164,8 @@
       "institutionId": "42551",
       "lat": 33.8181,
       "lng": -118.0357,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "DST": {
       "symbol": "DST",
@@ -3017,7 +3183,8 @@
       "institutionId": "2708",
       "lat": 44.0054,
       "lng": -97.1149,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "SDW": {
       "symbol": "SDW",
@@ -3035,7 +3202,8 @@
       "institutionId": "2709",
       "lat": 43.7094,
       "lng": -98.0298,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MR6": {
       "symbol": "MR6",
@@ -3053,7 +3221,8 @@
       "institutionId": "12305",
       "lat": 37.6429,
       "lng": -93.0906,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ZHY": {
       "symbol": "ZHY",
@@ -3071,7 +3240,8 @@
       "institutionId": "85172",
       "lat": 34.768,
       "lng": -84.9607,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KP0": {
       "symbol": "KP0",
@@ -3089,7 +3259,8 @@
       "institutionId": "9838",
       "lat": 40.5364,
       "lng": -89.1885,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JVU": {
       "symbol": "JVU",
@@ -3107,7 +3278,8 @@
       "institutionId": "52228",
       "lat": 40.1486,
       "lng": -87.6473,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JN9": {
       "symbol": "JN9",
@@ -3125,7 +3297,8 @@
       "institutionId": "9841",
       "lat": 38.5162,
       "lng": -90.2104,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NNM": {
       "symbol": "NNM",
@@ -3143,7 +3316,8 @@
       "institutionId": "2105",
       "lat": 35.4925,
       "lng": -80.8213,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KOD": {
       "symbol": "KOD",
@@ -3161,7 +3335,8 @@
       "institutionId": "10923",
       "lat": 37.7495,
       "lng": -87.1153,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JNE": {
       "symbol": "JNE",
@@ -3179,7 +3354,8 @@
       "institutionId": "9842",
       "lat": 39.8484,
       "lng": -88.9645,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JWU": {
       "symbol": "JWU",
@@ -3197,7 +3373,8 @@
       "institutionId": "9843",
       "lat": 40.6224,
       "lng": -89.3323,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "DEF": {
       "symbol": "DEF",
@@ -3215,7 +3392,8 @@
       "institutionId": "2251",
       "lat": 41.2799,
       "lng": -84.3626,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "CDM": {
       "symbol": "CDM",
@@ -3233,7 +3411,8 @@
       "institutionId": "42884",
       "lat": 27.7624,
       "lng": -97.4348,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "D#M": {
       "symbol": "D#M",
@@ -3251,7 +3430,8 @@
       "institutionId": "9696",
       "lat": 42.6888,
       "lng": -113.6481,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "DNU": {
       "symbol": "DNU",
@@ -3269,7 +3449,8 @@
       "institutionId": "2252",
       "lat": 40.0788,
       "lng": -82.5194,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "AW3": {
       "symbol": "AW3",
@@ -3287,7 +3468,8 @@
       "institutionId": "10789",
       "lat": 37.553,
       "lng": -97.2549,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "GK8": {
       "symbol": "GK8",
@@ -3305,7 +3487,8 @@
       "institutionId": "9848",
       "lat": 42.0288,
       "lng": -87.889,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "DIP": {
       "symbol": "DIP",
@@ -3323,7 +3506,8 @@
       "institutionId": "91577",
       "lat": 46.8424,
       "lng": -102.773,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NDI": {
       "symbol": "NDI",
@@ -3341,7 +3525,8 @@
       "institutionId": "2193",
       "lat": 46.8424,
       "lng": -102.773,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "YZV": {
       "symbol": "YZV",
@@ -3359,7 +3544,8 @@
       "institutionId": "12459",
       "lat": 45.2339,
       "lng": -112.6405,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JY3": {
       "symbol": "JY3",
@@ -3377,7 +3563,8 @@
       "institutionId": "9851",
       "lat": 41.8478,
       "lng": -89.4893,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NBD": {
       "symbol": "NBD",
@@ -3395,7 +3582,8 @@
       "institutionId": "56616",
       "lat": 40.6193,
       "lng": -96.9567,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TP4": {
       "symbol": "TP4",
@@ -3413,7 +3601,8 @@
       "institutionId": "9853",
       "lat": 41.6257,
       "lng": -87.598,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "D2A": {
       "symbol": "D2A",
@@ -3431,7 +3620,8 @@
       "institutionId": "44794",
       "lat": 32.3797,
       "lng": -106.7691,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IOT": {
       "symbol": "IOT",
@@ -3449,7 +3639,8 @@
       "institutionId": "1015",
       "lat": 43.0814,
       "lng": -96.18,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NVQ": {
       "symbol": "NVQ",
@@ -3467,7 +3658,8 @@
       "institutionId": "13417",
       "lat": 39.0218,
       "lng": -119.7314,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "DOV": {
       "symbol": "DOV",
@@ -3485,7 +3677,8 @@
       "institutionId": "8966",
       "lat": 39.1482,
       "lng": -75.5189,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IOD": {
       "symbol": "IOD",
@@ -3503,7 +3696,8 @@
       "institutionId": "1016",
       "lat": 41.6503,
       "lng": -93.586,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ORDRI": {
       "symbol": "ORDRI",
@@ -3521,7 +3715,8 @@
       "institutionId": "14559",
       "lat": 44.9089,
       "lng": -123.9888,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "WW9": {
       "symbol": "WW9",
@@ -3539,7 +3734,8 @@
       "institutionId": "1729",
       "lat": 38.8518,
       "lng": -91.9605,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IDV": {
       "symbol": "IDV",
@@ -3557,7 +3753,8 @@
       "institutionId": "9857",
       "lat": 40.8444,
       "lng": -89.6397,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "XYO": {
       "symbol": "XYO",
@@ -3576,7 +3773,8 @@
       "lat": 40.4333,
       "lng": -88.9811,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "KEU": {
       "symbol": "KEU",
@@ -3594,7 +3792,8 @@
       "institutionId": "1136",
       "lat": 37.7512,
       "lng": -84.2951,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VEM": {
       "symbol": "VEM",
@@ -3612,7 +3811,8 @@
       "institutionId": "3015",
       "lat": 38.4575,
       "lng": -78.8581,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "EOS": {
       "symbol": "EOS",
@@ -3630,7 +3830,8 @@
       "institutionId": "2412",
       "lat": 45.3304,
       "lng": -118.0852,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IH9": {
       "symbol": "IH9",
@@ -3648,7 +3849,8 @@
       "institutionId": "9865",
       "lat": 38.8082,
       "lng": -89.9584,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IV7": {
       "symbol": "IV7",
@@ -3666,7 +3868,8 @@
       "institutionId": "9866",
       "lat": 39.1217,
       "lng": -88.5611,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TP7": {
       "symbol": "TP7",
@@ -3684,7 +3887,8 @@
       "institutionId": "9867",
       "lat": 41.9643,
       "lng": -87.8162,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IHY": {
       "symbol": "IHY",
@@ -3702,7 +3906,8 @@
       "institutionId": "9868",
       "lat": 42.2165,
       "lng": -88.0769,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JCV": {
       "symbol": "JCV",
@@ -3720,7 +3925,8 @@
       "institutionId": "51714",
       "lat": 42.0419,
       "lng": -88.308,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IV3": {
       "symbol": "IV3",
@@ -3738,7 +3944,8 @@
       "institutionId": "10220",
       "lat": 39.5934,
       "lng": -88.6038,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ELZ": {
       "symbol": "ELZ",
@@ -3756,7 +3963,8 @@
       "institutionId": "2491",
       "lat": 40.1553,
       "lng": -76.6025,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "O2R": {
       "symbol": "O2R",
@@ -3774,7 +3982,8 @@
       "institutionId": "14449",
       "lat": 35.4112,
       "lng": -99.4127,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IL2": {
       "symbol": "IL2",
@@ -3792,7 +4001,8 @@
       "institutionId": "9872",
       "lat": 42.0057,
       "lng": -87.9817,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JBU": {
       "symbol": "JBU",
@@ -3810,7 +4020,8 @@
       "institutionId": "9876",
       "lat": 41.8927,
       "lng": -87.941,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ICV": {
       "symbol": "ICV",
@@ -3828,7 +4039,8 @@
       "institutionId": "820",
       "lat": 41.8927,
       "lng": -87.941,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NEO": {
       "symbol": "NEO",
@@ -3846,7 +4058,8 @@
       "institutionId": "2111",
       "lat": 36.1029,
       "lng": -79.5067,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ERU": {
       "symbol": "ERU",
@@ -3864,7 +4077,8 @@
       "institutionId": "93",
       "lat": 34.6307,
       "lng": -112.5238,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JWZ": {
       "symbol": "JWZ",
@@ -3882,7 +4096,8 @@
       "institutionId": "9881",
       "lat": 40.7152,
       "lng": -89.2706,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IHE": {
       "symbol": "IHE",
@@ -3900,7 +4115,8 @@
       "institutionId": "9882",
       "lat": 42.0471,
       "lng": -87.6921,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TO5": {
       "symbol": "TO5",
@@ -3918,7 +4134,8 @@
       "institutionId": "9884",
       "lat": 41.722,
       "lng": -87.7024,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "FGJ": {
       "symbol": "FGJ",
@@ -3937,7 +4154,8 @@
       "lat": 47.3463,
       "lng": -121.2199,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Federal/Natl Government"
     },
     "JO3": {
       "symbol": "JO3",
@@ -3955,7 +4173,8 @@
       "institutionId": "9888",
       "lat": 38.596,
       "lng": -90.0071,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NLZ": {
       "symbol": "NLZ",
@@ -3973,7 +4192,8 @@
       "institutionId": "12721",
       "lat": 40.0742,
       "lng": -95.5931,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JYW": {
       "symbol": "JYW",
@@ -3991,7 +4211,8 @@
       "institutionId": "9890",
       "lat": 40.6832,
       "lng": -90.035,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "FSO": {
       "symbol": "FSO",
@@ -4009,7 +4230,8 @@
       "institutionId": "1342",
       "lat": 42.3523,
       "lng": -71.0387,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "LE9": {
       "symbol": "LE9",
@@ -4027,7 +4249,8 @@
       "institutionId": "10161",
       "lat": 41.9282,
       "lng": -89.071,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "Y72": {
       "symbol": "Y72",
@@ -4045,7 +4268,8 @@
       "institutionId": "70266",
       "lat": 48.2223,
       "lng": -114.3299,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TO7": {
       "symbol": "TO7",
@@ -4063,7 +4287,8 @@
       "institutionId": "9892",
       "lat": 41.5406,
       "lng": -87.6837,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IDY": {
       "symbol": "IDY",
@@ -4082,7 +4307,8 @@
       "lat": 40.4333,
       "lng": -88.9811,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "TO9": {
       "symbol": "TO9",
@@ -4100,7 +4326,8 @@
       "institutionId": "9894",
       "lat": 41.8744,
       "lng": -87.8106,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JY6": {
       "symbol": "JY6",
@@ -4118,7 +4345,8 @@
       "institutionId": "9896",
       "lat": 42.1229,
       "lng": -89.5831,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "YNQ": {
       "symbol": "YNQ",
@@ -4136,7 +4364,8 @@
       "institutionId": "70813",
       "lat": 48.1307,
       "lng": -105.187,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "FSM": {
       "symbol": "FSM",
@@ -4154,7 +4383,8 @@
       "institutionId": "8343",
       "lat": 35.3671,
       "lng": -94.396,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OJ3": {
       "symbol": "OJ3",
@@ -4172,7 +4402,8 @@
       "institutionId": "9898",
       "lat": 41.2657,
       "lng": -88.2231,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OJ4": {
       "symbol": "OJ4",
@@ -4190,7 +4421,8 @@
       "institutionId": "9899",
       "lat": 41.6883,
       "lng": -88.1138,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "GK9": {
       "symbol": "GK9",
@@ -4209,7 +4441,8 @@
       "lat": 40.4333,
       "lng": -88.9811,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "IFC": {
       "symbol": "IFC",
@@ -4227,7 +4460,8 @@
       "institutionId": "944",
       "lat": 39.4854,
       "lng": -86.0608,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JY9": {
       "symbol": "JY9",
@@ -4245,7 +4479,8 @@
       "institutionId": "9905",
       "lat": 42.2991,
       "lng": -89.6345,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "GL4": {
       "symbol": "GL4",
@@ -4263,7 +4498,8 @@
       "institutionId": "9906",
       "lat": 42.2636,
       "lng": -88.0048,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "KFU": {
       "symbol": "KFU",
@@ -4281,7 +4517,8 @@
       "institutionId": "1083",
       "lat": 37.6946,
       "lng": -97.3419,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IB2": {
       "symbol": "IB2",
@@ -4299,7 +4536,8 @@
       "institutionId": "50467",
       "lat": 38.3782,
       "lng": -88.3593,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "SFU": {
       "symbol": "SFU",
@@ -4317,7 +4555,8 @@
       "institutionId": "2668",
       "lat": 34.8551,
       "lng": -82.4125,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JZ2": {
       "symbol": "JZ2",
@@ -4335,7 +4574,8 @@
       "institutionId": "9908",
       "lat": 42.4182,
       "lng": -90.4195,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JYX": {
       "symbol": "JYX",
@@ -4353,7 +4593,8 @@
       "institutionId": "9909",
       "lat": 40.95,
       "lng": -90.3705,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ZRQ": {
       "symbol": "ZRQ",
@@ -4371,7 +4612,8 @@
       "institutionId": "9643",
       "lat": 43.7318,
       "lng": -116.2797,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "HOT": {
       "symbol": "HOT",
@@ -4390,7 +4632,8 @@
       "lat": 35.1271,
       "lng": -92.4028,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "JSY": {
       "symbol": "JSY",
@@ -4408,7 +4651,8 @@
       "institutionId": "9912",
       "lat": 41.886,
       "lng": -88.311,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "YMR": {
       "symbol": "YMR",
@@ -4426,7 +4670,8 @@
       "institutionId": "12452",
       "lat": 47.4264,
       "lng": -105.6148,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "GAT": {
       "symbol": "GAT",
@@ -4444,7 +4689,8 @@
       "institutionId": "5090",
       "lat": 33.8171,
       "lng": -84.3802,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "GAC": {
       "symbol": "GAC",
@@ -4462,7 +4708,8 @@
       "institutionId": "671",
       "lat": 32.0178,
       "lng": -81.0942,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NOJ": {
       "symbol": "NOJ",
@@ -4480,7 +4727,8 @@
       "institutionId": "12729",
       "lat": 41.822,
       "lng": -103.6629,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "YMW": {
       "symbol": "YMW",
@@ -4498,7 +4746,8 @@
       "institutionId": "12467",
       "lat": 48.2034,
       "lng": -106.6094,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "YW6": {
       "symbol": "YW6",
@@ -4516,7 +4765,8 @@
       "institutionId": "71037",
       "lat": 38.7609,
       "lng": -89.9706,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Other"
     },
     "JAH": {
       "symbol": "JAH",
@@ -4534,7 +4784,8 @@
       "institutionId": "9920",
       "lat": 42.1333,
       "lng": -87.7615,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "YQP": {
       "symbol": "YQP",
@@ -4552,7 +4803,8 @@
       "institutionId": "12468",
       "lat": 47.1008,
       "lng": -104.7287,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JCW": {
       "symbol": "JCW",
@@ -4570,7 +4822,8 @@
       "institutionId": "9919",
       "lat": 41.8718,
       "lng": -88.0659,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JVJ": {
       "symbol": "JVJ",
@@ -4588,7 +4841,8 @@
       "institutionId": "9921",
       "lat": 41.9205,
       "lng": -88.0793,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "FM0": {
       "symbol": "FM0",
@@ -4606,7 +4860,8 @@
       "institutionId": "9922",
       "lat": 42.0728,
       "lng": -87.805,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TM5": {
       "symbol": "TM5",
@@ -4625,7 +4880,8 @@
       "lat": 40.4333,
       "lng": -88.9811,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "WUG": {
       "symbol": "WUG",
@@ -4643,7 +4899,8 @@
       "institutionId": "3090",
       "lat": 47.6647,
       "lng": -117.3985,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "GMPMT": {
       "symbol": "GMPMT",
@@ -4661,7 +4918,8 @@
       "institutionId": "14265",
       "lat": 41.2854,
       "lng": -82.0431,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TM8": {
       "symbol": "TM8",
@@ -4679,7 +4937,8 @@
       "institutionId": "9925",
       "lat": 41.5738,
       "lng": -87.6849,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "FGK": {
       "symbol": "FGK",
@@ -4697,7 +4956,8 @@
       "institutionId": "75688",
       "lat": 47.9597,
       "lng": -97.3733,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Federal/Natl Government"
     },
     "GIP": {
       "symbol": "GIP",
@@ -4715,7 +4975,8 @@
       "institutionId": "12732",
       "lat": 40.9077,
       "lng": -98.4102,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "GL5": {
       "symbol": "GL5",
@@ -4733,7 +4994,8 @@
       "institutionId": "9928",
       "lat": 42.3524,
       "lng": -88.0545,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "YQV": {
       "symbol": "YQV",
@@ -4751,7 +5013,8 @@
       "institutionId": "12469",
       "lat": 47.527,
       "lng": -111.2808,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TL4": {
       "symbol": "TL4",
@@ -4769,7 +5032,8 @@
       "institutionId": "9930",
       "lat": 41.7004,
       "lng": -87.8263,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "SGR": {
       "symbol": "SGR",
@@ -4787,7 +5051,8 @@
       "institutionId": "6631",
       "lat": 34.8551,
       "lng": -82.4125,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "GRN": {
       "symbol": "GRN",
@@ -4805,7 +5070,8 @@
       "institutionId": "8817",
       "lat": 41.0414,
       "lng": -73.638,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Other"
     },
     "MNG": {
       "symbol": "MNG",
@@ -4823,7 +5089,8 @@
       "institutionId": "1529",
       "lat": 44.3351,
       "lng": -93.9811,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZOR": {
       "symbol": "ZOR",
@@ -4841,7 +5108,8 @@
       "institutionId": "9652",
       "lat": 43.6138,
       "lng": -116.9472,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "VHS": {
       "symbol": "VHS",
@@ -4860,7 +5128,8 @@
       "lat": 37.7144,
       "lng": -78.2311,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Academic"
     },
     "Y2A": {
       "symbol": "Y2A",
@@ -4878,7 +5147,8 @@
       "institutionId": "75539",
       "lat": 39.7902,
       "lng": -85.8141,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MU4": {
       "symbol": "MU4",
@@ -4896,7 +5166,8 @@
       "institutionId": "12273",
       "lat": 39.7064,
       "lng": -91.3839,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "HANCL": {
       "symbol": "HANCL",
@@ -4914,7 +5185,8 @@
       "institutionId": "9653",
       "lat": 42.5249,
       "lng": -114.2994,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "AHS": {
       "symbol": "AHS",
@@ -4932,7 +5204,8 @@
       "institutionId": "137",
       "lat": 35.2561,
       "lng": -91.7319,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "UX7": {
       "symbol": "UX7",
@@ -4950,7 +5223,8 @@
       "institutionId": "9938",
       "lat": 37.7257,
       "lng": -88.544,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JZ6": {
       "symbol": "JZ6",
@@ -4968,7 +5242,8 @@
       "institutionId": "9940",
       "lat": 42.4227,
       "lng": -88.6048,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NBH": {
       "symbol": "NBH",
@@ -4986,7 +5261,8 @@
       "institutionId": "56621",
       "lat": 40.5887,
       "lng": -98.3941,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JZH": {
       "symbol": "JZH",
@@ -5004,7 +5280,8 @@
       "institutionId": "9942",
       "lat": 40.3,
       "lng": -90.061,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "YVZ": {
       "symbol": "YVZ",
@@ -5022,7 +5299,8 @@
       "institutionId": "12474",
       "lat": 48.5561,
       "lng": -109.688,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IK2": {
       "symbol": "IK2",
@@ -5040,7 +5318,8 @@
       "institutionId": "113636",
       "lat": 38.9087,
       "lng": -90.1568,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "YZR": {
       "symbol": "YZR",
@@ -5058,7 +5337,8 @@
       "institutionId": "12517",
       "lat": 46.1299,
       "lng": -112.9739,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "H9C": {
       "symbol": "H9C",
@@ -5076,7 +5356,8 @@
       "institutionId": "86331",
       "lat": 40.5114,
       "lng": -88.9931,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JFL": {
       "symbol": "JFL",
@@ -5094,7 +5375,8 @@
       "institutionId": "10003",
       "lat": 41.8721,
       "lng": -88.016,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "KG7": {
       "symbol": "KG7",
@@ -5112,7 +5394,8 @@
       "institutionId": "10944",
       "lat": 38.3696,
       "lng": -85.1782,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "UU4": {
       "symbol": "UU4",
@@ -5130,7 +5413,8 @@
       "institutionId": "9948",
       "lat": 37.8019,
       "lng": -89.0232,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "PA2": {
       "symbol": "PA2",
@@ -5148,7 +5432,8 @@
       "institutionId": "14850",
       "lat": 40.2638,
       "lng": -76.6545,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IHV": {
       "symbol": "IHV",
@@ -5166,7 +5451,8 @@
       "institutionId": "9951",
       "lat": 42.1794,
       "lng": -87.8059,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "UOI": {
       "symbol": "UOI",
@@ -5185,7 +5471,8 @@
       "lat": 47.3463,
       "lng": -121.2199,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Academic"
     },
     "EEI": {
       "symbol": "EEI",
@@ -5203,7 +5490,8 @@
       "institutionId": "4353",
       "lat": 41.924,
       "lng": -84.6208,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TL7": {
       "symbol": "TL7",
@@ -5221,7 +5509,8 @@
       "institutionId": "9954",
       "lat": 41.8725,
       "lng": -87.9016,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TL9": {
       "symbol": "TL9",
@@ -5239,7 +5528,8 @@
       "institutionId": "9955",
       "lat": 41.8199,
       "lng": -88.0087,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NHO": {
       "symbol": "NHO",
@@ -5257,7 +5547,8 @@
       "institutionId": "6556",
       "lat": 40.4475,
       "lng": -99.3672,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ON3": {
       "symbol": "ON3",
@@ -5275,7 +5566,8 @@
       "institutionId": "9958",
       "lat": 41.6028,
       "lng": -87.9599,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "HCF": {
       "symbol": "HCF",
@@ -5293,7 +5585,8 @@
       "institutionId": "1276",
       "lat": 39.4222,
       "lng": -77.4076,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "SHM": {
       "symbol": "SHM",
@@ -5311,7 +5604,8 @@
       "institutionId": "15169",
       "lat": 33.8639,
       "lng": -79.0407,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TWH": {
       "symbol": "TWH",
@@ -5329,7 +5623,8 @@
       "institutionId": "2845",
       "lat": 29.7979,
       "lng": -95.4191,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VXV": {
       "symbol": "VXV",
@@ -5347,7 +5642,8 @@
       "institutionId": "67365",
       "lat": 42.7491,
       "lng": -73.6753,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IHH": {
       "symbol": "IHH",
@@ -5365,7 +5661,8 @@
       "institutionId": "949",
       "lat": 40.8811,
       "lng": -85.5054,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KAH": {
       "symbol": "KAH",
@@ -5383,7 +5680,8 @@
       "institutionId": "10792",
       "lat": 38.0413,
       "lng": -97.9702,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JX5": {
       "symbol": "JX5",
@@ -5401,7 +5699,8 @@
       "institutionId": "9754",
       "lat": 42.2595,
       "lng": -88.8509,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ICH": {
       "symbol": "ICH",
@@ -5419,7 +5718,8 @@
       "institutionId": "836",
       "lat": 39.7161,
       "lng": -90.2452,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ICO": {
       "symbol": "ICO",
@@ -5437,7 +5737,8 @@
       "institutionId": "834",
       "lat": 40.4819,
       "lng": -88.9469,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IUB": {
       "symbol": "IUB",
@@ -5455,7 +5756,8 @@
       "institutionId": "4319",
       "lat": 39.1726,
       "lng": -86.5212,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IU0": {
       "symbol": "IU0",
@@ -5473,7 +5775,8 @@
       "institutionId": "969",
       "lat": 40.4722,
       "lng": -86.1296,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "PZI": {
       "symbol": "PZI",
@@ -5491,7 +5794,8 @@
       "institutionId": "2509",
       "lat": 40.6205,
       "lng": -79.156,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "I3U": {
       "symbol": "I3U",
@@ -5509,7 +5813,8 @@
       "institutionId": "970",
       "lat": 41.6636,
       "lng": -86.2638,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "XUN": {
       "symbol": "XUN",
@@ -5527,7 +5832,8 @@
       "institutionId": "973",
       "lat": 38.2973,
       "lng": -85.8231,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TJ7": {
       "symbol": "TJ7",
@@ -5545,7 +5851,8 @@
       "institutionId": "9840",
       "lat": 41.7434,
       "lng": -87.9805,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LXY": {
       "symbol": "LXY",
@@ -5563,7 +5870,8 @@
       "institutionId": "9138",
       "lat": 41.6401,
       "lng": -91.5539,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JSU": {
       "symbol": "JSU",
@@ -5581,7 +5889,8 @@
       "institutionId": "9965",
       "lat": 41.972,
       "lng": -88.0202,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "XXWBL": {
       "symbol": "XXWBL",
@@ -5599,7 +5908,8 @@
       "institutionId": "89550",
       "lat": 39.1726,
       "lng": -86.5212,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "EJ4": {
       "symbol": "EJ4",
@@ -5617,7 +5927,8 @@
       "institutionId": "11882",
       "lat": 42.2482,
       "lng": -84.4026,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JBF": {
       "symbol": "JBF",
@@ -5635,7 +5946,8 @@
       "institutionId": "9966",
       "lat": 39.7161,
       "lng": -90.2452,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "VMC": {
       "symbol": "VMC",
@@ -5653,7 +5965,8 @@
       "institutionId": "3025",
       "lat": 38.4575,
       "lng": -78.8581,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "EXN": {
       "symbol": "EXN",
@@ -5671,7 +5984,8 @@
       "institutionId": "1421",
       "lat": 41.9472,
       "lng": -86.3465,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VND": {
       "symbol": "VND",
@@ -5689,7 +6003,8 @@
       "institutionId": "67055",
       "lat": 43.9415,
       "lng": -75.9044,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KJC": {
       "symbol": "KJC",
@@ -5707,7 +6022,8 @@
       "institutionId": "85605",
       "lat": 38.2084,
       "lng": -85.6963,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MJ8": {
       "symbol": "MJ8",
@@ -5725,7 +6041,8 @@
       "institutionId": "12360",
       "lat": 38.4728,
       "lng": -90.5281,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "Y36": {
       "symbol": "Y36",
@@ -5743,7 +6060,8 @@
       "institutionId": "7311",
       "lat": 45.8771,
       "lng": -112.1245,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "QQ3": {
       "symbol": "QQ3",
@@ -5762,7 +6080,8 @@
       "lat": 39.2639,
       "lng": -105.3172,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "Z85": {
       "symbol": "Z85",
@@ -5780,7 +6099,8 @@
       "institutionId": "16385",
       "lat": 48.0345,
       "lng": -122.7682,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IK6": {
       "symbol": "IK6",
@@ -5798,7 +6118,8 @@
       "institutionId": "9967",
       "lat": 39.1213,
       "lng": -90.3338,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LD5": {
       "symbol": "LD5",
@@ -5817,7 +6138,8 @@
       "lat": 40.4333,
       "lng": -88.9811,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "KNJ": {
       "symbol": "KNJ",
@@ -5835,7 +6157,8 @@
       "institutionId": "6528",
       "lat": 38.914,
       "lng": -94.7289,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IFJ": {
       "symbol": "IFJ",
@@ -5853,7 +6176,8 @@
       "institutionId": "10538",
       "lat": 39.4854,
       "lng": -86.0608,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JUH": {
       "symbol": "JUH",
@@ -5871,7 +6195,8 @@
       "institutionId": "9594",
       "lat": 41.673,
       "lng": -93.7028,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "J9L": {
       "symbol": "J9L",
@@ -5889,7 +6214,8 @@
       "institutionId": "12516",
       "lat": 45.4941,
       "lng": -108.9922,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MQY": {
       "symbol": "MQY",
@@ -5907,7 +6233,8 @@
       "institutionId": "12264",
       "lat": 37.078,
       "lng": -94.5105,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "YVV": {
       "symbol": "YVV",
@@ -5925,7 +6252,8 @@
       "institutionId": "12500",
       "lat": 47.1489,
       "lng": -110.1961,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OO3": {
       "symbol": "OO3",
@@ -5943,7 +6271,8 @@
       "institutionId": "9974",
       "lat": 41.1166,
       "lng": -87.8696,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "USX": {
       "symbol": "USX",
@@ -5961,7 +6290,8 @@
       "institutionId": "66300",
       "lat": 39.36,
       "lng": -111.5823,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KPL": {
       "symbol": "KPL",
@@ -5979,7 +6309,8 @@
       "institutionId": "12752",
       "lat": 40.7502,
       "lng": -99.0876,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NFR": {
       "symbol": "NFR",
@@ -5997,7 +6328,8 @@
       "institutionId": "12724",
       "lat": 41.4374,
       "lng": -96.4963,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "GKJ": {
       "symbol": "GKJ",
@@ -6015,7 +6347,8 @@
       "institutionId": "716",
       "lat": 34.0165,
       "lng": -84.6249,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IEV": {
       "symbol": "IEV",
@@ -6033,7 +6366,8 @@
       "institutionId": "9976",
       "lat": 41.2411,
       "lng": -89.9274,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "YNB": {
       "symbol": "YNB",
@@ -6051,7 +6385,8 @@
       "institutionId": "12867",
       "lat": 40.8667,
       "lng": -97.5825,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TBK": {
       "symbol": "TBK",
@@ -6069,7 +6404,8 @@
       "institutionId": "2754",
       "lat": 36.556,
       "lng": -82.2117,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KCL": {
       "symbol": "KCL",
@@ -6087,7 +6423,8 @@
       "institutionId": "14552",
       "lat": 42.2367,
       "lng": -121.7742,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IBK": {
       "symbol": "IBK",
@@ -6105,7 +6442,8 @@
       "institutionId": "853",
       "lat": 40.95,
       "lng": -90.3705,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TKL": {
       "symbol": "TKL",
@@ -6123,7 +6461,8 @@
       "institutionId": "15426",
       "lat": 35.9717,
       "lng": -83.9645,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IKP": {
       "symbol": "IKP",
@@ -6141,7 +6480,8 @@
       "institutionId": "10465",
       "lat": 40.4722,
       "lng": -86.1296,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LAF": {
       "symbol": "LAF",
@@ -6159,7 +6499,8 @@
       "institutionId": "2518",
       "lat": 40.6938,
       "lng": -75.2347,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "BCI": {
       "symbol": "BCI",
@@ -6177,7 +6518,8 @@
       "institutionId": "9983",
       "lat": 41.8318,
       "lng": -87.874,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "BFI": {
       "symbol": "BFI",
@@ -6195,7 +6537,8 @@
       "institutionId": "9982",
       "lat": 41.7842,
       "lng": -87.8689,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JAI": {
       "symbol": "JAI",
@@ -6213,7 +6556,8 @@
       "institutionId": "9986",
       "lat": 42.2374,
       "lng": -87.8482,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Other"
     },
     "OLE": {
       "symbol": "OLE",
@@ -6231,7 +6575,8 @@
       "institutionId": "58767",
       "lat": 44.0691,
       "lng": -123.0962,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "BGI": {
       "symbol": "BGI",
@@ -6249,7 +6594,8 @@
       "institutionId": "9991",
       "lat": 41.566,
       "lng": -87.5446,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IMQ": {
       "symbol": "IMQ",
@@ -6267,7 +6613,8 @@
       "institutionId": "10377",
       "lat": 41.5492,
       "lng": -86.7088,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "WYL": {
       "symbol": "WYL",
@@ -6285,7 +6632,8 @@
       "institutionId": "16891",
       "lat": 41.1519,
       "lng": -104.7939,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ZWR": {
       "symbol": "ZWR",
@@ -6303,7 +6651,8 @@
       "institutionId": "9666",
       "lat": 46.7317,
       "lng": -116.995,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "KSA": {
       "symbol": "KSA",
@@ -6321,7 +6670,8 @@
       "institutionId": "10700",
       "lat": 38.9672,
       "lng": -95.2511,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LVC": {
       "symbol": "LVC",
@@ -6339,7 +6689,8 @@
       "institutionId": "2522",
       "lat": 40.3456,
       "lng": -76.5447,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "LYU": {
       "symbol": "LYU",
@@ -6357,7 +6708,8 @@
       "institutionId": "2525",
       "lat": 40.6465,
       "lng": -75.39,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "XK4": {
       "symbol": "XK4",
@@ -6375,7 +6727,8 @@
       "institutionId": "9995",
       "lat": 41.7074,
       "lng": -87.9756,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "FTL": {
       "symbol": "FTL",
@@ -6393,7 +6746,8 @@
       "institutionId": "8995",
       "lat": 30.4548,
       "lng": -84.2802,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "GY4": {
       "symbol": "GY4",
@@ -6411,7 +6765,8 @@
       "institutionId": "12756",
       "lat": 40.785,
       "lng": -99.7515,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "VLB": {
       "symbol": "VLB",
@@ -6429,7 +6784,8 @@
       "institutionId": "3028",
       "lat": 37.3752,
       "lng": -79.1585,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ISQ": {
       "symbol": "ISQ",
@@ -6447,7 +6803,8 @@
       "institutionId": "10146",
       "lat": 40.9093,
       "lng": -89.7723,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "I9H": {
       "symbol": "I9H",
@@ -6465,7 +6822,8 @@
       "institutionId": "10332",
       "lat": 41.1166,
       "lng": -87.8696,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NLN": {
       "symbol": "NLN",
@@ -6483,7 +6841,8 @@
       "institutionId": "12757",
       "lat": 40.8176,
       "lng": -96.6889,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LCS": {
       "symbol": "LCS",
@@ -6501,7 +6860,8 @@
       "institutionId": "14645",
       "lat": 44.6487,
       "lng": -124.0509,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ILM": {
       "symbol": "ILM",
@@ -6519,7 +6879,8 @@
       "institutionId": "10207",
       "lat": 39.7756,
       "lng": -89.619,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IY3": {
       "symbol": "IY3",
@@ -6537,7 +6898,8 @@
       "institutionId": "9999",
       "lat": 40.1451,
       "lng": -89.3684,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ILE": {
       "symbol": "ILE",
@@ -6555,7 +6917,8 @@
       "institutionId": "10306",
       "lat": 42.008,
       "lng": -87.7361,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TU7": {
       "symbol": "TU7",
@@ -6573,7 +6936,8 @@
       "institutionId": "9775",
       "lat": 41.8217,
       "lng": -87.8492,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LWC": {
       "symbol": "LWC",
@@ -6591,7 +6955,8 @@
       "institutionId": "1155",
       "lat": 37.1161,
       "lng": -85.2656,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OLC": {
       "symbol": "OLC",
@@ -6609,7 +6974,8 @@
       "institutionId": "2418",
       "lat": 45.2097,
       "lng": -123.2043,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "BNO": {
       "symbol": "BNO",
@@ -6627,7 +6993,8 @@
       "institutionId": "10000",
       "lat": 41.7862,
       "lng": -88.0879,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LVQ": {
       "symbol": "LVQ",
@@ -6645,7 +7012,8 @@
       "institutionId": "12482",
       "lat": 45.6546,
       "lng": -110.5609,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "UUD": {
       "symbol": "UUD",
@@ -6663,7 +7031,8 @@
       "institutionId": "16034",
       "lat": 41.7249,
       "lng": -111.8401,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IOL": {
       "symbol": "IOL",
@@ -6681,7 +7050,8 @@
       "institutionId": "1036",
       "lat": 42.4987,
       "lng": -90.6865,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IK4": {
       "symbol": "IK4",
@@ -6699,7 +7069,8 @@
       "institutionId": "9950",
       "lat": 38.7631,
       "lng": -89.6789,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LOY": {
       "symbol": "LOY",
@@ -6717,7 +7088,8 @@
       "institutionId": "4011",
       "lat": 39.3019,
       "lng": -76.621,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IAL": {
       "symbol": "IAL",
@@ -6735,7 +7107,8 @@
       "institutionId": "864",
       "lat": 41.8542,
       "lng": -87.6761,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MZK": {
       "symbol": "MZK",
@@ -6753,7 +7126,8 @@
       "institutionId": "56247",
       "lat": 45.2339,
       "lng": -112.6405,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Other"
     },
     "IOH": {
       "symbol": "IOH",
@@ -6771,7 +7145,8 @@
       "institutionId": "1037",
       "lat": 43.3227,
       "lng": -91.7939,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "BQI": {
       "symbol": "BQI",
@@ -6789,7 +7164,8 @@
       "institutionId": "10006",
       "lat": 41.813,
       "lng": -87.8236,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "KRZ": {
       "symbol": "KRZ",
@@ -6807,7 +7183,8 @@
       "institutionId": "14516",
       "lat": 35.4936,
       "lng": -97.7412,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MAC": {
       "symbol": "MAC",
@@ -6826,7 +7203,8 @@
       "lat": 45.5629,
       "lng": -94.1223,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Academic"
     },
     "IER": {
       "symbol": "IER",
@@ -6844,7 +7222,8 @@
       "institutionId": "10011",
       "lat": 40.5396,
       "lng": -89.3458,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "KJ3": {
       "symbol": "KJ3",
@@ -6862,7 +7241,8 @@
       "institutionId": "10964",
       "lat": 37.7512,
       "lng": -84.2951,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MIU": {
       "symbol": "MIU",
@@ -6880,7 +7260,8 @@
       "institutionId": "1038",
       "lat": 41.0102,
       "lng": -91.9629,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "AHO": {
       "symbol": "AHO",
@@ -6898,7 +7279,8 @@
       "institutionId": "8337",
       "lat": 34.3557,
       "lng": -92.8292,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "FMA": {
       "symbol": "FMA",
@@ -6916,7 +7298,8 @@
       "institutionId": "8996",
       "lat": 27.4495,
       "lng": -82.4959,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ZMC": {
       "symbol": "ZMC",
@@ -6934,7 +7317,8 @@
       "institutionId": "1949",
       "lat": 40.849,
       "lng": -73.8781,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OR6": {
       "symbol": "OR6",
@@ -6952,7 +7336,8 @@
       "institutionId": "10022",
       "lat": 41.2514,
       "lng": -87.8468,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LD8": {
       "symbol": "LD8",
@@ -6970,7 +7355,8 @@
       "institutionId": "10025",
       "lat": 42.2442,
       "lng": -88.6074,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "XMA": {
       "symbol": "XMA",
@@ -6988,7 +7374,8 @@
       "institutionId": "1953",
       "lat": 41.7285,
       "lng": -73.8153,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IY5": {
       "symbol": "IY5",
@@ -7006,7 +7393,8 @@
       "institutionId": "10031",
       "lat": 39.6348,
       "lng": -88.7543,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "KJ7": {
       "symbol": "KJ7",
@@ -7024,7 +7412,8 @@
       "institutionId": "10967",
       "lat": 36.8806,
       "lng": -88.3548,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "Q6J": {
       "symbol": "Q6J",
@@ -7042,7 +7431,8 @@
       "institutionId": "9684",
       "lat": 42.8311,
       "lng": -112.4198,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MRGLN": {
       "symbol": "MRGLN",
@@ -7060,7 +7450,8 @@
       "institutionId": "134349",
       "lat": 31.2104,
       "lng": -81.5091,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "VMB": {
       "symbol": "VMB",
@@ -7078,7 +7469,8 @@
       "institutionId": "3032",
       "lat": 38.1583,
       "lng": -79.064,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JO6": {
       "symbol": "JO6",
@@ -7096,7 +7488,8 @@
       "institutionId": "10035",
       "lat": 38.4745,
       "lng": -89.7877,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NDA": {
       "symbol": "NDA",
@@ -7114,7 +7507,8 @@
       "institutionId": "1385",
       "lat": 42.6955,
       "lng": -73.08,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "PFN": {
       "symbol": "PFN",
@@ -7132,7 +7526,8 @@
       "institutionId": "16147",
       "lat": 38.4575,
       "lng": -78.8581,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MG0": {
       "symbol": "MG0",
@@ -7150,7 +7545,8 @@
       "institutionId": "10038",
       "lat": 39.4802,
       "lng": -88.3762,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NMY": {
       "symbol": "NMY",
@@ -7168,7 +7564,8 @@
       "institutionId": "2199",
       "lat": 47.5014,
       "lng": -97.3176,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "V#L": {
       "symbol": "V#L",
@@ -7186,7 +7583,8 @@
       "institutionId": "9665",
       "lat": 44.8918,
       "lng": -116.0789,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "KL6": {
       "symbol": "KL6",
@@ -7204,7 +7602,8 @@
       "institutionId": "10970",
       "lat": 37.0619,
       "lng": -88.6564,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MNV": {
       "symbol": "MNV",
@@ -7222,7 +7621,8 @@
       "institutionId": "5363",
       "lat": 44.4481,
       "lng": -95.7795,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Other"
     },
     "ITV": {
       "symbol": "ITV",
@@ -7240,7 +7640,8 @@
       "institutionId": "51332",
       "lat": 42.2739,
       "lng": -88.3687,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KAP": {
       "symbol": "KAP",
@@ -7258,7 +7659,8 @@
       "institutionId": "1102",
       "lat": 38.3763,
       "lng": -97.6702,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "YYL": {
       "symbol": "YYL",
@@ -7276,7 +7678,8 @@
       "institutionId": "12511",
       "lat": 46.6332,
       "lng": -111.0506,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TYV": {
       "symbol": "TYV",
@@ -7294,7 +7697,8 @@
       "institutionId": "10091",
       "lat": 41.8089,
       "lng": -88.3274,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "PGM": {
       "symbol": "PGM",
@@ -7312,7 +7716,8 @@
       "institutionId": "2540",
       "lat": 40.1956,
       "lng": -77.0151,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NEM": {
       "symbol": "NEM",
@@ -7330,7 +7735,8 @@
       "institutionId": "56984",
       "lat": 41.2563,
       "lng": -96.0062,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "XOJ": {
       "symbol": "XOJ",
@@ -7348,7 +7754,8 @@
       "institutionId": "1545",
       "lat": 44.9596,
       "lng": -93.1016,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MTB": {
       "symbol": "MTB",
@@ -7366,7 +7773,8 @@
       "institutionId": "12309",
       "lat": 39.1712,
       "lng": -91.8895,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MDY": {
       "symbol": "MDY",
@@ -7384,7 +7792,8 @@
       "institutionId": "2987",
       "lat": 43.9919,
       "lng": -73.1716,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "CKI": {
       "symbol": "CKI",
@@ -7402,7 +7811,8 @@
       "institutionId": "10044",
       "lat": 41.635,
       "lng": -87.7362,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TMI": {
       "symbol": "TMI",
@@ -7420,7 +7830,8 @@
       "institutionId": "2875",
       "lat": 33.9061,
       "lng": -98.5046,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "YNZ": {
       "symbol": "YNZ",
@@ -7438,7 +7849,8 @@
       "institutionId": "12485",
       "lat": 46.4075,
       "lng": -105.8332,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TMJ": {
       "symbol": "TMJ",
@@ -7457,7 +7869,8 @@
       "lat": 35.8065,
       "lng": -86.4314,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Academic"
     },
     "ICK": {
       "symbol": "ICK",
@@ -7475,7 +7888,8 @@
       "institutionId": "874",
       "lat": 39.8484,
       "lng": -88.9645,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MUO": {
       "symbol": "MUO",
@@ -7493,7 +7907,8 @@
       "institutionId": "1556",
       "lat": 46.8723,
       "lng": -96.7664,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NMI": {
       "symbol": "NMI",
@@ -7511,7 +7926,8 @@
       "institutionId": "2201",
       "lat": 48.2594,
       "lng": -101.3029,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MFM": {
       "symbol": "MFM",
@@ -7529,7 +7945,8 @@
       "institutionId": "5204",
       "lat": 33.4156,
       "lng": -88.7433,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IH7": {
       "symbol": "IH7",
@@ -7547,7 +7964,8 @@
       "institutionId": "6776",
       "lat": 38.6835,
       "lng": -89.9853,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MUJ": {
       "symbol": "MUJ",
@@ -7565,7 +7983,8 @@
       "institutionId": "12377",
       "lat": 38.5698,
       "lng": -92.1849,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "UMR": {
       "symbol": "UMR",
@@ -7583,7 +8002,8 @@
       "institutionId": "5441",
       "lat": 37.9504,
       "lng": -91.7676,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "AMP": {
       "symbol": "AMP",
@@ -7601,7 +8021,8 @@
       "institutionId": "8297",
       "lat": 30.68,
       "lng": -88.1215,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OU9": {
       "symbol": "OU9",
@@ -7619,7 +8040,8 @@
       "institutionId": "10051",
       "lat": 41.5342,
       "lng": -87.8911,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ICL": {
       "symbol": "ICL",
@@ -7637,7 +8059,8 @@
       "institutionId": "875",
       "lat": 40.9107,
       "lng": -90.6448,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "EM2": {
       "symbol": "EM2",
@@ -7655,7 +8078,8 @@
       "institutionId": "46371",
       "lat": 45.7968,
       "lng": -108.516,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MZF": {
       "symbol": "MZF",
@@ -7673,7 +8097,8 @@
       "institutionId": "56245",
       "lat": 45.659,
       "lng": -111.0458,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MTJ": {
       "symbol": "MTJ",
@@ -7691,7 +8116,8 @@
       "institutionId": "74383",
       "lat": 36.5959,
       "lng": -121.8805,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "RS$": {
       "symbol": "RS$",
@@ -7709,7 +8135,8 @@
       "institutionId": "8711",
       "lat": 38.4377,
       "lng": -107.8998,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "UQK": {
       "symbol": "UQK",
@@ -7727,7 +8154,8 @@
       "institutionId": "12579",
       "lat": 35.5807,
       "lng": -80.8456,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JO8": {
       "symbol": "JO8",
@@ -7745,7 +8173,8 @@
       "institutionId": "10263",
       "lat": 38.3223,
       "lng": -90.1478,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Other"
     },
     "IMT": {
       "symbol": "IMT",
@@ -7763,7 +8192,8 @@
       "institutionId": "10060",
       "lat": 42.0431,
       "lng": -87.7899,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IST": {
       "symbol": "IST",
@@ -7781,7 +8211,8 @@
       "institutionId": "10059",
       "lat": 40.6148,
       "lng": -89.4604,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "SDY": {
       "symbol": "SDY",
@@ -7799,7 +8230,8 @@
       "institutionId": "2713",
       "lat": 42.8821,
       "lng": -97.3986,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "UIW": {
       "symbol": "UIW",
@@ -7817,7 +8249,8 @@
       "institutionId": "1042",
       "lat": 42.0374,
       "lng": -91.6359,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "LE3": {
       "symbol": "LE3",
@@ -7835,7 +8268,8 @@
       "institutionId": "10065",
       "lat": 42.0479,
       "lng": -89.4346,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "VFQ": {
       "symbol": "VFQ",
@@ -7853,7 +8287,8 @@
       "institutionId": "1965",
       "lat": 41.5118,
       "lng": -74.0209,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IY8": {
       "symbol": "IY8",
@@ -7872,7 +8307,8 @@
       "lat": 40.4333,
       "lng": -88.9811,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "MI0": {
       "symbol": "MI0",
@@ -7890,7 +8326,8 @@
       "institutionId": "9915",
       "lat": 40.4659,
       "lng": -88.3609,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MHD": {
       "symbol": "MHD",
@@ -7908,7 +8345,8 @@
       "institutionId": "87135",
       "lat": 45.4985,
       "lng": -122.4179,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZAG": {
       "symbol": "ZAG",
@@ -7927,7 +8365,8 @@
       "lat": 38.3928,
       "lng": -92.4653,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "KMS": {
       "symbol": "KMS",
@@ -7945,7 +8384,8 @@
       "institutionId": "1165",
       "lat": 36.6099,
       "lng": -88.3032,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "EZU": {
       "symbol": "EZU",
@@ -7963,7 +8403,8 @@
       "institutionId": "46855",
       "lat": 43.2284,
       "lng": -86.2396,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "O3Y": {
       "symbol": "O3Y",
@@ -7981,7 +8422,8 @@
       "institutionId": "14481",
       "lat": 35.3885,
       "lng": -97.7309,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "XNC": {
       "symbol": "XNC",
@@ -7999,7 +8441,8 @@
       "institutionId": "1970",
       "lat": 43.1981,
       "lng": -77.6366,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NBW": {
       "symbol": "NBW",
@@ -8017,7 +8460,8 @@
       "institutionId": "56642",
       "lat": 40.8176,
       "lng": -96.6889,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "XRR": {
       "symbol": "XRR",
@@ -8035,7 +8479,8 @@
       "institutionId": "16390",
       "lat": 46.7332,
       "lng": -117.1762,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "XXO": {
       "symbol": "XXO",
@@ -8053,7 +8498,8 @@
       "institutionId": "10363",
       "lat": 38.013,
       "lng": -87.3195,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "QNC": {
       "symbol": "QNC",
@@ -8071,7 +8517,8 @@
       "institutionId": "14710",
       "lat": 40.9922,
       "lng": -80.3316,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "FHC": {
       "symbol": "FHC",
@@ -8089,7 +8536,8 @@
       "institutionId": "3288",
       "lat": 27.318,
       "lng": -82.4986,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OV7": {
       "symbol": "OV7",
@@ -8107,7 +8555,8 @@
       "institutionId": "10082",
       "lat": 41.5067,
       "lng": -87.9631,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "KKN": {
       "symbol": "KKN",
@@ -8125,7 +8574,8 @@
       "institutionId": "1096",
       "lat": 37.6946,
       "lng": -97.3419,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NMH": {
       "symbol": "NMH",
@@ -8143,7 +8593,8 @@
       "institutionId": "1816",
       "lat": 35.5949,
       "lng": -105.2272,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NMM": {
       "symbol": "NMM",
@@ -8161,7 +8612,8 @@
       "institutionId": "57537",
       "lat": 33.4384,
       "lng": -104.445,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IRU": {
       "symbol": "IRU",
@@ -8179,7 +8631,8 @@
       "institutionId": "51188",
       "lat": 32.3797,
       "lng": -106.7691,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MXO": {
       "symbol": "MXO",
@@ -8197,7 +8650,8 @@
       "institutionId": "73992",
       "lat": 32.8963,
       "lng": -105.9544,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OXA": {
       "symbol": "OXA",
@@ -8215,7 +8669,8 @@
       "institutionId": "14574",
       "lat": 44.6487,
       "lng": -124.0509,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "FD8": {
       "symbol": "FD8",
@@ -8233,7 +8688,8 @@
       "institutionId": "6866",
       "lat": 30.5891,
       "lng": -86.5384,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "GO4": {
       "symbol": "GO4",
@@ -8251,7 +8707,8 @@
       "institutionId": "10086",
       "lat": 42.0312,
       "lng": -87.8112,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "W8N": {
       "symbol": "W8N",
@@ -8269,7 +8726,8 @@
       "institutionId": "16905",
       "lat": 42.766,
       "lng": -104.4651,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NSZ": {
       "symbol": "NSZ",
@@ -8287,7 +8745,8 @@
       "institutionId": "8399",
       "lat": 31.4803,
       "lng": -110.9207,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NFL": {
       "symbol": "NFL",
@@ -8305,7 +8764,8 @@
       "institutionId": "12780",
       "lat": 42.0306,
       "lng": -97.42,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "INO": {
       "symbol": "INO",
@@ -8323,7 +8783,8 @@
       "institutionId": "10095",
       "lat": 42.1264,
       "lng": -87.8377,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ICN": {
       "symbol": "ICN",
@@ -8341,7 +8802,8 @@
       "institutionId": "4434",
       "lat": 41.7697,
       "lng": -88.1449,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NWQ": {
       "symbol": "NWQ",
@@ -8359,7 +8821,8 @@
       "institutionId": "2205",
       "lat": 46.8698,
       "lng": -96.8019,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OKN": {
       "symbol": "OKN",
@@ -8377,7 +8840,8 @@
       "institutionId": "2377",
       "lat": 35.9047,
       "lng": -95.0094,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "HL6": {
       "symbol": "HL6",
@@ -8395,7 +8859,8 @@
       "institutionId": "49692",
       "lat": 42.4435,
       "lng": -90.8094,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IX2": {
       "symbol": "IX2",
@@ -8413,7 +8878,8 @@
       "institutionId": "51386",
       "lat": 43.1974,
       "lng": -91.9126,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ACNLC": {
       "symbol": "ACNLC",
@@ -8431,7 +8897,8 @@
       "institutionId": "84763",
       "lat": 29.5465,
       "lng": -98.2954,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KHN": {
       "symbol": "KHN",
@@ -8450,7 +8917,8 @@
       "lat": 37.6213,
       "lng": -84.8319,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Academic"
     },
     "VAN": {
       "symbol": "VAN",
@@ -8468,7 +8936,8 @@
       "institutionId": "66736",
       "lat": 38.8307,
       "lng": -77.2142,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "CLNCY": {
       "symbol": "CLNCY",
@@ -8486,7 +8955,8 @@
       "institutionId": "43880",
       "lat": 46.4652,
       "lng": -111.9864,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MQO": {
       "symbol": "MQO",
@@ -8505,7 +8975,8 @@
       "lat": 38.3928,
       "lng": -92.4653,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "Y59": {
       "symbol": "Y59",
@@ -8523,7 +8994,8 @@
       "institutionId": "12491",
       "lat": 47.6876,
       "lng": -114.1404,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "HO6": {
       "symbol": "HO6",
@@ -8541,7 +9013,8 @@
       "institutionId": "49818",
       "lat": 34.9085,
       "lng": -110.1434,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NPG": {
       "symbol": "NPG",
@@ -8559,7 +9032,8 @@
       "institutionId": "12783",
       "lat": 41.0895,
       "lng": -100.7608,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "DIO": {
       "symbol": "DIO",
@@ -8578,7 +9052,8 @@
       "lat": 40.4333,
       "lng": -88.9811,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "LD4": {
       "symbol": "LD4",
@@ -8596,7 +9071,8 @@
       "institutionId": "10094",
       "lat": 42.3264,
       "lng": -89.1363,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "RC9": {
       "symbol": "RC9",
@@ -8614,7 +9090,8 @@
       "institutionId": "61463",
       "lat": 36.3474,
       "lng": -94.2605,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IOO": {
       "symbol": "IOO",
@@ -8632,7 +9109,8 @@
       "institutionId": "1046",
       "lat": 43.0185,
       "lng": -96.0565,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "FB3": {
       "symbol": "FB3",
@@ -8650,7 +9128,8 @@
       "institutionId": "47112",
       "lat": 30.5891,
       "lng": -86.5384,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "AD#": {
       "symbol": "AD#",
@@ -8668,7 +9147,8 @@
       "institutionId": "5671",
       "lat": 36.5959,
       "lng": -121.8805,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Federal/Natl Government"
     },
     "JSZ": {
       "symbol": "JSZ",
@@ -8686,7 +9166,8 @@
       "institutionId": "10097",
       "lat": 41.8371,
       "lng": -87.9638,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IVJ": {
       "symbol": "IVJ",
@@ -8704,7 +9185,8 @@
       "institutionId": "10098",
       "lat": 41.7631,
       "lng": -87.7194,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IUO": {
       "symbol": "IUO",
@@ -8722,7 +9204,8 @@
       "institutionId": "10099",
       "lat": 41.8847,
       "lng": -87.7901,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OCJ": {
       "symbol": "OCJ",
@@ -8740,7 +9223,8 @@
       "institutionId": "13299",
       "lat": 39.9475,
       "lng": -74.2142,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JP3": {
       "symbol": "JP3",
@@ -8759,7 +9243,8 @@
       "lat": 40.4333,
       "lng": -88.9811,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "OC2": {
       "symbol": "OC2",
@@ -8777,7 +9262,8 @@
       "institutionId": "16847",
       "lat": 40.1027,
       "lng": -80.6476,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OKJ": {
       "symbol": "OKJ",
@@ -8795,7 +9281,8 @@
       "institutionId": "58718",
       "lat": 35.495,
       "lng": -97.4886,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OSZ": {
       "symbol": "OSZ",
@@ -8813,7 +9300,8 @@
       "institutionId": "2389",
       "lat": 35.495,
       "lng": -97.4886,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "PS1": {
       "symbol": "PS1",
@@ -8831,7 +9319,8 @@
       "institutionId": "2384",
       "lat": 36.6744,
       "lng": -101.7137,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KOP": {
       "symbol": "KOP",
@@ -8849,7 +9338,8 @@
       "institutionId": "10699",
       "lat": 38.8899,
       "lng": -94.8149,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "VOD": {
       "symbol": "VOD",
@@ -8867,7 +9357,8 @@
       "institutionId": "3040",
       "lat": 36.8968,
       "lng": -76.2584,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JBE": {
       "symbol": "JBE",
@@ -8885,7 +9376,8 @@
       "institutionId": "889",
       "lat": 41.1661,
       "lng": -87.879,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VOC": {
       "symbol": "VOC",
@@ -8903,7 +9395,8 @@
       "institutionId": "67090",
       "lat": 43.0481,
       "lng": -76.1592,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "YVO": {
       "symbol": "YVO",
@@ -8921,7 +9414,8 @@
       "institutionId": "13889",
       "lat": 43.0481,
       "lng": -76.1592,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "Z66": {
       "symbol": "Z66",
@@ -8939,7 +9433,8 @@
       "institutionId": "16377",
       "lat": 48.6968,
       "lng": -122.9055,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "II5": {
       "symbol": "II5",
@@ -8957,7 +9452,8 @@
       "institutionId": "10313",
       "lat": 39.9351,
       "lng": -88.8547,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OC3": {
       "symbol": "OC3",
@@ -8975,7 +9471,8 @@
       "institutionId": "58468",
       "lat": 44.6487,
       "lng": -124.0509,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OIT": {
       "symbol": "OIT",
@@ -8993,7 +9490,8 @@
       "institutionId": "2427",
       "lat": 42.2367,
       "lng": -121.7742,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "DYJ": {
       "symbol": "DYJ",
@@ -9011,7 +9509,8 @@
       "institutionId": "10111",
       "lat": 41.6106,
       "lng": -87.8661,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "AKU": {
       "symbol": "AKU",
@@ -9029,7 +9528,8 @@
       "institutionId": "118",
       "lat": 34.7594,
       "lng": -92.3447,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OTC": {
       "symbol": "OTC",
@@ -9047,7 +9547,8 @@
       "institutionId": "2323",
       "lat": 40.0787,
       "lng": -82.9346,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "SAT": {
       "symbol": "SAT",
@@ -9065,7 +9566,8 @@
       "institutionId": "2886",
       "lat": 29.4647,
       "lng": -98.4984,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KL4": {
       "symbol": "KL4",
@@ -9083,7 +9585,8 @@
       "institutionId": "10982",
       "lat": 38.4986,
       "lng": -84.8086,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OPV": {
       "symbol": "OPV",
@@ -9101,7 +9604,8 @@
       "institutionId": "3105",
       "lat": 47.2261,
       "lng": -122.4536,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OPU": {
       "symbol": "OPU",
@@ -9119,7 +9623,8 @@
       "institutionId": "2431",
       "lat": 45.5981,
       "lng": -123.1818,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "CPD": {
       "symbol": "CPD",
@@ -9137,7 +9642,8 @@
       "institutionId": "44329",
       "lat": 33.1376,
       "lng": -117.1717,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "DZI": {
       "symbol": "DZI",
@@ -9155,7 +9661,8 @@
       "institutionId": "10116",
       "lat": 41.6621,
       "lng": -87.7927,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "DZZ": {
       "symbol": "DZZ",
@@ -9173,7 +9680,8 @@
       "institutionId": "10117",
       "lat": 41.6624,
       "lng": -87.8521,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TZP": {
       "symbol": "TZP",
@@ -9191,7 +9699,8 @@
       "institutionId": "65464",
       "lat": 32.1544,
       "lng": -94.3527,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "PPP": {
       "symbol": "PPP",
@@ -9209,7 +9718,8 @@
       "institutionId": "12874",
       "lat": 41.1469,
       "lng": -96.0251,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MO0": {
       "symbol": "MO0",
@@ -9227,7 +9737,8 @@
       "institutionId": "10119",
       "lat": 39.6132,
       "lng": -87.6976,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "UTP": {
       "symbol": "UTP",
@@ -9245,7 +9756,8 @@
       "institutionId": "16063",
       "lat": 40.6744,
       "lng": -111.5184,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IAQ": {
       "symbol": "IAQ",
@@ -9263,7 +9775,8 @@
       "institutionId": "50459",
       "lat": 40.116,
       "lng": -88.2755,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "GO6": {
       "symbol": "GO6",
@@ -9281,7 +9794,8 @@
       "institutionId": "10121",
       "lat": 42.0122,
       "lng": -87.8417,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IEL": {
       "symbol": "IEL",
@@ -9299,7 +9813,8 @@
       "institutionId": "9787",
       "lat": 40.5601,
       "lng": -90.0242,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IEW": {
       "symbol": "IEW",
@@ -9317,7 +9832,8 @@
       "institutionId": "10128",
       "lat": 40.5652,
       "lng": -89.6384,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IW3": {
       "symbol": "IW3",
@@ -9335,7 +9851,8 @@
       "institutionId": "9247",
       "lat": 41.4082,
       "lng": -92.9172,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "CSC": {
       "symbol": "CSC",
@@ -9353,7 +9870,8 @@
       "institutionId": "2468",
       "lat": 40.0625,
       "lng": -79.8953,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "REC": {
       "symbol": "REC",
@@ -9371,7 +9889,8 @@
       "institutionId": "2476",
       "lat": 41.2123,
       "lng": -79.3773,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OX9": {
       "symbol": "OX9",
@@ -9389,7 +9908,8 @@
       "institutionId": "10131",
       "lat": 41.3361,
       "lng": -87.7897,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "PTU": {
       "symbol": "PTU",
@@ -9408,7 +9928,8 @@
       "lat": 39.2639,
       "lng": -105.3172,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Other"
     },
     "ENZ": {
       "symbol": "ENZ",
@@ -9426,7 +9947,8 @@
       "institutionId": "11964",
       "lat": 45.3559,
       "lng": -84.9133,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "SPT": {
       "symbol": "SPT",
@@ -9444,7 +9966,8 @@
       "institutionId": "63899",
       "lat": 34.1975,
       "lng": -82.1614,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "PV4": {
       "symbol": "PV4",
@@ -9462,7 +9985,8 @@
       "institutionId": "6821",
       "lat": 36.7159,
       "lng": -83.7668,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OKM": {
       "symbol": "OKM",
@@ -9480,7 +10004,8 @@
       "institutionId": "14483",
       "lat": 35.2138,
       "lng": -97.4137,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "KFP": {
       "symbol": "KFP",
@@ -9498,7 +10023,8 @@
       "institutionId": "1110",
       "lat": 37.3951,
       "lng": -94.7105,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OY4": {
       "symbol": "OY4",
@@ -9516,7 +10042,8 @@
       "institutionId": "10138",
       "lat": 41.607,
       "lng": -88.2125,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OY5": {
       "symbol": "OY5",
@@ -9534,7 +10061,8 @@
       "institutionId": "10139",
       "lat": 41.667,
       "lng": -88.5384,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "PM@": {
       "symbol": "PM@",
@@ -9552,7 +10080,8 @@
       "institutionId": "12804",
       "lat": 40.9992,
       "lng": -95.9139,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "XPP": {
       "symbol": "XPP",
@@ -9570,7 +10099,8 @@
       "institutionId": "10401",
       "lat": 41.353,
       "lng": -86.3015,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "PSM": {
       "symbol": "PSM",
@@ -9588,7 +10118,8 @@
       "institutionId": "1752",
       "lat": 43.757,
       "lng": -71.6881,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "PTP": {
       "symbol": "PTP",
@@ -9606,7 +10137,8 @@
       "institutionId": "2599",
       "lat": 40.4413,
       "lng": -80.0038,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "LE7": {
       "symbol": "LE7",
@@ -9624,7 +10156,8 @@
       "institutionId": "10140",
       "lat": 41.989,
       "lng": -89.5984,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "UP5": {
       "symbol": "UP5",
@@ -9642,7 +10175,8 @@
       "institutionId": "10141",
       "lat": 40.8764,
       "lng": -88.6328,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "PPN": {
       "symbol": "PPN",
@@ -9660,7 +10194,8 @@
       "institutionId": "60039",
       "lat": 43.666,
       "lng": -70.2568,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TWM": {
       "symbol": "TWM",
@@ -9678,7 +10213,8 @@
       "institutionId": "16138",
       "lat": 36.8401,
       "lng": -76.3435,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "AA3": {
       "symbol": "AA3",
@@ -9696,7 +10232,8 @@
       "institutionId": "16389",
       "lat": 48.104,
       "lng": -122.7945,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JGD": {
       "symbol": "JGD",
@@ -9714,7 +10251,8 @@
       "institutionId": "9734",
       "lat": 39.9386,
       "lng": -90.0792,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "FJO": {
       "symbol": "FJO",
@@ -9732,7 +10270,8 @@
       "institutionId": "10144",
       "lat": 41.7447,
       "lng": -87.7699,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "PR#": {
       "symbol": "PR#",
@@ -9750,7 +10289,8 @@
       "institutionId": "8454",
       "lat": 34.6586,
       "lng": -112.2994,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OT4": {
       "symbol": "OT4",
@@ -9768,7 +10308,8 @@
       "institutionId": "10145",
       "lat": 41.3629,
       "lng": -89.427,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "PPR": {
       "symbol": "PPR",
@@ -9786,7 +10327,8 @@
       "institutionId": "13240",
       "lat": 40.3397,
       "lng": -74.6648,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ILPML": {
       "symbol": "ILPML",
@@ -9804,7 +10346,8 @@
       "institutionId": "50913",
       "lat": 42.5827,
       "lng": -87.8456,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Special"
     },
     "JAO": {
       "symbol": "JAO",
@@ -9822,7 +10365,8 @@
       "institutionId": "10148",
       "lat": 42.1058,
       "lng": -87.9395,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "UPZ": {
       "symbol": "UPZ",
@@ -9840,7 +10384,8 @@
       "institutionId": "16072",
       "lat": 40.2441,
       "lng": -111.6449,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OEG": {
       "symbol": "OEG",
@@ -9858,7 +10403,8 @@
       "institutionId": "14450",
       "lat": 36.3826,
       "lng": -97.8683,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "CQA": {
       "symbol": "CQA",
@@ -9876,7 +10422,8 @@
       "institutionId": "8720",
       "lat": 38.2304,
       "lng": -104.6045,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OZ2": {
       "symbol": "OZ2",
@@ -9894,7 +10441,8 @@
       "institutionId": "10149",
       "lat": 41.2352,
       "lng": -89.3218,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IDQ": {
       "symbol": "IDQ",
@@ -9912,7 +10460,8 @@
       "institutionId": "10150",
       "lat": 39.9421,
       "lng": -91.3629,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IBQ": {
       "symbol": "IBQ",
@@ -9930,7 +10479,8 @@
       "institutionId": "892",
       "lat": 39.9421,
       "lng": -91.3629,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VRA": {
       "symbol": "VRA",
@@ -9948,7 +10498,8 @@
       "institutionId": "3044",
       "lat": 37.127,
       "lng": -80.5558,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VRM": {
       "symbol": "VRM",
@@ -9966,7 +10517,8 @@
       "institutionId": "3045",
       "lat": 37.7395,
       "lng": -77.4784,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NF1": {
       "symbol": "NF1",
@@ -9984,7 +10536,8 @@
       "institutionId": "10151",
       "lat": 40.3107,
       "lng": -88.1462,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "RDG": {
       "symbol": "RDG",
@@ -10002,7 +10555,8 @@
       "institutionId": "61513",
       "lat": 40.3484,
       "lng": -75.9467,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "QX9": {
       "symbol": "QX9",
@@ -10020,7 +10574,8 @@
       "institutionId": "10113",
       "lat": 41.3526,
       "lng": -88.8416,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Other"
     },
     "RCM": {
       "symbol": "RCM",
@@ -10038,7 +10593,8 @@
       "institutionId": "61478",
       "lat": 41.8234,
       "lng": -71.4216,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "RSD": {
       "symbol": "RSD",
@@ -10056,7 +10612,8 @@
       "institutionId": "62065",
       "lat": 41.8234,
       "lng": -71.4216,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "WIP": {
       "symbol": "WIP",
@@ -10074,7 +10631,8 @@
       "institutionId": "3190",
       "lat": 43.8454,
       "lng": -88.8424,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "FWI": {
       "symbol": "FWI",
@@ -10092,7 +10650,8 @@
       "institutionId": "10159",
       "lat": 41.8379,
       "lng": -87.8213,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ZNW": {
       "symbol": "ZNW",
@@ -10110,7 +10669,8 @@
       "institutionId": "10157",
       "lat": 41.6013,
       "lng": -90.3263,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "HF9": {
       "symbol": "HF9",
@@ -10128,7 +10688,8 @@
       "institutionId": "1757",
       "lat": 42.7592,
       "lng": -71.4823,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VRO": {
       "symbol": "VRO",
@@ -10146,7 +10707,8 @@
       "institutionId": "3050",
       "lat": 37.2874,
       "lng": -80.0678,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IC1": {
       "symbol": "IC1",
@@ -10164,7 +10726,8 @@
       "institutionId": "10160",
       "lat": 39.007,
       "lng": -87.7484,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "HS2": {
       "symbol": "HS2",
@@ -10182,7 +10745,8 @@
       "institutionId": "12997",
       "lat": 43.2978,
       "lng": -70.969,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IZ2": {
       "symbol": "IZ2",
@@ -10200,7 +10764,8 @@
       "institutionId": "10162",
       "lat": 39.7182,
       "lng": -89.5649,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "VVR": {
       "symbol": "VVR",
@@ -10218,7 +10783,8 @@
       "institutionId": "67312",
       "lat": 41.1177,
       "lng": -74.1241,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JYJ": {
       "symbol": "JYJ",
@@ -10236,7 +10802,8 @@
       "institutionId": "52293",
       "lat": 42.2848,
       "lng": -89.0897,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "RPB": {
       "symbol": "RPB",
@@ -10254,7 +10821,8 @@
       "institutionId": "8370",
       "lat": 36.3284,
       "lng": -94.1293,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OVV": {
       "symbol": "OVV",
@@ -10272,7 +10840,8 @@
       "institutionId": "59085",
       "lat": 36.3161,
       "lng": -95.6028,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "RWB": {
       "symbol": "RWB",
@@ -10290,7 +10859,8 @@
       "institutionId": "76211",
       "lat": 41.6825,
       "lng": -71.2676,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MZ3": {
       "symbol": "MZ3",
@@ -10308,7 +10878,8 @@
       "institutionId": "12395",
       "lat": 39.7495,
       "lng": -94.8366,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "GO7": {
       "symbol": "GO7",
@@ -10326,7 +10897,8 @@
       "institutionId": "10166",
       "lat": 42.073,
       "lng": -88.0191,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Other"
     },
     "FWR": {
       "symbol": "FWR",
@@ -10344,7 +10916,8 @@
       "institutionId": "636",
       "lat": 28.5819,
       "lng": -81.2947,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "YLZ": {
       "symbol": "YLZ",
@@ -10362,7 +10935,8 @@
       "institutionId": "12514",
       "lat": 48.1119,
       "lng": -105.6293,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JSF": {
       "symbol": "JSF",
@@ -10380,7 +10954,8 @@
       "institutionId": "10168",
       "lat": 41.9798,
       "lng": -88.0857,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "YHX": {
       "symbol": "YHX",
@@ -10398,7 +10973,8 @@
       "institutionId": "12494",
       "lat": 46.4338,
       "lng": -108.5428,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NGC": {
       "symbol": "NGC",
@@ -10416,7 +10992,8 @@
       "institutionId": "1777",
       "lat": 39.7473,
       "lng": -75.0899,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "CLG": {
       "symbol": "CLG",
@@ -10434,7 +11011,8 @@
       "institutionId": "43862",
       "lat": 39.4778,
       "lng": -75.0,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NZY": {
       "symbol": "NZY",
@@ -10452,7 +11030,8 @@
       "institutionId": "12564",
       "lat": 35.6586,
       "lng": -80.4824,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "SHT": {
       "symbol": "SHT",
@@ -10470,7 +11049,8 @@
       "institutionId": "3191",
       "lat": 42.9017,
       "lng": -88.0086,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IOJ": {
       "symbol": "IOJ",
@@ -10488,7 +11068,8 @@
       "institutionId": "1051",
       "lat": 41.5654,
       "lng": -90.5916,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "PSF": {
       "symbol": "PSF",
@@ -10506,7 +11087,8 @@
       "institutionId": "2608",
       "lat": 40.5105,
       "lng": -78.6294,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NK1": {
       "symbol": "NK1",
@@ -10525,7 +11107,8 @@
       "lat": 40.4333,
       "lng": -88.9811,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "ZAE": {
       "symbol": "ZAE",
@@ -10544,7 +11127,8 @@
       "lat": 38.3928,
       "lng": -92.4653,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "WSL": {
       "symbol": "WSL",
@@ -10562,7 +11146,8 @@
       "institutionId": "3110",
       "lat": 47.001,
       "lng": -122.7425,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IMS": {
       "symbol": "IMS",
@@ -10581,7 +11166,8 @@
       "lat": 39.9403,
       "lng": -86.2675,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Academic"
     },
     "XOR": {
       "symbol": "XOR",
@@ -10599,7 +11185,8 @@
       "institutionId": "5356",
       "lat": 44.03,
       "lng": -91.7009,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MNY": {
       "symbol": "MNY",
@@ -10617,7 +11204,8 @@
       "institutionId": "1580",
       "lat": 44.03,
       "lng": -91.7009,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "SMD": {
       "symbol": "SMD",
@@ -10635,7 +11223,8 @@
       "institutionId": "2990",
       "lat": 44.525,
       "lng": -73.1717,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "WCD": {
       "symbol": "WCD",
@@ -10653,7 +11242,8 @@
       "institutionId": "3192",
       "lat": 44.4388,
       "lng": -88.0806,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "LTP": {
       "symbol": "LTP",
@@ -10671,7 +11261,8 @@
       "institutionId": "11062",
       "lat": 30.5097,
       "lng": -90.102,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "PSV": {
       "symbol": "PSV",
@@ -10689,7 +11280,8 @@
       "institutionId": "2610",
       "lat": 40.2926,
       "lng": -79.4103,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "RNS": {
       "symbol": "RNS",
@@ -10707,7 +11299,8 @@
       "institutionId": "16149",
       "lat": 37.2874,
       "lng": -80.0678,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "KA7": {
       "symbol": "KA7",
@@ -10725,7 +11318,8 @@
       "institutionId": "10625",
       "lat": 38.832,
       "lng": -97.6268,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TZI": {
       "symbol": "TZI",
@@ -10743,7 +11337,8 @@
       "institutionId": "10073",
       "lat": 37.7655,
       "lng": -89.3317,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "SLV": {
       "symbol": "SLV",
@@ -10761,7 +11356,8 @@
       "institutionId": "63662",
       "lat": 41.4933,
       "lng": -71.3131,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JRV": {
       "symbol": "JRV",
@@ -10779,7 +11375,8 @@
       "institutionId": "8573",
       "lat": 36.8462,
       "lng": -121.371,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "CBL": {
       "symbol": "CBL",
@@ -10797,7 +11394,8 @@
       "institutionId": "8574",
       "lat": 34.1195,
       "lng": -117.2964,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "S2J": {
       "symbol": "S2J",
@@ -10815,7 +11413,8 @@
       "institutionId": "1829",
       "lat": 36.7614,
       "lng": -108.1322,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "FEH": {
       "symbol": "FEH",
@@ -10833,7 +11432,8 @@
       "institutionId": "47207",
       "lat": null,
       "lng": null,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "O5J": {
       "symbol": "O5J",
@@ -10851,7 +11451,8 @@
       "institutionId": "14497",
       "lat": 36.0113,
       "lng": -96.1021,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "VVS": {
       "symbol": "VVS",
@@ -10869,7 +11470,8 @@
       "institutionId": "2010",
       "lat": 40.9391,
       "lng": -73.8353,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MZ7": {
       "symbol": "MZ7",
@@ -10887,7 +11489,8 @@
       "institutionId": "12285",
       "lat": 38.4456,
       "lng": -91.0206,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "GO9": {
       "symbol": "GO9",
@@ -10905,7 +11508,8 @@
       "institutionId": "10182",
       "lat": 42.043,
       "lng": -88.0867,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "WEN": {
       "symbol": "WEN",
@@ -10923,7 +11527,8 @@
       "institutionId": "1408",
       "lat": 42.3523,
       "lng": -71.0387,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "XV9": {
       "symbol": "XV9",
@@ -10941,7 +11546,8 @@
       "institutionId": "14593",
       "lat": 45.9932,
       "lng": -123.9226,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NRD": {
       "symbol": "NRD",
@@ -10959,7 +11565,8 @@
       "institutionId": "12820",
       "lat": 40.9066,
       "lng": -97.0966,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "OSS": {
       "symbol": "OSS",
@@ -10977,7 +11584,8 @@
       "institutionId": "2331",
       "lat": 38.7932,
       "lng": -82.9306,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "WVS": {
       "symbol": "WVS",
@@ -10995,7 +11603,8 @@
       "institutionId": "5031",
       "lat": 39.4311,
       "lng": -77.8158,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "W5F": {
       "symbol": "W5F",
@@ -11013,7 +11622,8 @@
       "institutionId": "16894",
       "lat": 44.7849,
       "lng": -106.9648,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "I8S": {
       "symbol": "I8S",
@@ -11031,7 +11641,8 @@
       "institutionId": "10328",
       "lat": 39.9121,
       "lng": -89.5877,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "SQP": {
       "symbol": "SQP",
@@ -11049,7 +11660,8 @@
       "institutionId": "2618",
       "lat": 40.0514,
       "lng": -77.5195,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TE7": {
       "symbol": "TE7",
@@ -11067,7 +11679,8 @@
       "institutionId": "10194",
       "lat": 41.5076,
       "lng": -88.2169,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "VKM": {
       "symbol": "VKM",
@@ -11086,7 +11699,8 @@
       "lat": 42.2238,
       "lng": -75.1448,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Academic"
     },
     "SVZ": {
       "symbol": "SVZ",
@@ -11104,7 +11718,8 @@
       "institutionId": "8416",
       "lat": 31.5622,
       "lng": -110.2664,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "SH2": {
       "symbol": "SH2",
@@ -11122,7 +11737,8 @@
       "institutionId": "8630",
       "lat": 33.8029,
       "lng": -118.1677,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IWP": {
       "symbol": "IWP",
@@ -11140,7 +11756,8 @@
       "institutionId": "132893",
       "lat": 42.4824,
       "lng": -96.3889,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IJ5": {
       "symbol": "IJ5",
@@ -11158,7 +11775,8 @@
       "institutionId": "9926",
       "lat": 38.7261,
       "lng": -90.1106,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "Z74": {
       "symbol": "Z74",
@@ -11176,7 +11794,8 @@
       "institutionId": "71389",
       "lat": 48.3997,
       "lng": -122.1743,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "Q6M": {
       "symbol": "Q6M",
@@ -11194,7 +11813,8 @@
       "institutionId": "8093",
       "lat": 59.4685,
       "lng": -135.3018,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "SRS": {
       "symbol": "SRS",
@@ -11212,7 +11832,8 @@
       "institutionId": "2619",
       "lat": 41.0454,
       "lng": -80.0468,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TF5": {
       "symbol": "TF5",
@@ -11230,7 +11851,8 @@
       "institutionId": "10199",
       "lat": 41.6383,
       "lng": -88.6816,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "SDB": {
       "symbol": "SDB",
@@ -11248,7 +11870,8 @@
       "institutionId": "2720",
       "lat": 44.3376,
       "lng": -96.791,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "FYQ": {
       "symbol": "FYQ",
@@ -11266,7 +11889,8 @@
       "institutionId": "649",
       "lat": 28.0429,
       "lng": -81.9644,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KUS": {
       "symbol": "KUS",
@@ -11284,7 +11908,8 @@
       "institutionId": "74213",
       "lat": 36.9711,
       "lng": -82.9771,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "UUA": {
       "symbol": "UUA",
@@ -11302,7 +11927,8 @@
       "institutionId": "2968",
       "lat": 37.6775,
       "lng": -113.0619,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "GFO": {
       "symbol": "GFO",
@@ -11320,7 +11946,8 @@
       "institutionId": "10202",
       "lat": 41.5979,
       "lng": -87.5938,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "Z@2": {
       "symbol": "Z@2",
@@ -11338,7 +11965,8 @@
       "institutionId": "71482",
       "lat": 47.045,
       "lng": -122.9022,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "PZW": {
       "symbol": "PZW",
@@ -11356,7 +11984,8 @@
       "institutionId": "74906",
       "lat": 37.0411,
       "lng": -78.4699,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MOB": {
       "symbol": "MOB",
@@ -11374,7 +12003,8 @@
       "institutionId": "1714",
       "lat": 37.6085,
       "lng": -93.4126,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "HLO": {
       "symbol": "HLO",
@@ -11392,7 +12022,8 @@
       "institutionId": "2401",
       "lat": 35.535,
       "lng": -98.6996,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TXX": {
       "symbol": "TXX",
@@ -11410,7 +12041,8 @@
       "institutionId": "2911",
       "lat": 30.6561,
       "lng": -97.7133,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "HUW": {
       "symbol": "HUW",
@@ -11429,7 +12061,8 @@
       "lat": 39.9403,
       "lng": -86.2675,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "BV1": {
       "symbol": "BV1",
@@ -11447,7 +12080,8 @@
       "institutionId": "41658",
       "lat": 47.6647,
       "lng": -117.3985,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "PX0": {
       "symbol": "PX0",
@@ -11465,7 +12099,8 @@
       "institutionId": "10174",
       "lat": 41.9336,
       "lng": -88.3494,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TXK": {
       "symbol": "TXK",
@@ -11483,7 +12118,8 @@
       "institutionId": "2912",
       "lat": 31.6517,
       "lng": -94.6163,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KKQ": {
       "symbol": "KKQ",
@@ -11501,7 +12137,8 @@
       "institutionId": "52751",
       "lat": 38.2126,
       "lng": -98.2055,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "GYI": {
       "symbol": "GYI",
@@ -11520,7 +12157,8 @@
       "lat": 40.4333,
       "lng": -88.9811,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Public"
     },
     "VZJ": {
       "symbol": "VZJ",
@@ -11538,7 +12176,8 @@
       "institutionId": "2019",
       "lat": 43.1981,
       "lng": -77.6366,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "M8X": {
       "symbol": "M8X",
@@ -11556,7 +12195,8 @@
       "institutionId": "1249",
       "lat": 43.8142,
       "lng": -70.4807,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NJS": {
       "symbol": "NJS",
@@ -11575,7 +12215,8 @@
       "lat": 40.3851,
       "lng": -74.5167,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Academic"
     },
     "STO": {
       "symbol": "STO",
@@ -11593,7 +12234,8 @@
       "institutionId": "1405",
       "lat": 42.0235,
       "lng": -71.1324,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "SP1": {
       "symbol": "SP1",
@@ -11611,7 +12253,8 @@
       "institutionId": "4670",
       "lat": 37.4104,
       "lng": -122.2606,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "SSA": {
       "symbol": "SSA",
@@ -11629,7 +12272,8 @@
       "institutionId": "8905",
       "lat": 41.1965,
       "lng": -73.132,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JPK": {
       "symbol": "JPK",
@@ -11647,7 +12291,8 @@
       "institutionId": "10219",
       "lat": 41.7741,
       "lng": -88.4397,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ZAM": {
       "symbol": "ZAM",
@@ -11665,7 +12310,8 @@
       "institutionId": "71561",
       "lat": 42.2534,
       "lng": -77.7893,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZLM": {
       "symbol": "ZLM",
@@ -11683,7 +12329,8 @@
       "institutionId": "2041",
       "lat": 41.7464,
       "lng": -74.1092,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "YPM": {
       "symbol": "YPM",
@@ -11701,7 +12348,8 @@
       "institutionId": "2048",
       "lat": 44.6891,
       "lng": -73.4567,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZQM": {
       "symbol": "ZQM",
@@ -11719,7 +12367,8 @@
       "institutionId": "2044",
       "lat": 44.6645,
       "lng": -74.9747,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZPM": {
       "symbol": "ZPM",
@@ -11737,7 +12386,8 @@
       "institutionId": "2045",
       "lat": 41.0384,
       "lng": -73.7156,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "XMM": {
       "symbol": "XMM",
@@ -11755,7 +12405,8 @@
       "institutionId": "75749",
       "lat": 42.9108,
       "lng": -75.6487,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZBM": {
       "symbol": "ZBM",
@@ -11773,7 +12424,8 @@
       "institutionId": "2042",
       "lat": 42.4625,
       "lng": -75.0491,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "YOM": {
       "symbol": "YOM",
@@ -11791,7 +12443,8 @@
       "institutionId": "2043",
       "lat": 43.4394,
       "lng": -76.4613,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "YTM": {
       "symbol": "YTM",
@@ -11809,7 +12462,8 @@
       "institutionId": "2035",
       "lat": 43.0997,
       "lng": -75.232,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VSB": {
       "symbol": "VSB",
@@ -11827,7 +12481,8 @@
       "institutionId": "3057",
       "lat": 37.5529,
       "lng": -79.0664,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "LF3": {
       "symbol": "LF3",
@@ -11845,7 +12500,8 @@
       "institutionId": "10222",
       "lat": 41.9911,
       "lng": -88.6928,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NGX": {
       "symbol": "NGX",
@@ -11863,7 +12519,8 @@
       "institutionId": "13798",
       "lat": 40.8204,
       "lng": -73.5023,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "X@7": {
       "symbol": "X@7",
@@ -11881,7 +12538,8 @@
       "institutionId": "8097",
       "lat": 62.2605,
       "lng": -150.1101,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "W8T": {
       "symbol": "W8T",
@@ -11899,7 +12557,8 @@
       "institutionId": "16907",
       "lat": 43.4664,
       "lng": -110.7508,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TLS": {
       "symbol": "TLS",
@@ -11917,7 +12576,8 @@
       "institutionId": "75282",
       "lat": 27.5186,
       "lng": -99.4617,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TXF": {
       "symbol": "TXF",
@@ -11935,7 +12595,8 @@
       "institutionId": "2823",
       "lat": 27.7624,
       "lng": -97.4348,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TAI": {
       "symbol": "TAI",
@@ -11953,7 +12614,8 @@
       "institutionId": "2925",
       "lat": 27.4694,
       "lng": -97.8484,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TXV": {
       "symbol": "TXV",
@@ -11971,7 +12633,8 @@
       "institutionId": "2849",
       "lat": 28.832,
       "lng": -97.0273,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "SAZ": {
       "symbol": "SAZ",
@@ -11989,7 +12652,8 @@
       "institutionId": "2937",
       "lat": 29.5865,
       "lng": -97.967,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "SCN": {
       "symbol": "SCN",
@@ -12007,7 +12671,8 @@
       "institutionId": "2655",
       "lat": 32.8252,
       "lng": -79.9283,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NJT": {
       "symbol": "NJT",
@@ -12026,7 +12691,8 @@
       "lat": 40.3851,
       "lng": -74.5167,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Academic"
     },
     "TPN": {
       "symbol": "TPN",
@@ -12044,7 +12710,8 @@
       "institutionId": "2887",
       "lat": 26.3738,
       "lng": -98.175,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "HAO": {
       "symbol": "HAO",
@@ -12062,7 +12729,8 @@
       "institutionId": "10278",
       "lat": 41.8049,
       "lng": -87.8995,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "THV": {
       "symbol": "THV",
@@ -12080,7 +12748,8 @@
       "institutionId": "12509",
       "lat": 45.2938,
       "lng": -111.9461,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TG3": {
       "symbol": "TG3",
@@ -12098,7 +12767,8 @@
       "institutionId": "10227",
       "lat": 41.4347,
       "lng": -88.2138,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TG4": {
       "symbol": "TG4",
@@ -12116,7 +12786,8 @@
       "institutionId": "7032",
       "lat": 41.4615,
       "lng": -88.2786,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TMBCC": {
       "symbol": "TMBCC",
@@ -12134,7 +12805,8 @@
       "institutionId": "64987",
       "lat": 45.4492,
       "lng": -123.8189,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "HHO": {
       "symbol": "HHO",
@@ -12152,7 +12824,8 @@
       "institutionId": "10228",
       "lat": 41.5731,
       "lng": -87.8196,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "VXT": {
       "symbol": "VXT",
@@ -12170,7 +12843,8 @@
       "institutionId": "67363",
       "lat": 42.4861,
       "lng": -76.2872,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KTP": {
       "symbol": "KTP",
@@ -12188,7 +12862,8 @@
       "institutionId": "10701",
       "lat": 39.0433,
       "lng": -95.7053,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ISW": {
       "symbol": "ISW",
@@ -12206,7 +12881,8 @@
       "institutionId": "10233",
       "lat": 41.1009,
       "lng": -89.8606,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JVM": {
       "symbol": "JVM",
@@ -12224,7 +12900,8 @@
       "institutionId": "9869",
       "lat": 41.8824,
       "lng": -88.4611,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MUK": {
       "symbol": "MUK",
@@ -12242,7 +12919,8 @@
       "institutionId": "12267",
       "lat": 38.7667,
       "lng": -93.7273,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TVC": {
       "symbol": "TVC",
@@ -12260,7 +12938,8 @@
       "institutionId": "65337",
       "lat": 44.0416,
       "lng": -116.9783,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ITS": {
       "symbol": "ITS",
@@ -12278,7 +12957,8 @@
       "institutionId": "1002",
       "lat": 41.6563,
       "lng": -85.0198,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ADA": {
       "symbol": "ADA",
@@ -12296,7 +12976,8 @@
       "institutionId": "69",
       "lat": 31.7856,
       "lng": -85.9769,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "T#B": {
       "symbol": "T#B",
@@ -12314,7 +12995,8 @@
       "institutionId": "12507",
       "lat": 45.5311,
       "lng": -112.3495,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "UAA": {
       "symbol": "UAA",
@@ -12332,7 +13014,8 @@
       "institutionId": "73",
       "lat": 61.1745,
       "lng": -149.8452,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "X@8": {
       "symbol": "X@8",
@@ -12350,7 +13033,8 @@
       "institutionId": "8119",
       "lat": 53.8871,
       "lng": -166.5199,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "NHM": {
       "symbol": "NHM",
@@ -12368,7 +13052,8 @@
       "institutionId": "1749",
       "lat": 43.1174,
       "lng": -70.9197,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZWU": {
       "symbol": "ZWU",
@@ -12386,7 +13071,8 @@
       "institutionId": "2062",
       "lat": 42.8133,
       "lng": -73.9481,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VUT": {
       "symbol": "VUT",
@@ -12404,7 +13090,8 @@
       "institutionId": "3060",
       "lat": 37.528,
       "lng": -77.4742,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "FGT": {
       "symbol": "FGT",
@@ -12422,7 +13109,8 @@
       "institutionId": "55011",
       "lat": 48.4228,
       "lng": -101.3254,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Federal/Natl Government"
     },
     "UNA": {
       "symbol": "UNA",
@@ -12440,7 +13128,8 @@
       "institutionId": "1301",
       "lat": 38.991,
       "lng": -76.523,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Federal/Natl Government"
     },
     "COS": {
       "symbol": "COS",
@@ -12458,7 +13147,8 @@
       "institutionId": "498",
       "lat": 38.2304,
       "lng": -104.6045,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "UAF": {
       "symbol": "UAF",
@@ -12476,7 +13166,8 @@
       "institutionId": "74",
       "lat": 64.8613,
       "lng": -147.756,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "Y4Z": {
       "symbol": "Y4Z",
@@ -12494,7 +13185,8 @@
       "institutionId": "75",
       "lat": 58.3163,
       "lng": -134.4471,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "AKC": {
       "symbol": "AKC",
@@ -12512,7 +13204,8 @@
       "institutionId": "129",
       "lat": 35.0943,
       "lng": -92.4004,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MCW": {
       "symbol": "MCW",
@@ -12530,7 +13223,8 @@
       "institutionId": "1648",
       "lat": 38.7667,
       "lng": -93.7273,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OKX": {
       "symbol": "OKX",
@@ -12548,7 +13242,8 @@
       "institutionId": "2369",
       "lat": 35.6621,
       "lng": -97.4841,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IUE": {
       "symbol": "IUE",
@@ -12566,7 +13261,8 @@
       "institutionId": "942",
       "lat": 37.9962,
       "lng": -87.5702,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TXH": {
       "symbol": "TXH",
@@ -12584,7 +13280,8 @@
       "institutionId": "5524",
       "lat": 29.7979,
       "lng": -95.4191,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "UHC": {
       "symbol": "UHC",
@@ -12602,7 +13299,8 @@
       "institutionId": "2846",
       "lat": 29.7979,
       "lng": -95.4191,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "THD": {
       "symbol": "THD",
@@ -12620,7 +13318,8 @@
       "institutionId": "2848",
       "lat": 29.7979,
       "lng": -95.4191,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NDJ": {
       "symbol": "NDJ",
@@ -12638,7 +13337,8 @@
       "institutionId": "2195",
       "lat": 46.9377,
       "lng": -98.8017,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VLY": {
       "symbol": "VLY",
@@ -12656,7 +13356,8 @@
       "institutionId": "3031",
       "lat": 37.3752,
       "lng": -79.1585,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ULN": {
       "symbol": "ULN",
@@ -12674,7 +13375,8 @@
       "institutionId": "1359",
       "lat": 42.6409,
       "lng": -71.3176,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MCR": {
       "symbol": "MCR",
@@ -12692,7 +13394,8 @@
       "institutionId": "1547",
       "lat": 47.7797,
       "lng": -96.5931,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "AMN": {
       "symbol": "AMN",
@@ -12710,7 +13413,8 @@
       "institutionId": "47",
       "lat": 33.1248,
       "lng": -86.8622,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VZV": {
       "symbol": "VZV",
@@ -12729,7 +13433,8 @@
       "lat": 42.2238,
       "lng": -75.1448,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Academic"
     },
     "NBU": {
       "symbol": "NBU",
@@ -12747,7 +13452,8 @@
       "institutionId": "74264",
       "lat": 41.2563,
       "lng": -96.0062,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IQU": {
       "symbol": "IQU",
@@ -12765,7 +13471,8 @@
       "institutionId": "1822",
       "lat": 35.0773,
       "lng": -106.6448,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VL#": {
       "symbol": "VL#",
@@ -12783,7 +13490,8 @@
       "institutionId": "1827",
       "lat": 34.7806,
       "lng": -106.7115,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "LNU": {
       "symbol": "LNU",
@@ -12801,7 +13509,8 @@
       "institutionId": "1205",
       "lat": 29.9571,
       "lng": -90.0704,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NXW": {
       "symbol": "NXW",
@@ -12819,7 +13528,8 @@
       "institutionId": "105484",
       "lat": 34.1998,
       "lng": -77.8864,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OKU": {
       "symbol": "OKU",
@@ -12837,7 +13547,8 @@
       "institutionId": "2390",
       "lat": 35.2138,
       "lng": -97.4137,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "CUR": {
       "symbol": "CUR",
@@ -12855,7 +13566,8 @@
       "institutionId": "374",
       "lat": 34.0534,
       "lng": -117.1767,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "RIU": {
       "symbol": "RIU",
@@ -12873,7 +13585,8 @@
       "institutionId": "61731",
       "lat": 41.4803,
       "lng": -71.5292,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "SDF": {
       "symbol": "SDF",
@@ -12891,7 +13604,8 @@
       "institutionId": "2722",
       "lat": 43.59,
       "lng": -96.7507,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZKL": {
       "symbol": "ZKL",
@@ -12909,7 +13623,8 @@
       "institutionId": "2687",
       "lat": 33.0077,
       "lng": -81.3203,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZKM": {
       "symbol": "ZKM",
@@ -12927,7 +13642,8 @@
       "institutionId": "2692",
       "lat": 34.9378,
       "lng": -81.8998,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ISE": {
       "symbol": "ISE",
@@ -12945,7 +13661,8 @@
       "institutionId": "967",
       "lat": 37.9962,
       "lng": -87.5702,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MLA": {
       "symbol": "MLA",
@@ -12963,7 +13680,8 @@
       "institutionId": "4178",
       "lat": 30.3598,
       "lng": -89.1646,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "FUT": {
       "symbol": "FUT",
@@ -12981,7 +13699,8 @@
       "institutionId": "653",
       "lat": 27.9429,
       "lng": -82.462,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "GWC": {
       "symbol": "GWC",
@@ -12999,7 +13718,8 @@
       "institutionId": "755",
       "lat": 33.5911,
       "lng": -85.076,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MR0": {
       "symbol": "MR0",
@@ -13017,7 +13737,8 @@
       "institutionId": "10241",
       "lat": 40.0967,
       "lng": -88.1991,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JIU": {
       "symbol": "JIU",
@@ -13035,7 +13756,8 @@
       "institutionId": "9233",
       "lat": 41.6285,
       "lng": -93.7356,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "CCLAF": {
       "symbol": "CCLAF",
@@ -13054,7 +13776,8 @@
       "lat": 39.2639,
       "lng": -105.3172,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Federal/Natl Government"
     },
     "TYL": {
       "symbol": "TYL",
@@ -13073,7 +13796,8 @@
       "lat": 33.6066,
       "lng": -111.6466,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Federal/Natl Government"
     },
     "MDI": {
       "symbol": "MDI",
@@ -13091,7 +13815,8 @@
       "institutionId": "75707",
       "lat": 27.9429,
       "lng": -82.462,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Federal/Natl Government"
     },
     "FGS": {
       "symbol": "FGS",
@@ -13109,7 +13834,8 @@
       "institutionId": "75692",
       "lat": 37.6066,
       "lng": -97.2979,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Federal/Natl Government"
     },
     "TYI": {
       "symbol": "TYI",
@@ -13127,7 +13853,8 @@
       "institutionId": "75724",
       "lat": 43.7914,
       "lng": -116.4012,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Federal/Natl Government"
     },
     "TFB": {
       "symbol": "TFB",
@@ -13146,7 +13873,8 @@
       "lat": 35.5112,
       "lng": -97.0017,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Federal/Natl Government"
     },
     "FGY": {
       "symbol": "FGY",
@@ -13165,7 +13893,8 @@
       "lat": 38.3928,
       "lng": -92.4653,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Federal/Natl Government"
     },
     "UUS": {
       "symbol": "UUS",
@@ -13183,7 +13912,8 @@
       "institutionId": "2971",
       "lat": 41.7249,
       "lng": -111.8401,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "USG": {
       "symbol": "USG",
@@ -13202,7 +13932,8 @@
       "lat": 39.9097,
       "lng": -111.8312,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Academic"
     },
     "UV$": {
       "symbol": "UV$",
@@ -13220,7 +13951,8 @@
       "institutionId": "2972",
       "lat": 40.2674,
       "lng": -111.6557,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VVV": {
       "symbol": "VVV",
@@ -13238,7 +13970,8 @@
       "institutionId": "2066",
       "lat": 43.0997,
       "lng": -75.232,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "GYG": {
       "symbol": "GYG",
@@ -13256,7 +13989,8 @@
       "institutionId": "751",
       "lat": 30.8423,
       "lng": -83.2698,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "FVC": {
       "symbol": "FVC",
@@ -13274,7 +14008,8 @@
       "institutionId": "47839",
       "lat": 28.5178,
       "lng": -81.3075,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VTETL": {
       "symbol": "VTETL",
@@ -13292,7 +14027,8 @@
       "institutionId": "9706",
       "lat": 43.7263,
       "lng": -111.1199,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Other"
     },
     "IVU": {
       "symbol": "IVU",
@@ -13310,7 +14046,8 @@
       "institutionId": "1003",
       "lat": 41.4719,
       "lng": -87.0733,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "UVU": {
       "symbol": "UVU",
@@ -13328,7 +14065,8 @@
       "institutionId": "1838",
       "lat": 40.7612,
       "lng": -73.8828,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "VSCSL": {
       "symbol": "VSCSL",
@@ -13346,7 +14084,8 @@
       "institutionId": "271305",
       "lat": 44.642,
       "lng": -72.6712,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IV@": {
       "symbol": "IV@",
@@ -13364,7 +14103,8 @@
       "institutionId": "10248",
       "lat": 42.1976,
       "lng": -87.9261,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IZ8": {
       "symbol": "IZ8",
@@ -13382,7 +14122,8 @@
       "institutionId": "10302",
       "lat": 40.1487,
       "lng": -88.9627,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IVC": {
       "symbol": "IVC",
@@ -13400,7 +14141,8 @@
       "institutionId": "10523",
       "lat": 39.4677,
       "lng": -87.389,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JOW": {
       "symbol": "JOW",
@@ -13418,7 +14160,8 @@
       "institutionId": "10252",
       "lat": 41.8799,
       "lng": -87.9782,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JZT": {
       "symbol": "JZT",
@@ -13436,7 +14179,8 @@
       "institutionId": "10253",
       "lat": 41.2024,
       "lng": -90.5936,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "VPI": {
       "symbol": "VPI",
@@ -13454,7 +14198,8 @@
       "institutionId": "5027",
       "lat": 37.2236,
       "lng": -80.4035,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ZR1": {
       "symbol": "ZR1",
@@ -13472,7 +14217,8 @@
       "institutionId": "3197",
       "lat": 43.8518,
       "lng": -91.2112,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TVS": {
       "symbol": "TVS",
@@ -13490,7 +14236,8 @@
       "institutionId": "65351",
       "lat": 36.3834,
       "lng": -86.4512,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "WADPL": {
       "symbol": "WADPL",
@@ -13508,7 +14255,8 @@
       "institutionId": "14392",
       "lat": 41.032,
       "lng": -81.7336,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "ZWC": {
       "symbol": "ZWC",
@@ -13526,7 +14274,8 @@
       "institutionId": "2071",
       "lat": 40.5868,
       "lng": -74.1466,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "XVG": {
       "symbol": "XVG",
@@ -13544,7 +14293,8 @@
       "institutionId": "87155",
       "lat": 46.0614,
       "lng": -118.3315,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "XVJ": {
       "symbol": "XVJ",
@@ -13562,7 +14312,8 @@
       "institutionId": "16393",
       "lat": 46.0614,
       "lng": -118.3315,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "WAL": {
       "symbol": "WAL",
@@ -13580,7 +14331,8 @@
       "institutionId": "2352",
       "lat": 40.7989,
       "lng": -81.3784,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JZU": {
       "symbol": "JZU",
@@ -13598,7 +14350,8 @@
       "institutionId": "10258",
       "lat": 40.9107,
       "lng": -90.6448,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IHZ": {
       "symbol": "IHZ",
@@ -13616,7 +14369,8 @@
       "institutionId": "10259",
       "lat": 42.3669,
       "lng": -87.9452,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IOW": {
       "symbol": "IOW",
@@ -13634,7 +14388,8 @@
       "institutionId": "1058",
       "lat": 42.7748,
       "lng": -92.404,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KKW": {
       "symbol": "KKW",
@@ -13652,7 +14407,8 @@
       "institutionId": "1119",
       "lat": 39.0433,
       "lng": -95.7053,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OZA": {
       "symbol": "OZA",
@@ -13670,7 +14426,8 @@
       "institutionId": "8334",
       "lat": 36.0754,
       "lng": -94.1979,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IDW": {
       "symbol": "IDW",
@@ -13688,7 +14445,8 @@
       "institutionId": "10262",
       "lat": 40.7034,
       "lng": -89.4194,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "PUG": {
       "symbol": "PUG",
@@ -13706,7 +14464,8 @@
       "institutionId": "2636",
       "lat": 40.1717,
       "lng": -80.256,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "NTE": {
       "symbol": "NTE",
@@ -13724,7 +14483,8 @@
       "institutionId": "88431",
       "lat": 46.7332,
       "lng": -117.1762,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "XZZ": {
       "symbol": "XZZ",
@@ -13742,7 +14502,8 @@
       "institutionId": "8102",
       "lat": 61.5635,
       "lng": -149.477,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "WTX": {
       "symbol": "WTX",
@@ -13760,7 +14521,8 @@
       "institutionId": "8618",
       "lat": 36.9109,
       "lng": -121.7572,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "WAN": {
       "symbol": "WAN",
@@ -13778,7 +14540,8 @@
       "institutionId": "13308",
       "lat": 40.9476,
       "lng": -74.2458,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "WAY": {
       "symbol": "WAY",
@@ -13796,7 +14559,8 @@
       "institutionId": "67769",
       "lat": 42.2304,
       "lng": -97.0186,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "TJF": {
       "symbol": "TJF",
@@ -13814,7 +14578,8 @@
       "institutionId": "64907",
       "lat": 32.7799,
       "lng": -97.7729,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "UTW": {
       "symbol": "UTW",
@@ -13832,7 +14597,8 @@
       "institutionId": "16076",
       "lat": 41.1724,
       "lng": -112.0382,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "UUO": {
       "symbol": "UUO",
@@ -13850,7 +14616,8 @@
       "institutionId": "2975",
       "lat": 41.2395,
       "lng": -111.9654,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "WEL": {
       "symbol": "WEL",
@@ -13868,7 +14635,8 @@
       "institutionId": "1407",
       "lat": 42.2945,
       "lng": -71.2992,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IWM": {
       "symbol": "IWM",
@@ -13886,7 +14654,8 @@
       "institutionId": "10427",
       "lat": 40.7368,
       "lng": -85.1622,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "HMO": {
       "symbol": "HMO",
@@ -13904,7 +14673,8 @@
       "institutionId": "10276",
       "lat": 41.8524,
       "lng": -87.8845,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "QWC": {
       "symbol": "QWC",
@@ -13923,7 +14693,8 @@
       "lat": 40.6198,
       "lng": -77.5619,
       "group": "FILM",
-      "_coordsFromState": true
+      "_coordsFromState": true,
+      "type": "Academic"
     },
     "JOV": {
       "symbol": "JOV",
@@ -13941,7 +14712,8 @@
       "institutionId": "10273",
       "lat": 41.8867,
       "lng": -88.2031,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "COW": {
       "symbol": "COW",
@@ -13959,7 +14731,8 @@
       "institutionId": "503",
       "lat": 38.5485,
       "lng": -106.9281,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "CTD": {
       "symbol": "CTD",
@@ -13977,7 +14750,8 @@
       "institutionId": "543",
       "lat": 41.3705,
       "lng": -73.4267,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "IAZ": {
       "symbol": "IAZ",
@@ -13995,7 +14769,8 @@
       "institutionId": "926",
       "lat": 40.4617,
       "lng": -90.6787,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "WM@": {
       "symbol": "WM@",
@@ -14013,7 +14788,8 @@
       "institutionId": "7122",
       "lat": 39.6298,
       "lng": -77.7183,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "EXW": {
       "symbol": "EXW",
@@ -14031,7 +14807,8 @@
       "institutionId": "1500",
       "lat": 42.2865,
       "lng": -85.5787,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OUW": {
       "symbol": "OUW",
@@ -14049,7 +14826,8 @@
       "institutionId": "59050",
       "lat": 34.6433,
       "lng": -99.3272,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OWE": {
       "symbol": "OWE",
@@ -14067,7 +14845,8 @@
       "institutionId": "14440",
       "lat": 35.5115,
       "lng": -98.9795,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "Z97": {
       "symbol": "Z97",
@@ -14085,7 +14864,8 @@
       "institutionId": "87183",
       "lat": 47.045,
       "lng": -122.9022,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Special"
     },
     "XFF": {
       "symbol": "XFF",
@@ -14103,7 +14883,8 @@
       "institutionId": "3126",
       "lat": 48.7522,
       "lng": -122.4645,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "WYR": {
       "symbol": "WYR",
@@ -14121,7 +14902,8 @@
       "institutionId": "69010",
       "lat": 41.5968,
       "lng": -109.2165,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OPW": {
       "symbol": "OPW",
@@ -14139,7 +14921,8 @@
       "institutionId": "6571",
       "lat": 41.4535,
       "lng": -81.9218,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "HPO": {
       "symbol": "HPO",
@@ -14157,7 +14940,8 @@
       "institutionId": "10279",
       "lat": 41.7728,
       "lng": -87.9757,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TWT": {
       "symbol": "TWT",
@@ -14175,7 +14959,8 @@
       "institutionId": "2953",
       "lat": 34.9788,
       "lng": -101.9218,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "MW0": {
       "symbol": "MW0",
@@ -14193,7 +14978,8 @@
       "institutionId": "10280",
       "lat": 40.0451,
       "lng": -87.636,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "WVQ": {
       "symbol": "WVQ",
@@ -14211,7 +14997,8 @@
       "institutionId": "3152",
       "lat": 38.9755,
       "lng": -80.2407,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "GWK": {
       "symbol": "GWK",
@@ -14229,7 +15016,8 @@
       "institutionId": "8926",
       "lat": 41.7465,
       "lng": -72.6976,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "WC3": {
       "symbol": "WC3",
@@ -14247,7 +15035,8 @@
       "institutionId": "67819",
       "lat": 48.7522,
       "lng": -122.4645,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "WC4": {
       "symbol": "WC4",
@@ -14265,7 +15054,8 @@
       "institutionId": "16402",
       "lat": 48.7522,
       "lng": -122.4645,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JAD": {
       "symbol": "JAD",
@@ -14283,7 +15073,8 @@
       "institutionId": "10281",
       "lat": 41.856,
       "lng": -88.1005,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "XQU": {
       "symbol": "XQU",
@@ -14301,7 +15092,8 @@
       "institutionId": "16394",
       "lat": 46.88,
       "lng": -117.367,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "KSW": {
       "symbol": "KSW",
@@ -14319,7 +15111,8 @@
       "institutionId": "1121",
       "lat": 37.6946,
       "lng": -97.3419,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OWS": {
       "symbol": "OWS",
@@ -14337,7 +15130,8 @@
       "institutionId": "2445",
       "lat": 44.9439,
       "lng": -123.0095,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JDD": {
       "symbol": "JDD",
@@ -14355,7 +15149,8 @@
       "institutionId": "86740",
       "lat": 42.1124,
       "lng": -88.0281,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "ODO": {
       "symbol": "ODO",
@@ -14373,7 +15168,8 @@
       "institutionId": "6977",
       "lat": 39.9542,
       "lng": -89.5487,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "X#3": {
       "symbol": "X#3",
@@ -14391,7 +15187,8 @@
       "institutionId": "8103",
       "lat": 61.8966,
       "lng": -150.0038,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Other"
     },
     "GP5": {
       "symbol": "GP5",
@@ -14409,7 +15206,8 @@
       "institutionId": "10284",
       "lat": 42.0765,
       "lng": -87.7246,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TH8": {
       "symbol": "TH8",
@@ -14427,7 +15225,8 @@
       "institutionId": "10285",
       "lat": 41.3078,
       "lng": -88.1467,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JSI": {
       "symbol": "JSI",
@@ -14445,7 +15244,8 @@
       "institutionId": "10288",
       "lat": 41.8744,
       "lng": -88.1516,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LF7": {
       "symbol": "LF7",
@@ -14463,7 +15263,8 @@
       "institutionId": "10289",
       "lat": 42.2727,
       "lng": -89.2373,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IWE": {
       "symbol": "IWE",
@@ -14481,7 +15282,8 @@
       "institutionId": "10290",
       "lat": 42.1054,
       "lng": -87.7535,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "MNI": {
       "symbol": "MNI",
@@ -14499,7 +15301,8 @@
       "institutionId": "1596",
       "lat": 44.03,
       "lng": -91.7009,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "SWW": {
       "symbol": "SWW",
@@ -14517,7 +15320,8 @@
       "institutionId": "2701",
       "lat": 34.9722,
       "lng": -81.1196,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "SPW": {
       "symbol": "SPW",
@@ -14535,7 +15339,8 @@
       "institutionId": "2702",
       "lat": 34.9378,
       "lng": -81.8998,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "OMB": {
       "symbol": "OMB",
@@ -14553,7 +15358,8 @@
       "institutionId": "448",
       "lat": 34.1806,
       "lng": -118.3133,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "JZE": {
       "symbol": "JZE",
@@ -14571,7 +15377,8 @@
       "institutionId": "10292",
       "lat": 41.9574,
       "lng": -87.9594,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "HUO": {
       "symbol": "HUO",
@@ -14589,7 +15396,8 @@
       "institutionId": "10294",
       "lat": 41.7518,
       "lng": -88.0489,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "IQ2": {
       "symbol": "IQ2",
@@ -14607,7 +15415,8 @@
       "institutionId": "10293",
       "lat": 38.8643,
       "lng": -90.0875,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "LF8": {
       "symbol": "LF8",
@@ -14625,7 +15434,8 @@
       "institutionId": "10295",
       "lat": 42.3198,
       "lng": -88.4477,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "W3W": {
       "symbol": "W3W",
@@ -14643,7 +15453,8 @@
       "institutionId": "14513",
       "lat": 36.4854,
       "lng": -99.3511,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "WPG": {
       "symbol": "WPG",
@@ -14661,7 +15472,8 @@
       "institutionId": "1415",
       "lat": 42.2803,
       "lng": -71.8183,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "WZW": {
       "symbol": "WZW",
@@ -14679,7 +15491,8 @@
       "institutionId": "11407",
       "lat": 42.2803,
       "lng": -71.8183,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "WRM": {
       "symbol": "WRM",
@@ -14697,7 +15510,8 @@
       "institutionId": "1416",
       "lat": 42.2803,
       "lng": -71.8183,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Academic"
     },
     "KGI": {
       "symbol": "KGI",
@@ -14715,7 +15529,8 @@
       "institutionId": "10297",
       "lat": 41.6895,
       "lng": -87.7863,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "TI2": {
       "symbol": "TI2",
@@ -14733,7 +15548,8 @@
       "institutionId": "10299",
       "lat": 41.6387,
       "lng": -88.4438,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     },
     "JAR": {
       "symbol": "JAR",
@@ -14751,7 +15567,8 @@
       "institutionId": "10301",
       "lat": 42.4442,
       "lng": -87.8389,
-      "group": "FILM"
+      "group": "FILM",
+      "type": "Public"
     }
   }
 }

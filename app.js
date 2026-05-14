@@ -257,7 +257,7 @@
             symbol: sym,
             name: entry.institution || sym,
             state: entry.state || null,
-            type: 'Other',
+            type: entry.type || 'Other',
             groups: [groupCode],
             lat: typeof entry.lat === 'number' ? entry.lat : null,
             lng: typeof entry.lng === 'number' ? entry.lng : null,

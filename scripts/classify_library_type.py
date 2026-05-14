@@ -1,0 +1,258 @@
+"""Heuristic library-type classifier shared by build_lvis_policies / build_film_policies.
+
+Maps an institution name (and optional branch name) to one of the four type
+buckets the app uses: Academic, Public, Special, Federal/Natl Government, or
+the catch-all 'Other'.
+
+The classifier is name-based and intentionally conservative — for names with
+no recognizable marker we fall back to 'Other' so they're easy to spot. The
+ordering matters: federal patterns are checked first because some federal
+libraries (e.g. "National Defense University") would otherwise be tagged
+Academic.
+"""
+from __future__ import annotations
+
+import re
+
+FED_MARKERS = (
+    "library of congress",
+    "national library of",
+    "national agricultural library",
+    "national archives",
+    "national institute of environmental health",
+    "national institutes of health",
+    "national institute of standards",
+    "national gallery of art",
+    "national science foundation",
+    "smithsonian",
+    "u.s. department",
+    "us department of",
+    "united states department",
+    "department of agriculture",
+    "department of defense",
+    "department of energy",
+    "department of the interior",
+    "department of state",
+    "department of veterans",
+    "veterans affairs",
+    "va medical center",
+    "federal reserve",
+    "federal bureau",
+    "federal aviation",
+    "naval war college",
+    "naval academy",
+    "naval postgraduate",
+    "air war college",
+    "air force academy",
+    "air force base",
+    " afb ",
+    "afb library",
+    "army war college",
+    "us military academy",
+    "u.s. military academy",
+    "marine corps university",
+    "nasa ",
+    "noaa ",
+    "centers for disease control",
+    "environmental protection agency",
+    "government printing office",
+    "u.s. army",
+    "u.s. navy",
+    "u.s. air force",
+    "u.s. marine",
+    "us army",
+    "us navy",
+    "us air force",
+    "u.s. coast guard",
+    "us coast guard",
+    "u.s. court",
+    "us court of appeals",
+    "defense language institute",
+    "defense technical information",
+    "bureau of ocean energy",
+    "bureau of land management",
+    "bureau of reclamation",
+    "bureau of indian affairs",
+    "u.s. geological survey",
+    "us geological survey",
+    "naval research",
+    "naval undersea",
+    "naval surface warfare",
+    "naval air station",
+    "patuxent river",
+    "niaid",
+    "rocky mountain laboratories",
+    "boulder labs",
+    "afrl",
+    "air force research",
+    "air force civil engineer",
+    "air force institute of technology",
+    "arnold engineering development",
+    "bonneville power administration",
+)
+
+ACADEMIC_MARKERS = (
+    "university",
+    " college",
+    "college,",
+    "college of",
+    "college library",
+    "community college",
+    "junior college",
+    "college (",
+    "seminary",
+    "school of medicine",
+    "school of law",
+    "school of theology",
+    "school of nursing",
+    "school of design",
+    "school of art",
+    "art institute",
+    "law school",
+    "medical school",
+    "graduate school",
+    "theological school",
+    "institute of technology",
+    "polytechnic",
+    "academy of",
+    "preparatory school",
+    "suny ",
+    "suny at",
+    "military institute",
+    "the citadel",
+    "notre dame library",
+    "loyola notre dame",
+    "erikson institute",
+    "nashotah house",
+    "rhode island school",
+    "montana tech",
+    "high school",
+    "bible institute",
+    "institute of music",
+    "institute of mining",
+    "institute of the arts",
+    "institute of integral",
+    "institute of the americas",
+    "school of osteopathic",
+    "school of visual arts",
+    "cal poly",
+    "virginia tech",
+    "cuny",
+    "unh durham",
+    "moody bible",
+    "marine consortium",
+    "graduate center library",
+    "conservatory",
+)
+
+PUBLIC_MARKERS = (
+    "public library",
+    "public libraries",
+    "library district",
+    "district library",
+    "library system",
+    "free library",
+    "memorial library",
+    "regional library",
+    "county library",
+    "township library",
+    "parish library",
+    "town library",
+    "village library",
+    "borough library",
+    "community library",
+    "branch library",
+    "library cooperative",
+    "library consortium",
+    "library association",
+    "carnegie library",
+    "consolidated library",
+    "city libraries",
+    "city library",
+    "athenaeum",
+    "sno-isle libraries",
+    " libraries",
+)
+
+SPECIAL_MARKERS = (
+    "museum",
+    "historical society",
+    "historical association",
+    "art gallery",
+    "gallery of art",
+    "research institute",
+    "research center",
+    "research library",
+    "medical center",
+    "medical library",
+    "hospital",
+    "health sciences library",
+    "health professions library",
+    "law firm",
+    "law office",
+    "law library",
+    "monastery",
+    "abbey",
+    "diocese",
+    "archdiocese",
+    "synod",
+    "presbytery",
+    "society of",
+    "institute for",
+    "center for",
+    "foundation library",
+    "foundation,",
+    "genealogical",
+    "botanical",
+    "zoological",
+    "observatory",
+    "cultural center",
+    "heritage center",
+    "archives",
+    "state department of transportation",
+    "department of transportation",
+    "library commission",
+    "state library",
+    "library of virginia",
+    "brookings institution",
+    "wildlife conservation",
+    "menil collection",
+    "society library",
+    "population council",
+    "pollution control",
+    "law and legislative",
+    "law & legis",
+    "arboretum",
+    "botanic garden",
+    "department of health",
+    "department of conservation",
+    "energy commission",
+    "carnegie endowment",
+    "geological survey library",
+    "fish & wildlife",
+    "fish and wildlife",
+    "endowment for",
+)
+
+
+def classify_type(name: str | None, branch: str | None = None) -> str:
+    """Return the best-guess library type for a given institution/branch name."""
+    if not name:
+        return "Other"
+    # Normalize: lowercase, collapse whitespace, but keep punctuation we test on
+    combined = re.sub(r"\s+", " ", f"{name} {branch or ''}".lower()).strip()
+
+    if any(m in combined for m in FED_MARKERS):
+        return "Federal/Natl Government"
+    if any(m in combined for m in ACADEMIC_MARKERS):
+        return "Academic"
+    if any(m in combined for m in PUBLIC_MARKERS):
+        return "Public"
+    if any(m in combined for m in SPECIAL_MARKERS):
+        return "Special"
+
+    # Fallback: a bare "Library" with no other markers — most often a small
+    # public library (e.g. "Mexico Audrain County Library District" hits Public
+    # via the markers above; "Carnegie Stout Public Library" hits via Public).
+    # Anything left here defaults to Other so unclassified entries are visible.
+    return "Other"
