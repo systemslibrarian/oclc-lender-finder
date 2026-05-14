@@ -22,7 +22,7 @@
       "group": "Always 'LVIS' for this dataset",
       "lat": "Approximate latitude (city centroid from US postal data)",
       "lng": "Approximate longitude (city centroid from US postal data)",
-      "type": "Best-guess library type (Academic/Public/Special/Federal/Natl Government/Other) inferred from name"
+      "type": "Best-guess library type (Academic/Archives/Consortium/Corporate/Government/Law/Medical/Museum/Music/Public/School/Special/Other) inferred from name"
     }
   },
   "libraries": {
@@ -119,7 +119,7 @@
       "group": "LVIS",
       "lat": 30.5393,
       "lng": -86.6087,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "SCK": {
       "symbol": "SCK",
@@ -138,7 +138,7 @@
       "group": "LVIS",
       "lat": 35.0203,
       "lng": -106.5503,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "EGA": {
       "symbol": "EGA",
@@ -177,7 +177,7 @@
       "lat": 28.1279,
       "lng": -81.9556,
       "_coordsFromState": true,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "MWT": {
       "symbol": "MWT",
@@ -272,7 +272,7 @@
       "group": "LVIS",
       "lat": 58.3163,
       "lng": -134.4471,
-      "type": "Special"
+      "type": "Government"
     },
     "W8A": {
       "symbol": "W8A",
@@ -614,7 +614,7 @@
       "group": "LVIS",
       "lat": 38.8965,
       "lng": -77.0214,
-      "type": "Academic"
+      "type": "Law"
     },
     "UIB": {
       "symbol": "UIB",
@@ -900,7 +900,7 @@
       "group": "LVIS",
       "lat": 34.7594,
       "lng": -92.3447,
-      "type": "Special"
+      "type": "Government"
     },
     "ASU": {
       "symbol": "ASU",
@@ -995,7 +995,7 @@
       "group": "LVIS",
       "lat": 35.4976,
       "lng": -86.0748,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "ANM": {
       "symbol": "ANM",
@@ -1417,7 +1417,7 @@
       "lat": 38.3928,
       "lng": -92.4653,
       "_coordsFromState": true,
-      "type": "Academic"
+      "type": "Medical"
     },
     "MDH": {
       "symbol": "MDH",
@@ -1437,7 +1437,7 @@
       "lat": 45.5629,
       "lng": -94.1223,
       "_coordsFromState": true,
-      "type": "Special"
+      "type": "Government"
     },
     "FJQ": {
       "symbol": "FJQ",
@@ -1456,7 +1456,7 @@
       "group": "LVIS",
       "lat": 28.5178,
       "lng": -81.3075,
-      "type": "Academic"
+      "type": "Law"
     },
     "INB": {
       "symbol": "INB",
@@ -1551,7 +1551,7 @@
       "group": "LVIS",
       "lat": 42.7005,
       "lng": -74.9243,
-      "type": "Special"
+      "type": "Medical"
     },
     "JVX": {
       "symbol": "JVX",
@@ -2026,7 +2026,7 @@
       "group": "LVIS",
       "lat": 38.0743,
       "lng": -97.3473,
-      "type": "Academic"
+      "type": "Archives"
     },
     "MNK": {
       "symbol": "MNK",
@@ -2217,7 +2217,7 @@
       "group": "LVIS",
       "lat": 39.9421,
       "lng": -91.3629,
-      "type": "Special"
+      "type": "Medical"
     },
     "JOZ": {
       "symbol": "JOZ",
@@ -2350,7 +2350,7 @@
       "group": "LVIS",
       "lat": 45.5194,
       "lng": -122.6644,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "XMC": {
       "symbol": "XMC",
@@ -2388,7 +2388,7 @@
       "group": "LVIS",
       "lat": 42.3523,
       "lng": -71.0387,
-      "type": "Academic"
+      "type": "Music"
     },
     "BLQ": {
       "symbol": "BLQ",
@@ -2426,7 +2426,7 @@
       "group": "LVIS",
       "lat": 40.0375,
       "lng": -105.3026,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "ZVN": {
       "symbol": "ZVN",
@@ -2806,7 +2806,7 @@
       "group": "LVIS",
       "lat": 40.3265,
       "lng": -75.1228,
-      "type": "Public"
+      "type": "Consortium"
     },
     "IOE": {
       "symbol": "IOE",
@@ -2863,7 +2863,7 @@
       "group": "LVIS",
       "lat": 29.9571,
       "lng": -90.0704,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "BUP": {
       "symbol": "BUP",
@@ -2978,7 +2978,7 @@
       "group": "LVIS",
       "lat": 38.5808,
       "lng": -121.4744,
-      "type": "Special"
+      "type": "Government"
     },
     "CEC": {
       "symbol": "CEC",
@@ -2997,7 +2997,7 @@
       "group": "LVIS",
       "lat": 38.5808,
       "lng": -121.4744,
-      "type": "Special"
+      "type": "Government"
     },
     "CIJ": {
       "symbol": "CIJ",
@@ -3244,7 +3244,7 @@
       "group": "LVIS",
       "lat": 35.8088,
       "lng": -78.6336,
-      "type": "Academic"
+      "type": "Law"
     },
     "MQ9": {
       "symbol": "MQ9",
@@ -3301,7 +3301,7 @@
       "group": "LVIS",
       "lat": 37.2837,
       "lng": -79.9516,
-      "type": "Special"
+      "type": "Medical"
     },
     "JPE": {
       "symbol": "JPE",
@@ -3320,7 +3320,7 @@
       "group": "LVIS",
       "lat": 40.0967,
       "lng": -88.1991,
-      "type": "Special"
+      "type": "Medical"
     },
     "MNN": {
       "symbol": "MNN",
@@ -3605,7 +3605,7 @@
       "group": "LVIS",
       "lat": 38.8965,
       "lng": -77.0214,
-      "type": "Academic"
+      "type": "Law"
     },
     "RP8": {
       "symbol": "RP8",
@@ -3624,7 +3624,7 @@
       "group": "LVIS",
       "lat": 42.3523,
       "lng": -71.0387,
-      "type": "Other"
+      "type": "Corporate"
     },
     "CNT": {
       "symbol": "CNT",
@@ -3662,7 +3662,7 @@
       "group": "LVIS",
       "lat": 33.8171,
       "lng": -84.3802,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "AKD": {
       "symbol": "AKD",
@@ -4138,7 +4138,7 @@
       "group": "LVIS",
       "lat": 41.8542,
       "lng": -87.6761,
-      "type": "Academic"
+      "type": "Law"
     },
     "TS6": {
       "symbol": "TS6",
@@ -4461,7 +4461,7 @@
       "group": "LVIS",
       "lat": 41.5231,
       "lng": -81.6554,
-      "type": "Academic"
+      "type": "Music"
     },
     "TNZ": {
       "symbol": "TNZ",
@@ -5033,7 +5033,7 @@
       "group": "LVIS",
       "lat": 45.5194,
       "lng": -122.6644,
-      "type": "Special"
+      "type": "Government"
     },
     "SBI": {
       "symbol": "SBI",
@@ -5128,7 +5128,7 @@
       "group": "LVIS",
       "lat": 38.8965,
       "lng": -77.0214,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "LQS": {
       "symbol": "LQS",
@@ -5223,7 +5223,7 @@
       "group": "LVIS",
       "lat": 47.7989,
       "lng": -116.7423,
-      "type": "Public"
+      "type": "Consortium"
     },
     "FY3": {
       "symbol": "FY3",
@@ -5850,7 +5850,7 @@
       "group": "LVIS",
       "lat": 40.7449,
       "lng": -73.9469,
-      "type": "Academic"
+      "type": "Law"
     },
     "ZNC": {
       "symbol": "ZNC",
@@ -6156,7 +6156,7 @@
       "lat": 40.3885,
       "lng": -82.7399,
       "_coordsFromState": true,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "JNE": {
       "symbol": "JNE",
@@ -6327,7 +6327,7 @@
       "group": "LVIS",
       "lat": 38.8965,
       "lng": -77.0214,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "IDU": {
       "symbol": "IDU",
@@ -7452,7 +7452,7 @@
       "lat": 47.3463,
       "lng": -121.2199,
       "_coordsFromState": true,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "FDU": {
       "symbol": "FDU",
@@ -7625,7 +7625,7 @@
       "group": "LVIS",
       "lat": 42.3523,
       "lng": -71.0387,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "EZF": {
       "symbol": "EZF",
@@ -7778,7 +7778,7 @@
       "group": "LVIS",
       "lat": 30.4548,
       "lng": -84.2802,
-      "type": "Special"
+      "type": "Government"
     },
     "FLT": {
       "symbol": "FLT",
@@ -8882,7 +8882,7 @@
       "group": "LVIS",
       "lat": 40.5601,
       "lng": -90.0242,
-      "type": "Academic"
+      "type": "Medical"
     },
     "LGS": {
       "symbol": "LGS",
@@ -9701,7 +9701,7 @@
       "group": "LVIS",
       "lat": 40.7094,
       "lng": -73.613,
-      "type": "Academic"
+      "type": "Law"
     },
     "ZIH": {
       "symbol": "ZIH",
@@ -9758,7 +9758,7 @@
       "group": "LVIS",
       "lat": 40.2402,
       "lng": -76.9275,
-      "type": "Special"
+      "type": "Medical"
     },
     "JX1": {
       "symbol": "JX1",
@@ -10100,7 +10100,7 @@
       "group": "LVIS",
       "lat": 39.7756,
       "lng": -89.619,
-      "type": "Special"
+      "type": "Government"
     },
     "ILFSI": {
       "symbol": "ILFSI",
@@ -10157,7 +10157,7 @@
       "group": "LVIS",
       "lat": 39.7756,
       "lng": -89.619,
-      "type": "Special"
+      "type": "Government"
     },
     "LCX": {
       "symbol": "LCX",
@@ -10271,7 +10271,7 @@
       "group": "LVIS",
       "lat": 39.1726,
       "lng": -86.5212,
-      "type": "Academic"
+      "type": "Law"
     },
     "IU0": {
       "symbol": "IU0",
@@ -10347,7 +10347,7 @@
       "group": "LVIS",
       "lat": 39.8003,
       "lng": -86.1362,
-      "type": "Academic"
+      "type": "Law"
     },
     "I3U": {
       "symbol": "I3U",
@@ -10843,7 +10843,7 @@
       "group": "LVIS",
       "lat": 34.1488,
       "lng": -118.1418,
-      "type": "Special"
+      "type": "Archives"
     },
     "AKK": {
       "symbol": "AKK",
@@ -10901,7 +10901,7 @@
       "group": "LVIS",
       "lat": 39.3019,
       "lng": -76.621,
-      "type": "Special"
+      "type": "Medical"
     },
     "KCJ": {
       "symbol": "KCJ",
@@ -11358,7 +11358,7 @@
       "group": "LVIS",
       "lat": 47.528,
       "lng": -122.0081,
-      "type": "Public"
+      "type": "Consortium"
     },
     "UIN": {
       "symbol": "UIN",
@@ -11777,7 +11777,7 @@
       "group": "LVIS",
       "lat": 40.1486,
       "lng": -87.6473,
-      "type": "Academic"
+      "type": "Medical"
     },
     "JAS": {
       "symbol": "JAS",
@@ -12082,7 +12082,7 @@
       "group": "LVIS",
       "lat": 44.3348,
       "lng": -69.7791,
-      "type": "Special"
+      "type": "Law"
     },
     "KSA": {
       "symbol": "KSA",
@@ -12215,7 +12215,7 @@
       "group": "LVIS",
       "lat": 45.5194,
       "lng": -122.6644,
-      "type": "Special"
+      "type": "Medical"
     },
     "LCY": {
       "symbol": "LCY",
@@ -12386,7 +12386,7 @@
       "group": "LVIS",
       "lat": 45.5194,
       "lng": -122.6644,
-      "type": "Academic"
+      "type": "Law"
     },
     "WK0": {
       "symbol": "WK0",
@@ -12519,7 +12519,7 @@
       "group": "LVIS",
       "lat": 37.528,
       "lng": -77.4742,
-      "type": "Special"
+      "type": "Government"
     },
     "SBX": {
       "symbol": "SBX",
@@ -12975,7 +12975,7 @@
       "group": "LVIS",
       "lat": 29.4634,
       "lng": -90.598,
-      "type": "Academic"
+      "type": "Consortium"
     },
     "IK4": {
       "symbol": "IK4",
@@ -13968,7 +13968,7 @@
       "group": "LVIS",
       "lat": 29.7979,
       "lng": -95.4191,
-      "type": "Special"
+      "type": "Museum"
     },
     "MSW": {
       "symbol": "MSW",
@@ -14273,7 +14273,7 @@
       "group": "LVIS",
       "lat": 42.732,
       "lng": -84.4783,
-      "type": "Academic"
+      "type": "Law"
     },
     "MDY": {
       "symbol": "MDY",
@@ -14465,7 +14465,7 @@
       "lat": 45.5629,
       "lng": -94.1223,
       "_coordsFromState": true,
-      "type": "Special"
+      "type": "Government"
     },
     "MNM": {
       "symbol": "MNM",
@@ -14579,7 +14579,7 @@
       "group": "LVIS",
       "lat": 32.3083,
       "lng": -90.1838,
-      "type": "Special"
+      "type": "Government"
     },
     "MFM": {
       "symbol": "MFM",
@@ -14617,7 +14617,7 @@
       "group": "LVIS",
       "lat": 38.5698,
       "lng": -92.1849,
-      "type": "Special"
+      "type": "Government"
     },
     "MUJ": {
       "symbol": "MUJ",
@@ -14655,7 +14655,7 @@
       "group": "LVIS",
       "lat": 38.5698,
       "lng": -92.1849,
-      "type": "Special"
+      "type": "Government"
     },
     "UMR": {
       "symbol": "UMR",
@@ -14713,7 +14713,7 @@
       "group": "LVIS",
       "lat": 44.9596,
       "lng": -93.1016,
-      "type": "Academic"
+      "type": "Law"
     },
     "AMP": {
       "symbol": "AMP",
@@ -15398,7 +15398,7 @@
       "lat": 38.3928,
       "lng": -92.4653,
       "_coordsFromState": true,
-      "type": "Public"
+      "type": "Consortium"
     },
     "KMS": {
       "symbol": "KMS",
@@ -15474,7 +15474,7 @@
       "group": "LVIS",
       "lat": 29.7979,
       "lng": -95.4191,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "WIO": {
       "symbol": "WIO",
@@ -15551,7 +15551,7 @@
       "lat": 35.5736,
       "lng": -79.5283,
       "_coordsFromState": true,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "CIZ": {
       "symbol": "CIZ",
@@ -15589,7 +15589,7 @@
       "group": "LVIS",
       "lat": 38.7966,
       "lng": -77.0874,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "FZW": {
       "symbol": "FZW",
@@ -15646,7 +15646,7 @@
       "group": "LVIS",
       "lat": 32.7551,
       "lng": -117.1473,
-      "type": "Special"
+      "type": "Archives"
     },
     "NRL": {
       "symbol": "NRL",
@@ -15665,7 +15665,7 @@
       "group": "LVIS",
       "lat": 38.8965,
       "lng": -77.0214,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "NSW": {
       "symbol": "NSW",
@@ -15684,7 +15684,7 @@
       "group": "LVIS",
       "lat": 38.3375,
       "lng": -77.0429,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "NUS": {
       "symbol": "NUS",
@@ -15703,7 +15703,7 @@
       "group": "LVIS",
       "lat": 41.4933,
       "lng": -71.3131,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "XNC": {
       "symbol": "XNC",
@@ -15741,7 +15741,7 @@
       "group": "LVIS",
       "lat": 40.8176,
       "lng": -96.6889,
-      "type": "Special"
+      "type": "Government"
     },
     "NBW": {
       "symbol": "NBW",
@@ -15836,7 +15836,7 @@
       "group": "LVIS",
       "lat": 39.1553,
       "lng": -119.7723,
-      "type": "Special"
+      "type": "Archives"
     },
     "FHC": {
       "symbol": "FHC",
@@ -15950,7 +15950,7 @@
       "group": "LVIS",
       "lat": 40.2535,
       "lng": -74.7168,
-      "type": "Special"
+      "type": "Government"
     },
     "MJ1": {
       "symbol": "MJ1",
@@ -16083,7 +16083,7 @@
       "group": "LVIS",
       "lat": 40.7592,
       "lng": -73.9817,
-      "type": "Academic"
+      "type": "Law"
     },
     "ZNS": {
       "symbol": "ZNS",
@@ -16121,7 +16121,7 @@
       "group": "LVIS",
       "lat": 42.6586,
       "lng": -73.7638,
-      "type": "Special"
+      "type": "Government"
     },
     "FD8": {
       "symbol": "FD8",
@@ -16197,7 +16197,7 @@
       "group": "LVIS",
       "lat": 38.9398,
       "lng": -76.9178,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "OLA": {
       "symbol": "OLA",
@@ -16216,7 +16216,7 @@
       "group": "LVIS",
       "lat": 39.0182,
       "lng": -77.0206,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "VNS": {
       "symbol": "VNS",
@@ -16349,7 +16349,7 @@
       "group": "LVIS",
       "lat": 46.8132,
       "lng": -100.7537,
-      "type": "Special"
+      "type": "Government"
     },
     "NWQ": {
       "symbol": "NWQ",
@@ -16922,7 +16922,7 @@
       "group": "LVIS",
       "lat": 36.5959,
       "lng": -121.8805,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "EYR": {
       "symbol": "EYR",
@@ -17074,7 +17074,7 @@
       "group": "LVIS",
       "lat": 40.1039,
       "lng": -83.1342,
-      "type": "Special"
+      "type": "Museum"
     },
     "ORK": {
       "symbol": "ORK",
@@ -17208,7 +17208,7 @@
       "group": "LVIS",
       "lat": 35.495,
       "lng": -97.4886,
-      "type": "Academic"
+      "type": "Law"
     },
     "OTU": {
       "symbol": "OTU",
@@ -17702,7 +17702,7 @@
       "group": "LVIS",
       "lat": 41.5654,
       "lng": -90.5916,
-      "type": "Academic"
+      "type": "Medical"
     },
     "PPI": {
       "symbol": "PPI",
@@ -17873,7 +17873,7 @@
       "group": "LVIS",
       "lat": 45.6546,
       "lng": -110.5609,
-      "type": "Academic"
+      "type": "School"
     },
     "IAQ": {
       "symbol": "IAQ",
@@ -17968,7 +17968,7 @@
       "group": "LVIS",
       "lat": 38.2791,
       "lng": -76.4381,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "IW3": {
       "symbol": "IW3",
@@ -18424,7 +18424,7 @@
       "group": "LVIS",
       "lat": 35.9717,
       "lng": -83.9645,
-      "type": "Special"
+      "type": "Medical"
     },
     "PGL": {
       "symbol": "PGL",
@@ -18520,7 +18520,7 @@
       "group": "LVIS",
       "lat": 42.5827,
       "lng": -87.8456,
-      "type": "Special"
+      "type": "Museum"
     },
     "JAO": {
       "symbol": "JAO",
@@ -19433,7 +19433,7 @@
       "group": "LVIS",
       "lat": 46.2395,
       "lng": -114.1679,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "OVV": {
       "symbol": "OVV",
@@ -19893,7 +19893,7 @@
       "group": "LVIS",
       "lat": 39.1174,
       "lng": -94.5672,
-      "type": "Public"
+      "type": "Medical"
     },
     "IMS": {
       "symbol": "IMS",
@@ -20538,7 +20538,7 @@
       "group": "LVIS",
       "lat": 47.6037,
       "lng": -122.331,
-      "type": "Academic"
+      "type": "Law"
     },
     "FSS": {
       "symbol": "FSS",
@@ -20576,7 +20576,7 @@
       "group": "LVIS",
       "lat": 39.7467,
       "lng": -81.5153,
-      "type": "Other"
+      "type": "Consortium"
     },
     "PQA": {
       "symbol": "PQA",
@@ -20634,7 +20634,7 @@
       "lat": 35.5736,
       "lng": -79.5283,
       "_coordsFromState": true,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "OSS": {
       "symbol": "OSS",
@@ -21015,7 +21015,7 @@
       "group": "LVIS",
       "lat": 48.0811,
       "lng": -122.1771,
-      "type": "Public"
+      "type": "Consortium"
     },
     "DV9": {
       "symbol": "DV9",
@@ -21814,7 +21814,7 @@
       "group": "LVIS",
       "lat": 39.0433,
       "lng": -95.7053,
-      "type": "Special"
+      "type": "Government"
     },
     "OSO": {
       "symbol": "OSO",
@@ -21833,7 +21833,7 @@
       "group": "LVIS",
       "lat": 44.9439,
       "lng": -123.0095,
-      "type": "Special"
+      "type": "Government"
     },
     "MZ5": {
       "symbol": "MZ5",
@@ -21967,7 +21967,7 @@
       "lat": 28.1279,
       "lng": -81.9556,
       "_coordsFromState": true,
-      "type": "Academic"
+      "type": "Law"
     },
     "NNO": {
       "symbol": "NNO",
@@ -22082,7 +22082,7 @@
       "group": "LVIS",
       "lat": 39.7756,
       "lng": -89.619,
-      "type": "Special"
+      "type": "Medical"
     },
     "SJT": {
       "symbol": "SJT",
@@ -22388,7 +22388,7 @@
       "group": "LVIS",
       "lat": 40.9162,
       "lng": -73.1343,
-      "type": "Academic"
+      "type": "Medical"
     },
     "YSY": {
       "symbol": "YSY",
@@ -22940,7 +22940,7 @@
       "lat": 31.2743,
       "lng": -97.9979,
       "_coordsFromState": true,
-      "type": "Academic"
+      "type": "Law"
     },
     "TAMCT": {
       "symbol": "TAMCT",
@@ -23150,7 +23150,7 @@
       "group": "LVIS",
       "lat": 27.318,
       "lng": -82.4986,
-      "type": "Special"
+      "type": "Museum"
     },
     "BRENT": {
       "symbol": "BRENT",
@@ -23550,7 +23550,7 @@
       "group": "LVIS",
       "lat": 42.1244,
       "lng": -72.5727,
-      "type": "Special"
+      "type": "Law"
     },
     "SGP": {
       "symbol": "SGP",
@@ -23797,7 +23797,7 @@
       "group": "LVIS",
       "lat": 61.1745,
       "lng": -149.8452,
-      "type": "Public"
+      "type": "Consortium"
     },
     "NHM": {
       "symbol": "NHM",
@@ -23892,7 +23892,7 @@
       "group": "LVIS",
       "lat": 38.991,
       "lng": -76.523,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "ZSZ": {
       "symbol": "ZSZ",
@@ -23911,7 +23911,7 @@
       "group": "LVIS",
       "lat": 41.5118,
       "lng": -90.4321,
-      "type": "Academic"
+      "type": "School"
     },
     "NAM": {
       "symbol": "NAM",
@@ -24196,7 +24196,7 @@
       "group": "LVIS",
       "lat": 39.7387,
       "lng": -104.9817,
-      "type": "Academic"
+      "type": "Law"
     },
     "EYU": {
       "symbol": "EYU",
@@ -24234,7 +24234,7 @@
       "group": "LVIS",
       "lat": 42.3343,
       "lng": -83.0999,
-      "type": "Academic"
+      "type": "Law"
     },
     "IOV": {
       "symbol": "IOV",
@@ -24291,7 +24291,7 @@
       "group": "LVIS",
       "lat": 33.9545,
       "lng": -83.3856,
-      "type": "Academic"
+      "type": "Law"
     },
     "UGU": {
       "symbol": "UGU",
@@ -24517,7 +24517,7 @@
       "group": "LVIS",
       "lat": 38.2084,
       "lng": -85.6963,
-      "type": "Academic"
+      "type": "Music"
     },
     "KLG": {
       "symbol": "KLG",
@@ -24650,7 +24650,7 @@
       "group": "LVIS",
       "lat": 25.7215,
       "lng": -80.2684,
-      "type": "Academic"
+      "type": "Law"
     },
     "EMI": {
       "symbol": "EMI",
@@ -24669,7 +24669,7 @@
       "group": "LVIS",
       "lat": 42.2655,
       "lng": -83.7714,
-      "type": "Academic"
+      "type": "Law"
     },
     "LMU": {
       "symbol": "LMU",
@@ -24688,7 +24688,7 @@
       "group": "LVIS",
       "lat": 38.961,
       "lng": -92.3317,
-      "type": "Academic"
+      "type": "Law"
     },
     "UMS": {
       "symbol": "UMS",
@@ -24726,7 +24726,7 @@
       "group": "LVIS",
       "lat": 46.8823,
       "lng": -114.0291,
-      "type": "Academic"
+      "type": "Law"
     },
     "MTG": {
       "symbol": "MTG",
@@ -24878,7 +24878,7 @@
       "group": "LVIS",
       "lat": 43.256,
       "lng": -71.5918,
-      "type": "Academic"
+      "type": "Law"
     },
     "UNH": {
       "symbol": "UNH",
@@ -25050,7 +25050,7 @@
       "group": "LVIS",
       "lat": 35.2138,
       "lng": -97.4137,
-      "type": "Academic"
+      "type": "Law"
     },
     "OUP": {
       "symbol": "OUP",
@@ -25143,7 +25143,7 @@
       "group": "LVIS",
       "lat": 37.528,
       "lng": -77.4742,
-      "type": "Academic"
+      "type": "Law"
     },
     "RGC": {
       "symbol": "RGC",
@@ -25315,7 +25315,7 @@
       "group": "LVIS",
       "lat": 44.9824,
       "lng": -93.2961,
-      "type": "Academic"
+      "type": "Law"
     },
     "TLK": {
       "symbol": "TLK",
@@ -25334,7 +25334,7 @@
       "group": "LVIS",
       "lat": 35.9717,
       "lng": -83.9645,
-      "type": "Academic"
+      "type": "Law"
     },
     "TUM": {
       "symbol": "TUM",
@@ -25524,7 +25524,7 @@
       "group": "LVIS",
       "lat": 47.6037,
       "lng": -122.331,
-      "type": "Academic"
+      "type": "Law"
     },
     "OOJ": {
       "symbol": "OOJ",
@@ -25715,7 +25715,7 @@
       "lat": 36.1713,
       "lng": -119.7938,
       "_coordsFromState": true,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "TYI": {
       "symbol": "TYI",
@@ -25734,7 +25734,7 @@
       "group": "LVIS",
       "lat": 43.7914,
       "lng": -116.4012,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "VYR": {
       "symbol": "VYR",
@@ -25753,7 +25753,7 @@
       "group": "LVIS",
       "lat": 43.2244,
       "lng": -75.4479,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "CGA": {
       "symbol": "CGA",
@@ -25772,7 +25772,7 @@
       "group": "LVIS",
       "lat": 41.3507,
       "lng": -72.1062,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "UCT": {
       "symbol": "UCT",
@@ -25791,7 +25791,7 @@
       "group": "LVIS",
       "lat": 29.9571,
       "lng": -90.0704,
-      "type": "Federal/Natl Government"
+      "type": "Law"
     },
     "UCJ": {
       "symbol": "UCJ",
@@ -25810,7 +25810,7 @@
       "group": "LVIS",
       "lat": 38.6403,
       "lng": -90.2863,
-      "type": "Federal/Natl Government"
+      "type": "Law"
     },
     "UDI": {
       "symbol": "UDI",
@@ -25829,7 +25829,7 @@
       "group": "LVIS",
       "lat": 38.8965,
       "lng": -77.0214,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "ELB": {
       "symbol": "ELB",
@@ -25848,7 +25848,7 @@
       "group": "LVIS",
       "lat": 39.1705,
       "lng": -84.5045,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "ELD": {
       "symbol": "ELD",
@@ -25867,7 +25867,7 @@
       "group": "LVIS",
       "lat": 46.7864,
       "lng": -92.1266,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "EJA": {
       "symbol": "EJA",
@@ -25905,7 +25905,7 @@
       "group": "LVIS",
       "lat": 38.8949,
       "lng": -77.3171,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "DNO": {
       "symbol": "DNO",
@@ -25943,7 +25943,7 @@
       "group": "LVIS",
       "lat": 41.4933,
       "lng": -71.3131,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "ULC": {
       "symbol": "ULC",
@@ -25962,7 +25962,7 @@
       "group": "LVIS",
       "lat": 40.7099,
       "lng": -111.8888,
-      "type": "Special"
+      "type": "Government"
     },
     "USG": {
       "symbol": "USG",
@@ -26096,7 +26096,7 @@
       "group": "LVIS",
       "lat": 36.1665,
       "lng": -86.7857,
-      "type": "Academic"
+      "type": "Law"
     },
     "JPT": {
       "symbol": "JPT",
@@ -26115,7 +26115,7 @@
       "group": "LVIS",
       "lat": 41.8542,
       "lng": -87.6761,
-      "type": "Academic"
+      "type": "Music"
     },
     "VTT": {
       "symbol": "VTT",
@@ -26191,7 +26191,7 @@
       "group": "LVIS",
       "lat": 40.849,
       "lng": -73.8781,
-      "type": "Special"
+      "type": "Medical"
     },
     "BJF": {
       "symbol": "BJF",
@@ -26210,7 +26210,7 @@
       "group": "LVIS",
       "lat": 40.4413,
       "lng": -80.0038,
-      "type": "Special"
+      "type": "Medical"
     },
     "IVC": {
       "symbol": "IVC",
@@ -26628,7 +26628,7 @@
       "group": "LVIS",
       "lat": 39.0433,
       "lng": -95.7053,
-      "type": "Academic"
+      "type": "Law"
     },
     "CUC": {
       "symbol": "CUC",
@@ -26723,7 +26723,7 @@
       "group": "LVIS",
       "lat": 46.9616,
       "lng": -123.0283,
-      "type": "Special"
+      "type": "Government"
     },
     "WS7": {
       "symbol": "WS7",
@@ -26742,7 +26742,7 @@
       "group": "LVIS",
       "lat": 47.6647,
       "lng": -117.3985,
-      "type": "Academic"
+      "type": "Medical"
     },
     "EI1": {
       "symbol": "EI1",
@@ -27066,7 +27066,7 @@
       "lat": 40.6198,
       "lng": -77.5619,
       "_coordsFromState": true,
-      "type": "Academic"
+      "type": "Music"
     },
     "JOV": {
       "symbol": "JOV",
@@ -27294,7 +27294,7 @@
       "group": "LVIS",
       "lat": 47.045,
       "lng": -122.9022,
-      "type": "Special"
+      "type": "Medical"
     },
     "XFF": {
       "symbol": "XFF",
@@ -27484,7 +27484,7 @@
       "group": "LVIS",
       "lat": 37.8083,
       "lng": -80.4407,
-      "type": "Academic"
+      "type": "Medical"
     },
     "WV3": {
       "symbol": "WV3",
@@ -27731,7 +27731,7 @@
       "group": "LVIS",
       "lat": 39.7018,
       "lng": -75.569,
-      "type": "Academic"
+      "type": "Law"
     },
     "UWC": {
       "symbol": "UWC",
@@ -28416,7 +28416,7 @@
       "group": "LVIS",
       "lat": 41.1519,
       "lng": -104.7939,
-      "type": "Special"
+      "type": "Government"
     },
     "XAV": {
       "symbol": "XAV",

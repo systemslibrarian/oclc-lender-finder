@@ -22,7 +22,7 @@
       "lat": "Approximate latitude (city centroid from US postal data)",
       "lng": "Approximate longitude (city centroid from US postal data)",
       "group": "Always 'FILM' for this dataset",
-      "type": "Best-guess library type (Academic/Public/Special/Federal/Natl Government/Other) inferred from name"
+      "type": "Best-guess library type (Academic/Archives/Consortium/Corporate/Government/Law/Medical/Museum/Music/Public/School/Special/Other) inferred from name"
     }
   },
   "libraries": {
@@ -119,7 +119,7 @@
       "lat": 36.5959,
       "lng": -121.8805,
       "group": "FILM",
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "KZZ": {
       "symbol": "KZZ",
@@ -329,7 +329,7 @@
       "lat": 34.5982,
       "lng": -99.4408,
       "group": "FILM",
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "GZA": {
       "symbol": "GZA",
@@ -2251,7 +2251,7 @@
       "lat": 47.6647,
       "lng": -117.3985,
       "group": "FILM",
-      "type": "Academic"
+      "type": "Law"
     },
     "HHC": {
       "symbol": "HHC",
@@ -2823,7 +2823,7 @@
       "lat": 47.7989,
       "lng": -116.7423,
       "group": "FILM",
-      "type": "Public"
+      "type": "Consortium"
     },
     "BIC": {
       "symbol": "BIC",
@@ -4155,7 +4155,7 @@
       "lng": -121.2199,
       "group": "FILM",
       "_coordsFromState": true,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "JO3": {
       "symbol": "JO3",
@@ -4957,7 +4957,7 @@
       "lat": 47.9597,
       "lng": -97.3733,
       "group": "FILM",
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "GIP": {
       "symbol": "GIP",
@@ -5757,7 +5757,7 @@
       "lat": 39.1726,
       "lng": -86.5212,
       "group": "FILM",
-      "type": "Academic"
+      "type": "Law"
     },
     "IU0": {
       "symbol": "IU0",
@@ -8366,7 +8366,7 @@
       "lng": -92.4653,
       "group": "FILM",
       "_coordsFromState": true,
-      "type": "Public"
+      "type": "Consortium"
     },
     "KMS": {
       "symbol": "KMS",
@@ -9148,7 +9148,7 @@
       "lat": 36.5959,
       "lng": -121.8805,
       "group": "FILM",
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "JSZ": {
       "symbol": "JSZ",
@@ -10347,7 +10347,7 @@
       "lat": 42.5827,
       "lng": -87.8456,
       "group": "FILM",
-      "type": "Special"
+      "type": "Museum"
     },
     "JAO": {
       "symbol": "JAO",
@@ -13015,7 +13015,7 @@
       "lat": 61.1745,
       "lng": -149.8452,
       "group": "FILM",
-      "type": "Public"
+      "type": "Consortium"
     },
     "X@8": {
       "symbol": "X@8",
@@ -13110,7 +13110,7 @@
       "lat": 48.4228,
       "lng": -101.3254,
       "group": "FILM",
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "UNA": {
       "symbol": "UNA",
@@ -13129,7 +13129,7 @@
       "lat": 38.991,
       "lng": -76.523,
       "group": "FILM",
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "COS": {
       "symbol": "COS",
@@ -13643,7 +13643,7 @@
       "lat": 34.9378,
       "lng": -81.8998,
       "group": "FILM",
-      "type": "Academic"
+      "type": "Government"
     },
     "ISE": {
       "symbol": "ISE",
@@ -13777,7 +13777,7 @@
       "lng": -105.3172,
       "group": "FILM",
       "_coordsFromState": true,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "TYL": {
       "symbol": "TYL",
@@ -13797,7 +13797,7 @@
       "lng": -111.6466,
       "group": "FILM",
       "_coordsFromState": true,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "MDI": {
       "symbol": "MDI",
@@ -13816,7 +13816,7 @@
       "lat": 27.9429,
       "lng": -82.462,
       "group": "FILM",
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "FGS": {
       "symbol": "FGS",
@@ -13835,7 +13835,7 @@
       "lat": 37.6066,
       "lng": -97.2979,
       "group": "FILM",
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "TYI": {
       "symbol": "TYI",
@@ -13854,7 +13854,7 @@
       "lat": 43.7914,
       "lng": -116.4012,
       "group": "FILM",
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "TFB": {
       "symbol": "TFB",
@@ -13874,7 +13874,7 @@
       "lng": -97.0017,
       "group": "FILM",
       "_coordsFromState": true,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "FGY": {
       "symbol": "FGY",
@@ -13894,7 +13894,7 @@
       "lng": -92.4653,
       "group": "FILM",
       "_coordsFromState": true,
-      "type": "Federal/Natl Government"
+      "type": "Government"
     },
     "UUS": {
       "symbol": "UUS",
@@ -14694,7 +14694,7 @@
       "lng": -77.5619,
       "group": "FILM",
       "_coordsFromState": true,
-      "type": "Academic"
+      "type": "Music"
     },
     "JOV": {
       "symbol": "JOV",
@@ -14865,7 +14865,7 @@
       "lat": 47.045,
       "lng": -122.9022,
       "group": "FILM",
-      "type": "Special"
+      "type": "Medical"
     },
     "XFF": {
       "symbol": "XFF",

@@ -875,7 +875,7 @@
     {name: 'University of South Florida', symbol: 'SFU', state: 'FL', type: 'Academic'},
     {name: 'University of Georgia Libraries', symbol: 'GUA', state: 'GA', type: 'Academic'},
     {name: 'Emory University', symbol: 'EMU', state: 'GA', type: 'Academic'},
-    {name: 'Library of Congress', symbol: 'DLC', state: 'DC', type: 'Federal/Natl Government'},
+    {name: 'Library of Congress', symbol: 'DLC', state: 'DC', type: 'Government'},
     {name: 'Linda Hall Library', symbol: 'LHL', state: 'MO', type: 'Special'},
     {name: 'New York Public Library', symbol: 'NYP', state: 'NY', type: 'Public'},
     {name: 'University of Tennessee, Knoxville', symbol: 'TKN', state: 'TN', type: 'Academic'},
@@ -884,7 +884,7 @@
     {name: 'University of North Carolina, Chapel Hill', symbol: 'NOC', state: 'NC', type: 'Academic'},
     {name: 'Orange County Library System', symbol: 'FOC', state: 'FL', type: 'Public'},
     {name: 'Jacksonville Public Library', symbol: 'FJV', state: 'FL', type: 'Public'},
-    {name: 'Center for Research Libraries', symbol: 'CRL', state: 'IL', type: 'Special'}
+    {name: 'Center for Research Libraries', symbol: 'CRL', state: 'IL', type: 'Consortium'}
   ];
 
   function loadSampleData() {
@@ -1024,7 +1024,7 @@
         if (ALLOWED_GROUPS.has(g)) groupCounts[g] = (groupCounts[g] || 0) + 1;
       });
     });
-    const types = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
+    const types = Object.entries(typeCounts).sort((a, b) => a[0].localeCompare(b[0]));
     const states = Object.entries(stateCounts).sort(stateSort);
     const groups = Object.entries(groupCounts).sort((a, b) => b[1] - a[1]);
 
@@ -1636,7 +1636,7 @@
       });
     });
     document.getElementById('dir-type-facets').innerHTML =
-      Object.entries(typeCounts).sort((a, b) => b[1] - a[1]).map(([t, c]) =>
+      Object.entries(typeCounts).sort((a, b) => a[0].localeCompare(b[0])).map(([t, c]) =>
         `<label class="facet"><span><input type="checkbox" data-dirfacet="type" value="${escapeHtml(t)}" ${dirFilters.type.has(t) ? 'checked' : ''}>${escapeHtml(t)}</span><span class="count">${c}</span></label>`
       ).join('') || '<p class="hint">No data.</p>';
     document.getElementById('dir-state-facets').innerHTML =
