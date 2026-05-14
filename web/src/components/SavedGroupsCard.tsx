@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAppState, type SavedGroup } from '@/app-state/AppContext';
 import { Trash2, Download, ListChecks } from 'lucide-react';
+import { useToast } from '@/components/Toast';
 
 interface Props {
   source: 'rankings' | 'discover';
@@ -20,6 +21,7 @@ function downloadFile(filename: string, content: string, mime = 'text/plain') {
 
 export function SavedGroupsCard({ source, onRestore }: Props) {
   const { savedGroups, setSavedGroups } = useAppState();
+  const toast = useToast();
   if (savedGroups.length === 0) {
     return (
       <Card>
@@ -39,8 +41,14 @@ export function SavedGroupsCard({ source, onRestore }: Props) {
             key={i}
             group={g}
             source={source}
-            onRestore={() => onRestore(g.symbols)}
-            onDelete={() => setSavedGroups(savedGroups.filter((_, j) => j !== i))}
+            onRestore={() => {
+              onRestore(g.symbols);
+              toast.info(`Restored "${g.name}" — ${g.symbols.length} symbol${g.symbols.length === 1 ? '' : 's'} selected.`);
+            }}
+            onDelete={() => {
+              setSavedGroups(savedGroups.filter((_, j) => j !== i));
+              toast.success(`Deleted "${g.name}".`);
+            }}
           />
         ))}
       </CardContent>

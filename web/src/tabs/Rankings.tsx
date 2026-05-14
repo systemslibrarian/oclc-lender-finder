@@ -13,6 +13,8 @@ import { Pagination, PageSizeSelect } from '@/components/Pagination';
 import { SavedGroupsCard } from '@/components/SavedGroupsCard';
 import { SaveGroupDialog } from '@/components/SaveGroupDialog';
 import { useSelection } from '@/lib/use-selection';
+import { loadSampleMonths } from '@/lib/sample-data';
+import { useToast } from '@/components/Toast';
 import { SlidersHorizontal, StickyNote, Upload, X } from 'lucide-react';
 import { useAppState } from '@/app-state/AppContext';
 import { NoteEditor } from '@/components/NoteEditor';
@@ -56,6 +58,7 @@ export function RankingsTab() {
   const [compareOpen, setCompareOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'cards' | 'chart'>('cards');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const toast = useToast();
 
   const [filters, setFilters] = useState<ActiveFilters>({
     type: new Set(),
@@ -463,8 +466,24 @@ export function RankingsTab() {
           {/* List */}
           {months.length === 0 ? (
             <Card>
-              <CardContent className="py-10 text-center text-sm text-muted-foreground">
-                Upload a Borrower report on the left to populate rankings.
+              <CardContent className="space-y-3 py-10 text-center text-sm text-muted-foreground">
+                <p className="font-medium text-foreground">No data yet</p>
+                <p>Upload one or more OCLC Borrower Transaction-Level Detail reports using the panel on the left.</p>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <Button size="sm" onClick={() => fileInputRef.current?.click()}>
+                    <Upload className="mr-2 h-4 w-4" />Add a report
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setMonths(loadSampleMonths());
+                      toast.info('Loaded 3 months of sample data. Use the file picker to replace with your own.');
+                    }}
+                  >
+                    Try with sample data
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ) : filtered.length === 0 ? (
