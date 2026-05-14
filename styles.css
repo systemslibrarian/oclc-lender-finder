@@ -965,6 +965,52 @@ input[type="range"] {
 
 .results { min-width: 0; }
 
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  padding: 16px 4px 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.pagination .pg-info {
+  margin-right: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.pagination .pg-btn {
+  min-width: 32px;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+  transition: background var(--transition), border-color var(--transition);
+}
+.pagination .pg-btn:hover:not(:disabled) {
+  background: var(--bg-secondary);
+  border-color: var(--border-strong);
+}
+.pagination .pg-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.pagination .pg-btn.pg-current {
+  background: var(--bg-info);
+  border-color: var(--border-info);
+  color: var(--text-info);
+  font-weight: 600;
+}
+.pagination .pg-gap {
+  padding: 0 4px;
+  color: var(--text-tertiary);
+}
+
 .toolbar {
   background: var(--bg);
   border: 0.5px solid var(--border);

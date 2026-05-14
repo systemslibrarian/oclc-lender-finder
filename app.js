@@ -71,6 +71,49 @@
   };
   const stateSort = (a, b) => stateLabel(a[0]).localeCompare(stateLabel(b[0]));
   const dirFilters = { type: new Set(), state: new Set(), group: new Set(), loanDays: new Set(), search: '', maxDist: 0, onlyNew: true };
+  // Pagination state — page-size choices: 50/100/250/All. Page resets to 1
+  // whenever filters or sort change (see resetDirPage / resetRankPage).
+  let dirPage = 1, dirPageSize = 100;
+  let rankPage = 1, rankPageSize = 100;
+  const resetDirPage = () => { dirPage = 1; };
+  const resetRankPage = () => { rankPage = 1; };
+
+  // Render pagination footer into `wrap`, given total filtered count and
+  // a callback to receive the new page number. pageSize === 0 means "all".
+  function renderPagination(wrap, total, pageSize, currentPage, onPage) {
+    if (!wrap) return;
+    if (pageSize === 0 || total <= pageSize) {
+      wrap.hidden = true;
+      wrap.innerHTML = '';
+      return;
+    }
+    const pages = Math.max(1, Math.ceil(total / pageSize));
+    const page = Math.min(Math.max(1, currentPage), pages);
+    const start = (page - 1) * pageSize + 1;
+    const end = Math.min(page * pageSize, total);
+    // Window: page-2 ... page+2 with first/last
+    const windowed = new Set([1, pages, page, page - 1, page + 1, page - 2, page + 2]);
+    const visible = [...windowed].filter(p => p >= 1 && p <= pages).sort((a, b) => a - b);
+    let html = `<span class="pg-info">${start}–${end} of ${total}</span>`;
+    html += `<button class="pg-btn" data-pg="prev" ${page === 1 ? 'disabled' : ''} aria-label="Previous page">‹</button>`;
+    let last = 0;
+    visible.forEach(p => {
+      if (last && p - last > 1) html += `<span class="pg-gap">…</span>`;
+      html += `<button class="pg-btn ${p === page ? 'pg-current' : ''}" data-pg="${p}" aria-label="Page ${p}" ${p === page ? 'aria-current="page"' : ''}>${p}</button>`;
+      last = p;
+    });
+    html += `<button class="pg-btn" data-pg="next" ${page === pages ? 'disabled' : ''} aria-label="Next page">›</button>`;
+    wrap.innerHTML = html;
+    wrap.hidden = false;
+    wrap.querySelectorAll('[data-pg]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const v = btn.dataset.pg;
+        if (v === 'prev') onPage(page - 1);
+        else if (v === 'next') onPage(page + 1);
+        else onPage(parseInt(v, 10));
+      });
+    });
+  }
 
   // Last-rendered filtered lists, used by bulk actions
   let lastFilteredRankings = [];
@@ -1142,6 +1185,7 @@
     const wireFacet = wrap => wrap && wrap.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.addEventListener('change', () => {
       const set = activeFilters[cb.dataset.facet];
       if (cb.checked) set.add(cb.value); else set.delete(cb.value);
+      resetRankPage();
       renderRankings();
     }));
     wireFacet(typeWrap);
@@ -1192,6 +1236,7 @@
       activeFilters.state.clear();
       activeFilters.group.clear();
       activeFilters.hist.clear();
+      resetRankPage();
       rebuildFacetOptions();
       document.querySelectorAll('#rankings-view input[type="checkbox"][data-facet="hist"]').forEach(cb => cb.checked = false);
       renderRankings();
@@ -1233,6 +1278,7 @@
       document.getElementById('show-only-new').checked = true;
       document.getElementById('max-dist').value = 0;
       document.getElementById('dist-out').textContent = 'Any';
+      resetDirPage();
       buildDirFacetOptions();
       renderDiscover();
     });
@@ -1255,6 +1301,7 @@
         chips[idx].remove();
         // Re-render whichever tab owns these chips
         if (wrap.id === 'rankings-chips') {
+          resetRankPage();
           rebuildFacetOptions();
           // Sync hist checkboxes
           document.querySelectorAll('#rankings-view input[type="checkbox"][data-facet="hist"]').forEach(cb => {
@@ -1262,6 +1309,7 @@
           });
           renderRankings();
         } else {
+          resetDirPage();
           buildDirFacetOptions();
           renderDiscover();
         }
@@ -1329,10 +1377,27 @@
           Try removing some filters or resetting them.
         </div>`;
       }
+      const pagerEmpty = document.getElementById('rank-pagination');
+      if (pagerEmpty) { pagerEmpty.hidden = true; pagerEmpty.innerHTML = ''; }
       return;
     }
 
-    list.innerHTML = filtered.map(l => renderRankingCard(l, labels, w)).join('');
+    // Paginate
+    const rankPagerWrap = document.getElementById('rank-pagination');
+    const rankTotal = filtered.length;
+    let rankSlice = filtered;
+    if (rankPageSize > 0) {
+      const pages = Math.max(1, Math.ceil(rankTotal / rankPageSize));
+      if (rankPage > pages) rankPage = pages;
+      const startIdx = (rankPage - 1) * rankPageSize;
+      rankSlice = filtered.slice(startIdx, startIdx + rankPageSize);
+    }
+    list.innerHTML = rankSlice.map(l => renderRankingCard(l, labels, w)).join('');
+    renderPagination(rankPagerWrap, rankTotal, rankPageSize, rankPage, (p) => {
+      rankPage = p;
+      renderRankings();
+      list.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
 
     // Card click → toggle selection (but not when clicking interactive children)
     list.querySelectorAll('.card').forEach(card => {
@@ -1764,6 +1829,7 @@
       cb.addEventListener('change', () => {
         const set = dirFilters[cb.dataset.dirfacet];
         if (cb.checked) set.add(cb.value); else set.delete(cb.value);
+        resetDirPage();
         renderDiscover();
       });
     });
@@ -1837,10 +1903,28 @@
         <strong>${dirEmpty ? 'Directory is empty' : 'No candidates match'}</strong>
         ${dirEmpty ? 'Import a directory CSV using the panel on the left.' : 'Try removing filters, or turn off "Only libraries I haven\'t borrowed from".'}
       </div>`;
+      const pagerEmpty = document.getElementById('dir-pagination');
+      if (pagerEmpty) { pagerEmpty.hidden = true; pagerEmpty.innerHTML = ''; }
       return;
     }
 
-    list.innerHTML = filtered.map(l => renderDiscoverCard(l, borrowedSyms)).join('');
+    // Paginate
+    const pageWrap = document.getElementById('dir-pagination');
+    const total = filtered.length;
+    let pageSlice = filtered;
+    if (dirPageSize > 0) {
+      const pages = Math.max(1, Math.ceil(total / dirPageSize));
+      if (dirPage > pages) dirPage = pages;
+      const startIdx = (dirPage - 1) * dirPageSize;
+      pageSlice = filtered.slice(startIdx, startIdx + dirPageSize);
+    }
+    list.innerHTML = pageSlice.map(l => renderDiscoverCard(l, borrowedSyms)).join('');
+    renderPagination(pageWrap, total, dirPageSize, dirPage, (p) => {
+      dirPage = p;
+      renderDiscover();
+      // Scroll top of list into view
+      list.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
 
     list.querySelectorAll('.card').forEach(card => {
       card.addEventListener('click', (e) => {
@@ -2664,7 +2748,16 @@
       });
     });
 
-    document.getElementById('sort-by').addEventListener('change', renderRankings);
+    document.getElementById('sort-by').addEventListener('change', () => { resetRankPage(); renderRankings(); });
+    const rankPageSel = document.getElementById('rank-page-size');
+    if (rankPageSel) {
+      rankPageSel.addEventListener('change', () => {
+        const v = rankPageSel.value;
+        rankPageSize = v === 'all' ? 0 : parseInt(v, 10);
+        resetRankPage();
+        renderRankings();
+      });
+    }
     document.getElementById('build-group-btn').addEventListener('click', () => renderExportPanel('export-panel', selected, false));
     document.getElementById('compare-btn').addEventListener('click', showCompareModal);
 
@@ -2716,18 +2809,21 @@
     searchInput.addEventListener('input', e => {
       dirFilters.search = e.target.value;
       searchClear.hidden = !e.target.value;
+      resetDirPage();
       debounce('search', renderDiscover, 150);
     });
     searchClear.addEventListener('click', () => {
       searchInput.value = '';
       dirFilters.search = '';
       searchClear.hidden = true;
+      resetDirPage();
       renderDiscover();
       searchInput.focus();
     });
 
     document.getElementById('show-only-new').addEventListener('change', e => {
       dirFilters.onlyNew = e.target.checked;
+      resetDirPage();
       buildDirFacetOptions();
       renderDiscover();
     });
@@ -2735,9 +2831,19 @@
       dirFilters.maxDist = parseInt(e.target.value);
       const out = document.getElementById('dist-out');
       out.textContent = dirFilters.maxDist > 0 ? `${dirFilters.maxDist} mi` : 'Any';
+      resetDirPage();
       debounce('dist', renderDiscover, 50);
     });
-    document.getElementById('dir-sort-by').addEventListener('change', renderDiscover);
+    document.getElementById('dir-sort-by').addEventListener('change', () => { resetDirPage(); renderDiscover(); });
+    const dirPageSel = document.getElementById('dir-page-size');
+    if (dirPageSel) {
+      dirPageSel.addEventListener('change', () => {
+        const v = dirPageSel.value;
+        dirPageSize = v === 'all' ? 0 : parseInt(v, 10);
+        resetDirPage();
+        renderDiscover();
+      });
+    }
     document.getElementById('dir-build-btn').addEventListener('click', () => renderExportPanel('dir-export-panel', dirSelected, true));
     document.getElementById('map-toggle').addEventListener('click', toggleMapView);
     document.getElementById('dir-select-all').addEventListener('click', () => {
