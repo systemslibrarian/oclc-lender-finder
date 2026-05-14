@@ -10,6 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Pagination, PageSizeSelect } from '@/components/Pagination';
+import { SavedGroupsCard } from '@/components/SavedGroupsCard';
+import { SaveGroupDialog } from '@/components/SaveGroupDialog';
+import { useSelection } from '@/lib/use-selection';
 import { Upload, X } from 'lucide-react';
 import { useAppState } from '@/app-state/AppContext';
 import { parseOCLCReport } from '@/lib/parsing';
@@ -40,7 +43,9 @@ function passesFilter(l: MergedLender, f: ActiveFilters): boolean {
 }
 
 export function RankingsTab() {
-  const { months, setMonths, settings, updateSettings, updateWeights } = useAppState();
+  const { months, setMonths, settings, updateSettings, updateWeights, savedGroups, setSavedGroups } = useAppState();
+  const selection = useSelection();
+  const [saveOpen, setSaveOpen] = useState(false);
 
   const [filters, setFilters] = useState<ActiveFilters>({
     type: new Set(),
@@ -328,6 +333,8 @@ export function RankingsTab() {
               </div>
             </CardContent>
           </Card>
+
+          <SavedGroupsCard source="rankings" onRestore={(syms) => selection.setSelected(new Set(syms))} />
         </aside>
 
         <section className="space-y-4">
@@ -335,13 +342,28 @@ export function RankingsTab() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="text-sm">
               <strong>{filtered.length}</strong> match{filtered.length === 1 ? '' : 'es'}
+              {selection.count > 0 && (
+                <span className="ml-2 text-muted-foreground">· {selection.count} selected</span>
+              )}
               {months.length > 0 && (
                 <span className="ml-2 text-muted-foreground">
                   · {months.length} month{months.length === 1 ? '' : 's'} loaded
                 </span>
               )}
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" variant="outline" onClick={() => selection.selectTop(filtered, 10)} disabled={filtered.length === 0}>
+                Top 10
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => selection.selectAll(filtered)} disabled={filtered.length === 0}>
+                Select all
+              </Button>
+              {selection.count > 0 && (
+                <Button size="sm" variant="ghost" onClick={selection.clear}>Clear</Button>
+              )}
+              <Button size="sm" disabled={selection.count === 0} onClick={() => setSaveOpen(true)}>
+                Build group ({selection.count})
+              </Button>
               <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="Sort by" />
@@ -379,7 +401,14 @@ export function RankingsTab() {
               <ScrollArea className="h-[calc(100vh-320px)] pr-3">
                 <div className="space-y-3" role="list" ref={listRef}>
                   {visibleSlice.map((l) => (
-                    <LenderCard key={l.symbol} l={l} weights={settings.weights} homeState={settings.homeState} />
+                    <LenderCard
+                      key={l.symbol}
+                      l={l}
+                      weights={settings.weights}
+                      homeState={settings.homeState}
+                      selected={selection.isSelected(l.symbol)}
+                      onToggle={() => selection.toggle(l.symbol)}
+                    />
                   ))}
                 </div>
               </ScrollArea>
@@ -393,9 +422,31 @@ export function RankingsTab() {
             </>
           )}
         </section>
+
+        <SaveGroupDialog
+          open={saveOpen}
+          onOpenChange={setSaveOpen}
+          symbols={Array.from(selection.selected)}
+          defaultName={defaultGroupName(filters, false)}
+          onSave={(name, symbols) => {
+            setSavedGroups([
+              { name, symbols, createdAt: new Date().toISOString(), source: 'rankings' },
+              ...savedGroups.filter((g) => g.name !== name)
+            ]);
+          }}
+        />
       </div>
     </TooltipProvider>
   );
+}
+
+function defaultGroupName(filters: ActiveFilters, isDiscover: boolean): string {
+  const parts: string[] = [];
+  if (isDiscover) parts.push('Discover');
+  if (filters.state.size === 1) parts.push(Array.from(filters.state)[0]);
+  if (filters.type.size === 1) parts.push(Array.from(filters.type)[0].replace(/[^A-Za-z]/g, ''));
+  if (parts.length === (isDiscover ? 1 : 0)) parts.push('TopLenders');
+  return parts.join('_').toUpperCase();
 }
 
 interface FacetGroupProps {
@@ -475,7 +526,19 @@ function ActiveChips({
   );
 }
 
-function LenderCard({ l, weights, homeState }: { l: MergedLender; weights: Weights; homeState: string }) {
+function LenderCard({
+  l,
+  weights,
+  homeState,
+  selected,
+  onToggle
+}: {
+  l: MergedLender;
+  weights: Weights;
+  homeState: string;
+  selected: boolean;
+  onToggle: () => void;
+}) {
   const score = totalScore(l, weights, homeState);
   const subs = subscores(l, homeState);
   const fr = fillRate(l);
@@ -485,14 +548,22 @@ function LenderCard({ l, weights, homeState }: { l: MergedLender; weights: Weigh
     score >= 50 ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' :
     'bg-muted text-muted-foreground';
   return (
-    <Card role="listitem">
+    <Card role="listitem" className={selected ? 'border-primary ring-1 ring-primary' : ''}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <CardTitle className="truncate text-base">{l.name}</CardTitle>
-            <CardDescription className="text-xs">
-              {l.symbol} · {l.type || 'Other'} · {l.state || '—'}
-            </CardDescription>
+          <div className="flex min-w-0 items-start gap-2">
+            <Checkbox
+              checked={selected}
+              onCheckedChange={onToggle}
+              className="mt-1"
+              aria-label={`Select ${l.name}`}
+            />
+            <div className="min-w-0">
+              <CardTitle className="truncate text-base">{l.name}</CardTitle>
+              <CardDescription className="text-xs">
+                {l.symbol} · {l.type || 'Other'} · {l.state || '—'}
+              </CardDescription>
+            </div>
           </div>
           <span
             className={`shrink-0 rounded-md px-2.5 py-1 text-sm font-semibold tabular-nums ${scoreColor}`}

@@ -8,6 +8,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Pagination, PageSizeSelect } from '@/components/Pagination';
+import { SavedGroupsCard } from '@/components/SavedGroupsCard';
+import { SaveGroupDialog } from '@/components/SaveGroupDialog';
+import { Button } from '@/components/ui/button';
+import { useSelection } from '@/lib/use-selection';
 import { Search, X } from 'lucide-react';
 import { useAppState } from '@/app-state/AppContext';
 import { mergeDirectory } from '@/lib/directory';
@@ -36,8 +40,12 @@ export function DiscoverTab() {
     importedDirectory,
     policies,
     isLoadingDirectory,
-    months
+    months,
+    savedGroups,
+    setSavedGroups
   } = useAppState();
+  const selection = useSelection();
+  const [saveOpen, setSaveOpen] = useState(false);
 
   const [filters, setFilters] = useState<DiscoverFilters>({
     type: new Set(),
@@ -317,15 +325,27 @@ export function DiscoverTab() {
             )}
           </CardContent>
         </Card>
+
+        <SavedGroupsCard source="discover" onRestore={(syms) => selection.setSelected(new Set(syms))} />
       </aside>
 
       <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="text-sm">
             <strong>{filtered.length}</strong> candidate{filtered.length === 1 ? '' : 's'}
+            {selection.count > 0 && <span className="ml-2 text-muted-foreground">· {selection.count} selected</span>}
             {isLoadingDirectory && <span className="ml-2 text-muted-foreground">· loading directory…</span>}
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" onClick={() => selection.selectAll(filtered)} disabled={filtered.length === 0}>
+              Select all
+            </Button>
+            {selection.count > 0 && (
+              <Button size="sm" variant="ghost" onClick={selection.clear}>Clear</Button>
+            )}
+            <Button size="sm" disabled={selection.count === 0} onClick={() => setSaveOpen(true)}>
+              Build group ({selection.count})
+            </Button>
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
               <SelectTrigger className="w-[220px]">
                 <SelectValue />
@@ -362,6 +382,8 @@ export function DiscoverTab() {
                     l={l}
                     borrowed={borrowedSyms.has(l.symbol)}
                     homeState={settings.homeState}
+                    selected={selection.isSelected(l.symbol)}
+                    onToggle={() => selection.toggle(l.symbol)}
                   />
                 ))}
               </div>
@@ -376,8 +398,30 @@ export function DiscoverTab() {
           </>
         )}
       </section>
+
+      <SaveGroupDialog
+        open={saveOpen}
+        onOpenChange={setSaveOpen}
+        symbols={Array.from(selection.selected)}
+        defaultName={defaultDiscoverGroupName(filters)}
+        onSave={(name, symbols) => {
+          setSavedGroups([
+            { name, symbols, createdAt: new Date().toISOString(), source: 'discover' },
+            ...savedGroups.filter((g) => g.name !== name)
+          ]);
+        }}
+      />
     </div>
   );
+}
+
+function defaultDiscoverGroupName(filters: DiscoverFilters): string {
+  const parts: string[] = ['Discover'];
+  if (filters.state.size === 1) parts.push(Array.from(filters.state)[0]);
+  if (filters.type.size === 1) parts.push(Array.from(filters.type)[0].replace(/[^A-Za-z]/g, ''));
+  if (filters.group.size === 1) parts.push(Array.from(filters.group)[0].replace(/[^A-Za-z]/g, ''));
+  if (parts.length === 1) parts.push('Candidates');
+  return parts.join('_').toUpperCase();
 }
 
 interface FacetGroupProps {
@@ -474,24 +518,36 @@ function ActiveChips({
 function CandidateCard({
   l,
   borrowed,
-  homeState
+  homeState,
+  selected,
+  onToggle
 }: {
   l: DirectoryEntry & { _mi?: number | null };
   borrowed: boolean;
   homeState: string;
+  selected: boolean;
+  onToggle: () => void;
 }) {
   const dist = l._mi != null ? `${Math.round(l._mi)} mi` : '—';
   const loans = typeof l.loansDaysToRespond === 'number' ? `${l.loansDaysToRespond} day${l.loansDaysToRespond === 1 ? '' : 's'}` : '—';
   const copies = typeof l.copiesDaysToRespond === 'number' ? `${l.copiesDaysToRespond} day${l.copiesDaysToRespond === 1 ? '' : 's'}` : '—';
   return (
-    <Card role="listitem">
+    <Card role="listitem" className={selected ? 'border-primary ring-1 ring-primary' : ''}>
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <CardTitle className="truncate text-base">{l.name}</CardTitle>
-            <CardDescription className="text-xs">
-              {l.symbol} · {l.type || 'Other'} · {l.state || '—'}
-            </CardDescription>
+          <div className="flex min-w-0 items-start gap-2">
+            <Checkbox
+              checked={selected}
+              onCheckedChange={onToggle}
+              className="mt-1"
+              aria-label={`Select ${l.name}`}
+            />
+            <div className="min-w-0">
+              <CardTitle className="truncate text-base">{l.name}</CardTitle>
+              <CardDescription className="text-xs">
+                {l.symbol} · {l.type || 'Other'} · {l.state || '—'}
+              </CardDescription>
+            </div>
           </div>
         </div>
       </CardHeader>
