@@ -250,6 +250,24 @@ export function DiscoverTab() {
                 />
               </div>
             </div>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="w-full justify-start"
+              onClick={() => {
+                if (!navigator.geolocation) return;
+                navigator.geolocation.getCurrentPosition(
+                  (pos) =>
+                    updateSettings({
+                      homeLat: parseFloat(pos.coords.latitude.toFixed(4)),
+                      homeLng: parseFloat(pos.coords.longitude.toFixed(4))
+                    }),
+                  () => { /* user denied or error — silent */ }
+                );
+              }}
+            >
+              📍 Use my location
+            </Button>
           </CardContent>
         </Card>
 

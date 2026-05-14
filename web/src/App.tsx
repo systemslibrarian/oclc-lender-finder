@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { HelpCircle, Library } from 'lucide-react';
+import { Download, HelpCircle, Library, Upload } from 'lucide-react';
+import { exportSession, importSessionFromFile } from '@/lib/session';
 import { RankingsTab } from '@/tabs/Rankings';
 import { DiscoverTab } from '@/tabs/Discover';
 import { AuditTab } from '@/tabs/Audit';
@@ -12,6 +13,8 @@ import type { TabName } from '@/lib/types';
 function AppShell() {
   const { activeTab, setActiveTab, months, isLoadingDirectory } = useAppState();
   const [helpOpen, setHelpOpen] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   // Global keyboard shortcuts: 1/2/3 switch tabs, ? opens help. Skip when
   // the user is typing in a form field.
@@ -78,8 +81,45 @@ function AppShell() {
       </main>
 
       <footer className="border-t py-4 text-sm text-muted-foreground">
-        <div className="container">
-          Data stays in your browser — nothing is uploaded to a server.
+        <div className="container flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span>Data stays in your browser — nothing is uploaded to a server.</span>
+          <span aria-hidden="true">·</span>
+          <button
+            className="inline-flex items-center gap-1.5 text-primary hover:underline"
+            onClick={exportSession}
+          >
+            <Download className="h-3.5 w-3.5" />
+            Export session
+          </button>
+          <span aria-hidden="true">·</span>
+          <button
+            className="inline-flex items-center gap-1.5 text-primary hover:underline"
+            onClick={() => importInputRef.current?.click()}
+          >
+            <Upload className="h-3.5 w-3.5" />
+            Import session
+          </button>
+          <input
+            ref={importInputRef}
+            type="file"
+            accept=".json,application/json"
+            className="hidden"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setImportError(null);
+              try {
+                await importSessionFromFile(file);
+                // Reload so every useState picks up the new localStorage state.
+                window.location.reload();
+              } catch (err) {
+                setImportError(err instanceof Error ? err.message : String(err));
+              } finally {
+                e.target.value = '';
+              }
+            }}
+          />
+          {importError && <span className="text-destructive">{importError}</span>}
         </div>
       </footer>
     </div>
