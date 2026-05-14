@@ -15,6 +15,7 @@ import { SaveGroupDialog } from '@/components/SaveGroupDialog';
 import { useSelection } from '@/lib/use-selection';
 import { loadSampleMonths } from '@/lib/sample-data';
 import { useToast } from '@/components/Toast';
+import { STORAGE_KEYS, deserializeFilters, readJSON, serializeFilters, writeJSON } from '@/lib/storage';
 import { SlidersHorizontal, StickyNote, Upload, X } from 'lucide-react';
 import { useAppState } from '@/app-state/AppContext';
 import { NoteEditor } from '@/components/NoteEditor';
@@ -50,7 +51,7 @@ function passesFilter(l: MergedLender, f: ActiveFilters): boolean {
 }
 
 export function RankingsTab() {
-  const { months, setMonths, settings, updateSettings, updateWeights, savedGroups, setSavedGroups, notes } = useAppState();
+  const { months, setMonths, settings, updateSettings, updateWeights, savedGroups, setSavedGroups, notes, auditHoldings, setAuditHoldings, setActiveTab } = useAppState();
   const selection = useSelection();
   const [saveOpen, setSaveOpen] = useState(false);
   const [openNoteSym, setOpenNoteSym] = useState<string | null>(null);
@@ -60,12 +61,16 @@ export function RankingsTab() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const toast = useToast();
 
-  const [filters, setFilters] = useState<ActiveFilters>({
-    type: new Set(),
-    state: new Set(),
-    group: new Set(),
-    hist: new Set()
-  });
+  const [filters, setFilters] = useState<ActiveFilters>(() =>
+    deserializeFilters<ActiveFilters>(
+      readJSON<Record<string, unknown> | null>(STORAGE_KEYS.rankingsFilters, null),
+      ['type', 'state', 'group', 'hist'],
+      { type: new Set(), state: new Set(), group: new Set(), hist: new Set() }
+    )
+  );
+  useEffect(() => {
+    writeJSON(STORAGE_KEYS.rankingsFilters, serializeFilters(filters));
+  }, [filters]);
   const [sortBy, setSortBy] = useState<SortKey>('score');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(100);
@@ -441,6 +446,24 @@ export function RankingsTab() {
                   <GitCompare className="mr-1.5 h-3.5 w-3.5" />Compare periods
                 </Button>
               )}
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={selection.count === 0}
+                title="Send selected symbols to the Audit tab"
+                onClick={() => {
+                  const symsToAdd = Array.from(selection.selected).filter((s) => !auditHoldings.includes(s));
+                  if (symsToAdd.length === 0) {
+                    toast.info('Already in Audit list.');
+                    return;
+                  }
+                  setAuditHoldings([...auditHoldings, ...symsToAdd]);
+                  toast.success(`Added ${symsToAdd.length} symbol${symsToAdd.length === 1 ? '' : 's'} to Audit list.`);
+                  setActiveTab('audit');
+                }}
+              >
+                → Audit
+              </Button>
               <Button size="sm" disabled={selection.count === 0} onClick={() => setSaveOpen(true)}>
                 Build group ({selection.count})
               </Button>

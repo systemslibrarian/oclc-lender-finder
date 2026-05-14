@@ -53,3 +53,26 @@
   * { @apply border-border; }
   body { @apply bg-background text-foreground; font-feature-settings: "rlig" 1, "calt" 1; }
 }
+
+/* Print: strip chrome and show the active tab as a flat document so an ILL
+   coordinator can hand a stakeholder a paper version of the rankings or
+   saved-group list. */
+@media print {
+  header, footer, aside, .filter-toggle, button {
+    display: none !important;
+  }
+  body, [data-state="active"] { background: white !important; color: black !important; }
+  .container, main {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+  /* Show every card; don't paginate inside the page. */
+  [class*="overflow-y-auto"], [data-radix-scroll-area-viewport] {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+  }
+  .grid { display: block !important; }
+  .grid > * { width: 100% !important; }
+  .grid + nav, [role="navigation"] { display: none !important; }
+}

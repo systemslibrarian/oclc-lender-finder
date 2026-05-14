@@ -14,7 +14,9 @@ import { Button } from '@/components/ui/button';
 import { useSelection } from '@/lib/use-selection';
 import { LayoutGrid, Map as MapIcon, Search, SlidersHorizontal, StickyNote, Upload, X } from 'lucide-react';
 import { ImportDirectoryDialog } from '@/components/ImportDirectoryDialog';
+import { useToast } from '@/components/Toast';
 import { NoteEditor } from '@/components/NoteEditor';
+import { STORAGE_KEYS, deserializeFilters, readJSON, serializeFilters, writeJSON } from '@/lib/storage';
 // Leaflet is heavy (~150 KB gzipped); lazy-load so only Map-view users pay.
 const DiscoverMap = lazy(() => import('@/components/DiscoverMap').then((m) => ({ default: m.DiscoverMap })));
 import { useAppState } from '@/app-state/AppContext';
@@ -49,22 +51,25 @@ export function DiscoverTab() {
     savedGroups,
     setSavedGroups,
     notes,
-    auditHoldings
+    auditHoldings,
+    setAuditHoldings,
+    setActiveTab
   } = useAppState();
   const selection = useSelection();
+  const toast = useToast();
   const [saveOpen, setSaveOpen] = useState(false);
   const [openNoteSym, setOpenNoteSym] = useState<string | null>(null);
 
-  const [filters, setFilters] = useState<DiscoverFilters>({
-    type: new Set(),
-    state: new Set(),
-    group: new Set(),
-    loanDays: new Set(),
-    search: '',
-    maxDist: 0,
-    onlyNew: true,
-    excludeHoldings: true
-  });
+  const [filters, setFilters] = useState<DiscoverFilters>(() =>
+    deserializeFilters<DiscoverFilters>(
+      readJSON<Record<string, unknown> | null>(STORAGE_KEYS.discoverFilters, null),
+      ['type', 'state', 'group', 'loanDays'],
+      { type: new Set(), state: new Set(), group: new Set(), loanDays: new Set(), search: '', maxDist: 0, onlyNew: true, excludeHoldings: true }
+    )
+  );
+  useEffect(() => {
+    writeJSON(STORAGE_KEYS.discoverFilters, serializeFilters(filters));
+  }, [filters]);
   const [sortBy, setSortBy] = useState<SortKey>('distance');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(100);
@@ -436,6 +441,24 @@ export function DiscoverTab() {
             {selection.count > 0 && (
               <Button size="sm" variant="ghost" onClick={selection.clear}>Clear</Button>
             )}
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={selection.count === 0}
+              title="Send selected symbols to the Audit tab"
+              onClick={() => {
+                const symsToAdd = Array.from(selection.selected).filter((s) => !auditHoldings.includes(s));
+                if (symsToAdd.length === 0) {
+                  toast.info('Already in Audit list.');
+                  return;
+                }
+                setAuditHoldings([...auditHoldings, ...symsToAdd]);
+                toast.success(`Added ${symsToAdd.length} symbol${symsToAdd.length === 1 ? '' : 's'} to Audit list.`);
+                setActiveTab('audit');
+              }}
+            >
+              → Audit
+            </Button>
             <Button size="sm" disabled={selection.count === 0} onClick={() => setSaveOpen(true)}>
               Build group ({selection.count})
             </Button>

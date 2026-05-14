@@ -11,8 +11,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Copy } from 'lucide-react';
+import { Copy, Download } from 'lucide-react';
 import { useToast } from '@/components/Toast';
+
+function downloadFile(filename: string, content: string, mime = 'text/plain') {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+}
 
 interface Props {
   open: boolean;
@@ -84,7 +94,18 @@ export function SaveGroupDialog({ open, onOpenChange, symbols, defaultName, onSa
             </div>
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="gap-2">
+          <Button
+            variant="outline"
+            disabled={!name.trim() || symbols.length === 0}
+            onClick={() => {
+              const safe = name.trim().replace(/[^A-Za-z0-9_-]/g, '_') || 'holdings-group';
+              downloadFile(`${safe}.txt`, symbols.join('\n'));
+              toast.success(`Downloaded ${safe}.txt`);
+            }}
+          >
+            <Download className="mr-2 h-4 w-4" />Download .txt
+          </Button>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button
             disabled={!name.trim() || symbols.length === 0}
