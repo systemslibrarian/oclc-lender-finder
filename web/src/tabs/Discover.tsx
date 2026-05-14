@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,8 +12,10 @@ import { SavedGroupsCard } from '@/components/SavedGroupsCard';
 import { SaveGroupDialog } from '@/components/SaveGroupDialog';
 import { Button } from '@/components/ui/button';
 import { useSelection } from '@/lib/use-selection';
-import { Search, StickyNote, X } from 'lucide-react';
+import { LayoutGrid, Map as MapIcon, Search, StickyNote, X } from 'lucide-react';
 import { NoteEditor } from '@/components/NoteEditor';
+// Leaflet is heavy (~150 KB gzipped); lazy-load so only Map-view users pay.
+const DiscoverMap = lazy(() => import('@/components/DiscoverMap').then((m) => ({ default: m.DiscoverMap })));
 import { useAppState } from '@/app-state/AppContext';
 import { mergeDirectory } from '@/lib/directory';
 import { haversineKm, kmToMiles, mergeMonths } from '@/lib/scoring';
@@ -65,6 +67,7 @@ export function DiscoverTab() {
   const [sortBy, setSortBy] = useState<SortKey>('distance');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(100);
+  const [viewMode, setViewMode] = useState<'cards' | 'map'>('cards');
   const listRef = useRef<HTMLDivElement>(null);
 
   const merged = useMemo(
@@ -362,6 +365,26 @@ export function DiscoverTab() {
             {isLoadingDirectory && <span className="ml-2 text-muted-foreground">· loading directory…</span>}
           </div>
           <div className="flex flex-wrap gap-2">
+            <div className="inline-flex rounded-md border bg-background p-0.5" role="group" aria-label="View mode">
+              <Button
+                size="sm"
+                variant={viewMode === 'cards' ? 'default' : 'ghost'}
+                className="h-7 px-2"
+                aria-pressed={viewMode === 'cards'}
+                onClick={() => setViewMode('cards')}
+              >
+                <LayoutGrid className="mr-1.5 h-3.5 w-3.5" />Cards
+              </Button>
+              <Button
+                size="sm"
+                variant={viewMode === 'map' ? 'default' : 'ghost'}
+                className="h-7 px-2"
+                aria-pressed={viewMode === 'map'}
+                onClick={() => setViewMode('map')}
+              >
+                <MapIcon className="mr-1.5 h-3.5 w-3.5" />Map
+              </Button>
+            </div>
             <Button size="sm" variant="outline" onClick={() => selection.selectAll(filtered)} disabled={filtered.length === 0}>
               Select all
             </Button>
@@ -397,6 +420,16 @@ export function DiscoverTab() {
               No candidates match these filters.
             </CardContent>
           </Card>
+        ) : viewMode === 'map' ? (
+          <Suspense fallback={<div className="flex h-[560px] items-center justify-center rounded-md border text-sm text-muted-foreground">Loading map…</div>}>
+            <DiscoverMap
+              candidates={filtered}
+              home={{ lat: settings.homeLat, lng: settings.homeLng, symbol: settings.homeSymbol }}
+              selected={selection.selected}
+              onToggle={(sym) => selection.toggle(sym)}
+              borrowed={borrowedSyms}
+            />
+          </Suspense>
         ) : (
           <>
             <ScrollArea className="h-[calc(100vh-320px)] pr-3">
