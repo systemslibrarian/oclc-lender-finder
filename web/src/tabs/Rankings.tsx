@@ -16,6 +16,7 @@ import { useSelection } from '@/lib/use-selection';
 import { StickyNote, Upload, X } from 'lucide-react';
 import { useAppState } from '@/app-state/AppContext';
 import { NoteEditor } from '@/components/NoteEditor';
+import { MonthDots, Sparkline } from '@/components/Sparkline';
 import { parseOCLCReport } from '@/lib/parsing';
 import { mergeMonths, totalScore, subscores, fillRate, avgDays, PRESETS, PRESET_LABELS } from '@/lib/scoring';
 import { HIST_LABELS } from '@/lib/audit';
@@ -428,6 +429,7 @@ export function RankingsTab() {
                       hasNote={!!notes[l.symbol]}
                       noteOpen={openNoteSym === l.symbol}
                       onToggleNote={() => setOpenNoteSym((cur) => (cur === l.symbol ? null : l.symbol))}
+                      periods={months.map((m) => m.period)}
                     />
                   ))}
                 </div>
@@ -554,7 +556,8 @@ function LenderCard({
   onToggle,
   hasNote,
   noteOpen,
-  onToggleNote
+  onToggleNote,
+  periods
 }: {
   l: MergedLender;
   weights: Weights;
@@ -564,6 +567,7 @@ function LenderCard({
   hasNote: boolean;
   noteOpen: boolean;
   onToggleNote: () => void;
+  periods: Array<string | undefined>;
 }) {
   const score = totalScore(l, weights, homeState);
   const subs = subscores(l, homeState);
@@ -589,6 +593,19 @@ function LenderCard({
               <CardDescription className="text-xs">
                 {l.symbol} · {l.type || 'Other'} · {l.state || '—'}
               </CardDescription>
+              <div className="flex items-center gap-3">
+                <MonthDots
+                  filledMonths={l.filledMonths}
+                  requestedMonths={l.requestedMonths}
+                  monthsSpan={l.monthsSpan}
+                  periods={periods}
+                />
+                <Sparkline
+                  filledMonths={l.filledMonths}
+                  requestedMonths={l.requestedMonths}
+                  monthsSpan={l.monthsSpan}
+                />
+              </div>
             </div>
           </div>
           <span

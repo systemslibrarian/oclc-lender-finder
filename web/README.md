@@ -22,8 +22,15 @@ GitHub Pages workflow to deploy `web/dist/` instead.
 | Audit tab — paste symbols → tiered cards | done |
 | PWA (vite-plugin-pwa, Workbox SW, manifest, runtime data caching) | done |
 | Deployed at `/preview/` alongside the vanilla app | done |
-| Notes per lender, saved holdings groups, compare-periods modal, map view, CSV export/import, sparklines, drag-drop upload, help modal, bulk-select, pagination | not yet ported |
-| Workflow flip to deploy `web/dist/` at the root | deferred until parity |
+| Pagination (50/100/250/all) on all three tabs | done |
+| Selection state, bulk actions, saved holdings groups + build dialog | done |
+| Notes per lender | done |
+| Drag-drop upload | done |
+| Help dialog + 1/2/3/? keyboard shortcuts | done |
+| Sparkline + month dots on Rankings cards | done |
+| Compare-periods modal, map view (Leaflet), CSV import for the directory | not ported (low priority — niche features) |
+| Mobile filter-toggle (hamburger sidebar) | not ported (sidebar stacks naturally on narrow widths) |
+| Workflow flip to deploy `web/dist/` at the root | deferred until you verify the preview |
 
 ## Run
 
