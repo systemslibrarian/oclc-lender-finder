@@ -81,6 +81,7 @@ MEDICAL_MARKERS = (
     "biomedical",
     "hospital",
     "veterinary medicine",
+    "health center",
 )
 
 # Museums and art galleries.
@@ -97,6 +98,7 @@ MUSEUM_MARKERS = (
 ARCHIVES_MARKERS = (
     "archives",
     "national archives",
+    "internet archive",
 )
 
 # Federal/state/municipal government libraries (non-medical, non-law, non-archives).
@@ -181,6 +183,22 @@ GOVERNMENT_MARKERS = (
     "fish and wildlife",
     "arnold engineering development",
     "bonneville power administration",
+    "executive office of the president",
+    "fire service institute",
+    "library of the marine corps",
+    "national reconnaissance office",
+    "national reconaissance office",  # match the misspelled form in the OCLC export
+    "united states military academy",
+    "usma library",
+    "usace",
+    "us epa",
+    "epa region",
+    "epa, library",
+    "environmental prot",
+    "alaska resources library",
+    "department of labor",
+    "department labor",
+    "library service",
 )
 
 # Corporate research libraries / info centers.
@@ -250,6 +268,16 @@ ACADEMIC_MARKERS = (
     "unh durham",
     "moody bible",
     "graduate center library",
+    "school of psychology",
+    "school of engineering",
+    "school of business",
+    "school of education",
+    "school of mines",
+    "higher education center",
+    "pace library",
+    "um western",
+    "smsu",
+    "west florida",
 )
 
 # Public libraries.
@@ -312,6 +340,10 @@ SPECIAL_MARKERS = (
     "wildlife conservation",
     "population council",
     "endowment for",
+    "lunar and planetary",
+    "space telescope science",
+    "telescope science",
+    "policy institute",
 )
 
 
@@ -349,4 +381,10 @@ def classify_type(name: str | None, branch: str | None = None) -> str:
         return "Public"
     if _hit(combined, SPECIAL_MARKERS):
         return "Special"
+    # Fallback: bare "[Name] Library" with no other markers is almost
+    # always a small-town public library (e.g. "Reddick Library",
+    # "Greenwich Library"). Run after Special so e.g. "Society Library"
+    # still classifies as Special.
+    if "libary" in combined or " library" in combined:
+        return "Public"
     return "Other"

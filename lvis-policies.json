@@ -215,7 +215,7 @@
       "group": "LVIS",
       "lat": 32.3026,
       "lng": -86.2445,
-      "type": "Public"
+      "type": "Government"
     },
     "AMO": {
       "symbol": "AMO",
@@ -253,7 +253,7 @@
       "group": "LVIS",
       "lat": 61.1745,
       "lng": -149.8452,
-      "type": "Other"
+      "type": "Government"
     },
     "ALK": {
       "symbol": "ALK",
@@ -2084,7 +2084,7 @@
       "group": "LVIS",
       "lat": 45.9344,
       "lng": -106.6368,
-      "type": "Other"
+      "type": "Public"
     },
     "BPL": {
       "symbol": "BPL",
@@ -4690,7 +4690,7 @@
       "lat": 42.0222,
       "lng": -93.3339,
       "_coordsFromState": true,
-      "type": "Other"
+      "type": "Public"
     },
     "GBB": {
       "symbol": "GBB",
@@ -7299,7 +7299,7 @@
       "lat": 35.5736,
       "lng": -79.5283,
       "_coordsFromState": true,
-      "type": "Other"
+      "type": "Government"
     },
     "E4K": {
       "symbol": "E4K",
@@ -7432,7 +7432,7 @@
       "group": "LVIS",
       "lat": 38.8965,
       "lng": -77.0214,
-      "type": "Other"
+      "type": "Government"
     },
     "FGJ": {
       "symbol": "FGJ",
@@ -8596,7 +8596,7 @@
       "group": "LVIS",
       "lat": 38.7609,
       "lng": -89.9706,
-      "type": "Other"
+      "type": "Public"
     },
     "JAH": {
       "symbol": "JAH",
@@ -9034,7 +9034,7 @@
       "group": "LVIS",
       "lat": 41.0414,
       "lng": -73.638,
-      "type": "Other"
+      "type": "Public"
     },
     "MNG": {
       "symbol": "MNG",
@@ -10119,7 +10119,7 @@
       "group": "LVIS",
       "lat": 40.116,
       "lng": -88.2755,
-      "type": "Other"
+      "type": "Government"
     },
     "IAH": {
       "symbol": "IAH",
@@ -10461,7 +10461,7 @@
       "group": "LVIS",
       "lat": 37.7687,
       "lng": -122.4244,
-      "type": "Other"
+      "type": "Archives"
     },
     "VXI": {
       "symbol": "VXI",
@@ -11377,7 +11377,7 @@
       "group": "LVIS",
       "lat": 42.0374,
       "lng": -91.6359,
-      "type": "Academic"
+      "type": "Government"
     },
     "ET8": {
       "symbol": "ET8",
@@ -11434,7 +11434,7 @@
       "group": "LVIS",
       "lat": 42.2367,
       "lng": -121.7742,
-      "type": "Public"
+      "type": "Government"
     },
     "IBK": {
       "symbol": "IBK",
@@ -11663,7 +11663,7 @@
       "group": "LVIS",
       "lat": 42.2374,
       "lng": -87.8482,
-      "type": "Other"
+      "type": "Public"
     },
     "QX7": {
       "symbol": "QX7",
@@ -12500,7 +12500,7 @@
       "group": "LVIS",
       "lat": 38.5267,
       "lng": -77.3147,
-      "type": "Other"
+      "type": "Government"
     },
     "VIC": {
       "symbol": "VIC",
@@ -13108,7 +13108,7 @@
       "group": "LVIS",
       "lat": 45.2339,
       "lng": -112.6405,
-      "type": "Other"
+      "type": "Academic"
     },
     "LPZ": {
       "symbol": "LPZ",
@@ -13127,7 +13127,7 @@
       "group": "LVIS",
       "lat": 29.7979,
       "lng": -95.4191,
-      "type": "Other"
+      "type": "Special"
     },
     "IOH": {
       "symbol": "IOH",
@@ -13892,7 +13892,7 @@
       "group": "LVIS",
       "lat": 44.4481,
       "lng": -95.7795,
-      "type": "Other"
+      "type": "Academic"
     },
     "LHA": {
       "symbol": "LHA",
@@ -14254,7 +14254,7 @@
       "lat": 43.4435,
       "lng": -84.7356,
       "_coordsFromState": true,
-      "type": "Other"
+      "type": "Academic"
     },
     "EVK": {
       "symbol": "EVK",
@@ -14445,7 +14445,7 @@
       "group": "LVIS",
       "lat": 43.0498,
       "lng": -87.9529,
-      "type": "Other"
+      "type": "Academic"
     },
     "MDF": {
       "symbol": "MDF",
@@ -14484,7 +14484,7 @@
       "group": "LVIS",
       "lat": 44.1767,
       "lng": -94.0331,
-      "type": "Academic"
+      "type": "Government"
     },
     "MUO": {
       "symbol": "MUO",
@@ -15112,7 +15112,7 @@
       "group": "LVIS",
       "lat": 38.3223,
       "lng": -90.1478,
-      "type": "Other"
+      "type": "Public"
     },
     "JFI": {
       "symbol": "JFI",
@@ -15570,7 +15570,7 @@
       "group": "LVIS",
       "lat": 38.872,
       "lng": -77.4146,
-      "type": "Other"
+      "type": "Government"
     },
     "NSF": {
       "symbol": "NSF",
@@ -18824,7 +18824,7 @@
       "group": "LVIS",
       "lat": 41.3526,
       "lng": -88.8416,
-      "type": "Other"
+      "type": "Public"
     },
     "RJC": {
       "symbol": "RJC",
@@ -19243,7 +19243,7 @@
       "group": "LVIS",
       "lat": 37.2837,
       "lng": -79.9516,
-      "type": "Other"
+      "type": "Academic"
     },
     "RVA": {
       "symbol": "RVA",
@@ -20272,7 +20272,7 @@
       "group": "LVIS",
       "lat": 39.4802,
       "lng": -88.3762,
-      "type": "Other"
+      "type": "Medical"
     },
     "VVS": {
       "symbol": "VVS",
@@ -21091,7 +21091,7 @@
       "group": "LVIS",
       "lat": 44.0673,
       "lng": -103.2644,
-      "type": "Other"
+      "type": "Academic"
     },
     "SDB": {
       "symbol": "SDB",
@@ -21624,7 +21624,7 @@
       "group": "LVIS",
       "lat": 39.3019,
       "lng": -76.621,
-      "type": "Other"
+      "type": "Special"
     },
     "KLD": {
       "symbol": "KLD",
@@ -21719,7 +21719,7 @@
       "group": "LVIS",
       "lat": 42.1244,
       "lng": -72.5727,
-      "type": "Academic"
+      "type": "Government"
     },
     "SFC": {
       "symbol": "SFC",
@@ -23169,7 +23169,7 @@
       "group": "LVIS",
       "lat": 36.0197,
       "lng": -86.7868,
-      "type": "Other"
+      "type": "Public"
     },
     "EXO": {
       "symbol": "EXO",
@@ -23873,7 +23873,7 @@
       "group": "LVIS",
       "lat": 41.393,
       "lng": -73.9648,
-      "type": "Other"
+      "type": "Government"
     },
     "UNA": {
       "symbol": "UNA",
@@ -25562,7 +25562,7 @@
       "group": "LVIS",
       "lat": 30.4352,
       "lng": -87.2516,
-      "type": "Other"
+      "type": "Academic"
     },
     "GWC": {
       "symbol": "GWC",
@@ -25695,7 +25695,7 @@
       "group": "LVIS",
       "lat": 41.5222,
       "lng": -90.5741,
-      "type": "Other"
+      "type": "Government"
     },
     "CED": {
       "symbol": "CED",
@@ -25886,7 +25886,7 @@
       "group": "LVIS",
       "lat": 39.9908,
       "lng": -75.1426,
-      "type": "Other"
+      "type": "Government"
     },
     "GIS": {
       "symbol": "GIS",
@@ -26704,7 +26704,7 @@
       "group": "LVIS",
       "lat": 46.9616,
       "lng": -123.0283,
-      "type": "Other"
+      "type": "Government"
     },
     "WRJ": {
       "symbol": "WRJ",
@@ -27979,7 +27979,7 @@
       "group": "LVIS",
       "lat": 61.8966,
       "lng": -150.0038,
-      "type": "Other"
+      "type": "Public"
     },
     "GP5": {
       "symbol": "GP5",
@@ -28036,7 +28036,7 @@
       "group": "LVIS",
       "lat": 39.7018,
       "lng": -75.569,
-      "type": "Other"
+      "type": "Public"
     },
     "WMG": {
       "symbol": "WMG",

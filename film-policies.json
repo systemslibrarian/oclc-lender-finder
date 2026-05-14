@@ -1243,7 +1243,7 @@
       "lat": 45.9344,
       "lng": -106.6368,
       "group": "FILM",
-      "type": "Other"
+      "type": "Public"
     },
     "YFY": {
       "symbol": "YFY",
@@ -2576,7 +2576,7 @@
       "lng": -93.3339,
       "group": "FILM",
       "_coordsFromState": true,
-      "type": "Other"
+      "type": "Public"
     },
     "FO9": {
       "symbol": "FO9",
@@ -4766,7 +4766,7 @@
       "lat": 38.7609,
       "lng": -89.9706,
       "group": "FILM",
-      "type": "Other"
+      "type": "Public"
     },
     "JAH": {
       "symbol": "JAH",
@@ -5071,7 +5071,7 @@
       "lat": 41.0414,
       "lng": -73.638,
       "group": "FILM",
-      "type": "Other"
+      "type": "Public"
     },
     "MNG": {
       "symbol": "MNG",
@@ -6424,7 +6424,7 @@
       "lat": 42.2367,
       "lng": -121.7742,
       "group": "FILM",
-      "type": "Public"
+      "type": "Government"
     },
     "IBK": {
       "symbol": "IBK",
@@ -6557,7 +6557,7 @@
       "lat": 42.2374,
       "lng": -87.8482,
       "group": "FILM",
-      "type": "Other"
+      "type": "Public"
     },
     "OLE": {
       "symbol": "OLE",
@@ -7127,7 +7127,7 @@
       "lat": 45.2339,
       "lng": -112.6405,
       "group": "FILM",
-      "type": "Other"
+      "type": "Academic"
     },
     "IOH": {
       "symbol": "IOH",
@@ -7622,7 +7622,7 @@
       "lat": 44.4481,
       "lng": -95.7795,
       "group": "FILM",
-      "type": "Other"
+      "type": "Academic"
     },
     "ITV": {
       "symbol": "ITV",
@@ -8174,7 +8174,7 @@
       "lat": 38.3223,
       "lng": -90.1478,
       "group": "FILM",
-      "type": "Other"
+      "type": "Public"
     },
     "IMT": {
       "symbol": "IMT",
@@ -9929,7 +9929,7 @@
       "lng": -105.3172,
       "group": "FILM",
       "_coordsFromState": true,
-      "type": "Other"
+      "type": "Public"
     },
     "ENZ": {
       "symbol": "ENZ",
@@ -10575,7 +10575,7 @@
       "lat": 41.3526,
       "lng": -88.8416,
       "group": "FILM",
-      "type": "Other"
+      "type": "Public"
     },
     "RCM": {
       "symbol": "RCM",
@@ -10898,7 +10898,7 @@
       "lat": 42.073,
       "lng": -88.0191,
       "group": "FILM",
-      "type": "Other"
+      "type": "Public"
     },
     "FWR": {
       "symbol": "FWR",
@@ -14028,7 +14028,7 @@
       "lat": 43.7263,
       "lng": -111.1199,
       "group": "FILM",
-      "type": "Other"
+      "type": "Public"
     },
     "IVU": {
       "symbol": "IVU",
@@ -15188,7 +15188,7 @@
       "lat": 61.8966,
       "lng": -150.0038,
       "group": "FILM",
-      "type": "Other"
+      "type": "Public"
     },
     "GP5": {
       "symbol": "GP5",
