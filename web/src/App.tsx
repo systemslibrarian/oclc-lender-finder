@@ -8,12 +8,14 @@ import { DiscoverTab } from '@/tabs/Discover';
 import { AuditTab } from '@/tabs/Audit';
 import { AppProvider, useAppState } from '@/app-state/AppContext';
 import { HelpDialog } from '@/components/HelpDialog';
+import { CommandPalette } from '@/components/CommandPalette';
 import { ToastProvider, useToast } from '@/components/Toast';
 import type { TabName } from '@/lib/types';
 
 function AppShell() {
   const { activeTab, setActiveTab, months, isLoadingDirectory } = useAppState();
   const [helpOpen, setHelpOpen] = useState(false);
+  const [cmdOpen, setCmdOpen] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
@@ -22,6 +24,13 @@ function AppShell() {
   // the user is typing in a form field.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // ⌘K / Ctrl+K opens the command palette from anywhere, including
+      // when focus is in a form field.
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        setCmdOpen((o) => !o);
+        return;
+      }
       const t = e.target as HTMLElement | null;
       const editable =
         t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
@@ -73,6 +82,7 @@ function AppShell() {
       </header>
 
       <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
+      <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} onShowHelp={() => setHelpOpen(true)} />
 
       <main className="container flex-1 py-6">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabName)}>
