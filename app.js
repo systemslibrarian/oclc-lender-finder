@@ -1861,7 +1861,6 @@
           <div class="stat" title="OCLC stated turnaround for loan requests"><span class="stat-label">Loans</span><span class="stat-val ${l.loansDaysToRespond == null ? 'muted' : ''}">${loansDaysText}</span></div>
           <div class="stat" title="OCLC stated turnaround for copy requests"><span class="stat-label">Copies</span><span class="stat-val ${l.copiesDaysToRespond == null ? 'muted' : ''}">${copiesDaysText}</span></div>
           <div class="stat"><span class="stat-label">Groups</span><span class="stat-val ${(l.groups || []).length === 0 ? 'muted' : ''}">${(l.groups || []).length || '—'}</span></div>
-          <div class="stat"><span class="stat-label">Status</span><span class="stat-val">${alreadyBorrowed ? 'Known' : 'New'}</span></div>
         </div>
         <div class="badges">
           ${borrowedBadge}
