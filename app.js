@@ -556,6 +556,34 @@
     }[c]));
   }
 
+  // Clamp a facet wrapper to the height of its first N rows so the rest
+  // scrolls. Measures real layout so the height tracks the actual rendered
+  // font/line-height. Skipped when the element isn't laid out yet (e.g.
+  // hidden tab); clampAllFacets() re-runs after tab switch.
+  function clampFacetToRows(wrap, n) {
+    if (!wrap) return;
+    const rows = wrap.querySelectorAll('.facet');
+    if (rows.length <= n) {
+      wrap.classList.remove('facet-scroll');
+      wrap.style.maxHeight = '';
+      return;
+    }
+    wrap.classList.add('facet-scroll');
+    if (wrap.offsetParent === null) return; // hidden — measure later
+    const wrapTop = wrap.getBoundingClientRect().top;
+    const lastVisible = rows[n - 1].getBoundingClientRect().bottom;
+    if (lastVisible > wrapTop) {
+      wrap.style.maxHeight = (lastVisible - wrapTop) + 'px';
+    }
+  }
+
+  function clampAllFacets() {
+    [
+      'type-facets', 'state-facets',
+      'dir-type-facets', 'dir-state-facets'
+    ].forEach(id => clampFacetToRows(document.getElementById(id), 7));
+  }
+
   /* ---------- Period-over-period comparison ---------- */
 
   function aggregateRangeStats(monthIdxList) {
@@ -1055,6 +1083,8 @@
     wireFacet(typeWrap);
     wireFacet(stateWrap);
     wireFacet(groupWrap);
+    clampFacetToRows(typeWrap, 7);
+    clampFacetToRows(stateWrap, 7);
   }
 
   function syncWeightLabels() {
@@ -1647,6 +1677,8 @@
       Object.entries(groupCounts).sort((a, b) => b[1] - a[1]).map(([g, c]) =>
         renderGroupFacet(g, c, 'dirfacet', dirFilters.group.has(g))
       ).join('') || '<p class="hint">No groups recorded in directory.</p>';
+    clampFacetToRows(document.getElementById('dir-type-facets'), 7);
+    clampFacetToRows(document.getElementById('dir-state-facets'), 7);
 
     document.querySelectorAll('input[type="checkbox"][data-dirfacet]').forEach(cb => {
       cb.addEventListener('change', () => {
@@ -2148,6 +2180,8 @@
     document.getElementById('discover-view').hidden = name !== 'discover';
     renderProcessPanel(name);
     saveData();
+    // Re-clamp facets now that the newly-shown panel has a layout.
+    clampAllFacets();
   }
 
   /* ---------- Modal & help ---------- */

@@ -686,24 +686,18 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   color: var(--text-tertiary);
   font-weight: 400;
 }
-/* Library type and State facets can get long — cap at ~7 rows and let
-   the rest scroll so the sidebar stays compact. */
-#type-facets,
-#state-facets,
-#dir-type-facets,
-#dir-state-facets {
-  max-height: 196px;
+/* Library type and State facets can get long — JS clamps the wrapper to
+   the height of the first 7 rows; this rule just supplies the scrollbar
+   styling so the rest can scroll. */
+.facet-scroll {
   overflow-y: auto;
   padding-right: 4px;
+  /* Fallback when JS can't measure (e.g. clamp runs while hidden);
+     gets overwritten by an inline max-height once the panel is shown. */
+  max-height: 186px;
 }
-#type-facets::-webkit-scrollbar,
-#state-facets::-webkit-scrollbar,
-#dir-type-facets::-webkit-scrollbar,
-#dir-state-facets::-webkit-scrollbar { width: 6px; }
-#type-facets::-webkit-scrollbar-thumb,
-#state-facets::-webkit-scrollbar-thumb,
-#dir-type-facets::-webkit-scrollbar-thumb,
-#dir-state-facets::-webkit-scrollbar-thumb {
+.facet-scroll::-webkit-scrollbar { width: 6px; }
+.facet-scroll::-webkit-scrollbar-thumb {
   background: var(--border, #d0d7de);
   border-radius: 3px;
 }
