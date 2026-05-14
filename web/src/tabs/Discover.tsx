@@ -12,7 +12,8 @@ import { SavedGroupsCard } from '@/components/SavedGroupsCard';
 import { SaveGroupDialog } from '@/components/SaveGroupDialog';
 import { Button } from '@/components/ui/button';
 import { useSelection } from '@/lib/use-selection';
-import { LayoutGrid, Map as MapIcon, Search, StickyNote, X } from 'lucide-react';
+import { LayoutGrid, Map as MapIcon, Search, StickyNote, Upload, X } from 'lucide-react';
+import { ImportDirectoryDialog } from '@/components/ImportDirectoryDialog';
 import { NoteEditor } from '@/components/NoteEditor';
 // Leaflet is heavy (~150 KB gzipped); lazy-load so only Map-view users pay.
 const DiscoverMap = lazy(() => import('@/components/DiscoverMap').then((m) => ({ default: m.DiscoverMap })));
@@ -68,6 +69,7 @@ export function DiscoverTab() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(100);
   const [viewMode, setViewMode] = useState<'cards' | 'map'>('cards');
+  const [importOpen, setImportOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   const merged = useMemo(
@@ -372,6 +374,20 @@ export function DiscoverTab() {
           </CardContent>
         </Card>
 
+        <Card>
+          <CardHeader className="pb-3"><CardTitle className="text-base">Custom directory</CardTitle></CardHeader>
+          <CardContent className="space-y-2 pt-0 text-xs text-muted-foreground">
+            <p>Bring your own lender list on top of the bundled directory and group rosters.</p>
+            <Button size="sm" variant="outline" className="w-full justify-start" onClick={() => setImportOpen(true)}>
+              <Upload className="mr-2 h-4 w-4" />
+              Import directory CSV
+            </Button>
+            {importedDirectory.length > 0 && (
+              <p>{importedDirectory.length} imported row{importedDirectory.length === 1 ? '' : 's'} active.</p>
+            )}
+          </CardContent>
+        </Card>
+
         <SavedGroupsCard source="discover" onRestore={(syms) => selection.setSelected(new Set(syms))} />
       </aside>
 
@@ -490,6 +506,8 @@ export function DiscoverTab() {
           ]);
         }}
       />
+
+      <ImportDirectoryDialog open={importOpen} onOpenChange={setImportOpen} />
     </div>
   );
 }

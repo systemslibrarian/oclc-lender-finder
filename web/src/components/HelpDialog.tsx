@@ -29,13 +29,29 @@ export function HelpDialog({ open, onOpenChange }: Props) {
             </ul>
           </section>
           <section>
+            <h3 className="mb-2 font-semibold">Audit tab</h3>
+            <p className="text-muted-foreground">
+              Paste your current custom holdings group. <strong>Cards</strong>{' '}
+              view buckets each member Top / Strong / Weak / Unused based on
+              how it has performed in your loaded reports — Top is ≥ 70
+              composite score, Strong is 50–69, Weak is 1–49, Unused means
+              never borrowed from. Click any tier pill at the top to filter.{' '}
+              <strong>Tune</strong> view analyzes the group profile and
+              recommends drops (with predicted impact) and adds (with
+              profile-match reasons) inline.
+            </p>
+          </section>
+          <section>
             <h3 className="mb-2 font-semibold">Rankings tab</h3>
             <p className="text-muted-foreground">
-              Upload one or more <em>Borrower Transaction-Level Detail</em> reports
-              from OCLC WorldShare. Each row gets a composite score from five
-              weighted subscores — Speed, Fill rate, Volume, Consistency, Same
-              state. Pick a preset or tune the sliders; the list reorders
-              automatically when sorted by "best match".
+              Upload <em>Borrower Transaction-Level Detail</em> reports from
+              OCLC WorldShare. Each row gets a composite score from five
+              weighted subscores — Speed, Fill rate, Volume, Consistency,
+              Same state. <strong>Cards</strong> view is sortable + filterable;{' '}
+              <strong>Chart</strong> view scatters each lender on a Speed × Fill
+              rate plot so top-right performers cluster visually. Pick a
+              preset or tune sliders; the list reorders when sorted by "best
+              match".
             </p>
           </section>
           <section>
@@ -43,17 +59,10 @@ export function HelpDialog({ open, onOpenChange }: Props) {
             <p className="text-muted-foreground">
               Browse the bundled directory plus the LVIS / FILM / FLIN / LYRA /
               PL@A group rosters. Filter by library type, state, group
-              affiliation, OCLC-stated loan turnaround, or distance. Set a Home
-              symbol to hide your own library from the list.
-            </p>
-          </section>
-          <section>
-            <h3 className="mb-2 font-semibold">Audit tab</h3>
-            <p className="text-muted-foreground">
-              Paste your current custom holdings group. Each member is bucketed
-              Top / Strong / Weak / Unused based on how it has performed in
-              your loaded reports — Top is ≥ 70 composite score, Strong is
-              50–69, Weak is 1–49, Unused means never borrowed from.
+              affiliation, OCLC-stated loan turnaround, or distance. Toggle{' '}
+              <strong>Map</strong> view to see candidates plotted on
+              OpenStreetMap. Import your own CSV under "Custom directory" to
+              add rows on top of the bundled set.
             </p>
           </section>
           <section>

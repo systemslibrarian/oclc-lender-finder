@@ -257,6 +257,24 @@ export function RankingsTab() {
                 The state powers the same-state boost. Home symbol hides your own
                 library from candidate lists.
               </p>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="-mx-2 mt-1 justify-start"
+                onClick={() => {
+                  if (!navigator.geolocation) return;
+                  navigator.geolocation.getCurrentPosition(
+                    (pos) =>
+                      updateSettings({
+                        homeLat: parseFloat(pos.coords.latitude.toFixed(4)),
+                        homeLng: parseFloat(pos.coords.longitude.toFixed(4))
+                      }),
+                    () => { /* silent on denial */ }
+                  );
+                }}
+              >
+                📍 Use my location
+              </Button>
             </CardContent>
           </Card>
 
