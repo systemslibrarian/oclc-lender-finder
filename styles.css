@@ -686,6 +686,27 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   color: var(--text-tertiary);
   font-weight: 400;
 }
+/* Library type and State facets can get long — cap at ~7 rows and let
+   the rest scroll so the sidebar stays compact. */
+#type-facets,
+#state-facets,
+#dir-type-facets,
+#dir-state-facets {
+  max-height: 196px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+#type-facets::-webkit-scrollbar,
+#state-facets::-webkit-scrollbar,
+#dir-type-facets::-webkit-scrollbar,
+#dir-state-facets::-webkit-scrollbar { width: 6px; }
+#type-facets::-webkit-scrollbar-thumb,
+#state-facets::-webkit-scrollbar-thumb,
+#dir-type-facets::-webkit-scrollbar-thumb,
+#dir-state-facets::-webkit-scrollbar-thumb {
+  background: var(--border, #d0d7de);
+  border-radius: 3px;
+}
 
 .scroll-box {
   max-height: 220px;
