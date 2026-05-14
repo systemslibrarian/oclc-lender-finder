@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Pagination, PageSizeSelect } from '@/components/Pagination';
+import { LayoutGrid, Wand2 } from 'lucide-react';
+import { SmartSwap } from '@/components/SmartSwap';
 import { useAppState } from '@/app-state/AppContext';
 import { mergeMonths, totalScore } from '@/lib/scoring';
 import { mergeDirectory } from '@/lib/directory';
@@ -49,6 +51,7 @@ const TIER_BORDER: Record<AuditTier, string> = {
 export function AuditTab() {
   const { months, settings, auditHoldings, setAuditHoldings, bundledDirectory, importedDirectory, policies } =
     useAppState();
+  const [viewMode, setViewMode] = useState<'cards' | 'tune'>('cards');
   const [draft, setDraft] = useState(() => auditHoldings.join(', '));
   const [sortBy, setSortBy] = useState<SortKey>('score');
   const [page, setPage] = useState(1);
@@ -185,7 +188,27 @@ export function AuditTab() {
             <TierPill active={tierFilter === 'weak'} onClick={() => setTierFilter('weak')} count={counts.weak} label="weak" tier="weak" />
             <TierPill active={tierFilter === 'unused'} onClick={() => setTierFilter('unused')} count={counts.unused} label="unused" tier="unused" />
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <div className="inline-flex rounded-md border bg-background p-0.5" role="group" aria-label="View mode">
+              <Button
+                size="sm"
+                variant={viewMode === 'cards' ? 'default' : 'ghost'}
+                className="h-7 px-2"
+                aria-pressed={viewMode === 'cards'}
+                onClick={() => setViewMode('cards')}
+              >
+                <LayoutGrid className="mr-1.5 h-3.5 w-3.5" />Cards
+              </Button>
+              <Button
+                size="sm"
+                variant={viewMode === 'tune' ? 'default' : 'ghost'}
+                className="h-7 px-2"
+                aria-pressed={viewMode === 'tune'}
+                onClick={() => setViewMode('tune')}
+              >
+                <Wand2 className="mr-1.5 h-3.5 w-3.5" />Tune
+              </Button>
+            </div>
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
               <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -201,7 +224,19 @@ export function AuditTab() {
           </div>
         </div>
 
-        {rows.length === 0 ? (
+        {viewMode === 'tune' ? (
+          <SmartSwap
+            holdings={auditHoldings}
+            months={months}
+            directorySources={{ bundled: bundledDirectory, imported: importedDirectory, policies }}
+            weights={settings.weights}
+            homeState={settings.homeState}
+            onAdd={(sym) => {
+              if (!auditHoldings.includes(sym)) setAuditHoldings([...auditHoldings, sym]);
+            }}
+            onDrop={(sym) => setAuditHoldings(auditHoldings.filter((s) => s !== sym))}
+          />
+        ) : rows.length === 0 ? (
           <Card>
             <CardContent className="py-10 text-center text-sm text-muted-foreground">
               <p className="font-medium text-foreground">Paste your custom holdings group to audit it</p>
