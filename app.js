@@ -40,6 +40,31 @@
     'LYRA': 'Lyrasis'
   };
   const ALLOWED_GROUPS = new Set(Object.keys(GROUP_NAMES));
+  // Map US/territory postal codes to full names for facet display.
+  const STATE_NAMES = {
+    AL: 'Alabama', AK: 'Alaska', AZ: 'Arizona', AR: 'Arkansas', CA: 'California',
+    CO: 'Colorado', CT: 'Connecticut', DE: 'Delaware', DC: 'District of Columbia',
+    FL: 'Florida', GA: 'Georgia', HI: 'Hawaii', ID: 'Idaho', IL: 'Illinois',
+    IN: 'Indiana', IA: 'Iowa', KS: 'Kansas', KY: 'Kentucky', LA: 'Louisiana',
+    ME: 'Maine', MD: 'Maryland', MA: 'Massachusetts', MI: 'Michigan', MN: 'Minnesota',
+    MS: 'Mississippi', MO: 'Missouri', MT: 'Montana', NE: 'Nebraska', NV: 'Nevada',
+    NH: 'New Hampshire', NJ: 'New Jersey', NM: 'New Mexico', NY: 'New York',
+    NC: 'North Carolina', ND: 'North Dakota', OH: 'Ohio', OK: 'Oklahoma', OR: 'Oregon',
+    PA: 'Pennsylvania', RI: 'Rhode Island', SC: 'South Carolina', SD: 'South Dakota',
+    TN: 'Tennessee', TX: 'Texas', UT: 'Utah', VT: 'Vermont', VA: 'Virginia',
+    WA: 'Washington', WV: 'West Virginia', WI: 'Wisconsin', WY: 'Wyoming',
+    AS: 'American Samoa', GU: 'Guam', MP: 'Northern Mariana Islands',
+    PR: 'Puerto Rico', VI: 'U.S. Virgin Islands',
+    AB: 'Alberta', BC: 'British Columbia', MB: 'Manitoba', NB: 'New Brunswick',
+    NL: 'Newfoundland and Labrador', NS: 'Nova Scotia', NT: 'Northwest Territories',
+    NU: 'Nunavut', ON: 'Ontario', PE: 'Prince Edward Island', QC: 'Quebec',
+    SK: 'Saskatchewan', YT: 'Yukon'
+  };
+  const stateLabel = code => {
+    const name = STATE_NAMES[code];
+    return name ? `${name} (${code})` : (code || '—');
+  };
+  const stateSort = (a, b) => stateLabel(a[0]).localeCompare(stateLabel(b[0]));
   const dirFilters = { type: new Set(), state: new Set(), group: new Set(), search: '', maxDist: 0, onlyNew: true };
 
   // Last-rendered filtered lists, used by bulk actions
@@ -1000,7 +1025,7 @@
       });
     });
     const types = Object.entries(typeCounts).sort((a, b) => b[1] - a[1]);
-    const states = Object.entries(stateCounts).sort((a, b) => b[1] - a[1]);
+    const states = Object.entries(stateCounts).sort(stateSort);
     const groups = Object.entries(groupCounts).sort((a, b) => b[1] - a[1]);
 
     const typeWrap = document.getElementById('type-facets');
@@ -1013,7 +1038,7 @@
     }
     const stateWrap = document.getElementById('state-facets');
     stateWrap.innerHTML = states.map(([s, c]) =>
-      `<label class="facet"><span><input type="checkbox" data-facet="state" value="${escapeHtml(s)}" ${activeFilters.state.has(s) ? 'checked' : ''}>${escapeHtml(s)}</span><span class="count">${c}</span></label>`
+      `<label class="facet"><span><input type="checkbox" data-facet="state" value="${escapeHtml(s)}" ${activeFilters.state.has(s) ? 'checked' : ''}>${escapeHtml(stateLabel(s))}</span><span class="count">${c}</span></label>`
     ).join('');
     const groupWrap = document.getElementById('group-facets');
     if (groupWrap) {
@@ -1615,8 +1640,8 @@
         `<label class="facet"><span><input type="checkbox" data-dirfacet="type" value="${escapeHtml(t)}" ${dirFilters.type.has(t) ? 'checked' : ''}>${escapeHtml(t)}</span><span class="count">${c}</span></label>`
       ).join('') || '<p class="hint">No data.</p>';
     document.getElementById('dir-state-facets').innerHTML =
-      Object.entries(stateCounts).sort((a, b) => b[1] - a[1]).map(([s, c]) =>
-        `<label class="facet"><span><input type="checkbox" data-dirfacet="state" value="${escapeHtml(s)}" ${dirFilters.state.has(s) ? 'checked' : ''}>${escapeHtml(s)}</span><span class="count">${c}</span></label>`
+      Object.entries(stateCounts).sort(stateSort).map(([s, c]) =>
+        `<label class="facet"><span><input type="checkbox" data-dirfacet="state" value="${escapeHtml(s)}" ${dirFilters.state.has(s) ? 'checked' : ''}>${escapeHtml(stateLabel(s))}</span><span class="count">${c}</span></label>`
       ).join('');
     document.getElementById('dir-group-facets').innerHTML =
       Object.entries(groupCounts).sort((a, b) => b[1] - a[1]).map(([g, c]) =>
