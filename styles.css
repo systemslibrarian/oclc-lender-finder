@@ -9,7 +9,7 @@
   --bg-danger: #fbe7e6;
   --text: #2c2c2a;
   --text-secondary: #5f5e5a;
-  --text-tertiary: #888780;
+  --text-tertiary: #6b6964;  /* 4.96:1 on #ffffff — meets WCAG AA */
   --text-info: #185fa5;
   --text-success: #3b6d11;
   --text-warning: #854f0b;
@@ -41,7 +41,7 @@
     --bg-danger: #5a1f1d;
     --text: #e8e6dd;
     --text-secondary: #b4b2a9;
-    --text-tertiary: #888780;
+    --text-tertiary: #a8a69d;  /* 6.4:1 on #1a1a18 in dark mode */
     --text-info: #85b7eb;
     --text-success: #c0dd97;
     --text-warning: #fac775;
@@ -293,21 +293,30 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
     padding: 14px 16px;
     gap: 12px;
   }
-  .filter-toggle { display: flex; }
+  .filter-toggle { display: flex; min-height: 44px; }
   .facets { display: none; }
   .facets.open { display: block; }
   .toolbar { padding: 10px 12px; }
   .bulk-actions { width: 100%; order: 99; }
-  .ghost-btn { flex: 1; padding: 8px 10px; font-size: 12px; min-height: 36px; }
-  .primary-btn { padding: 8px 14px; min-height: 38px; }
-  select#sort-by, select#dir-sort-by { padding: 7px 8px; min-height: 36px; }
+  /* WCAG 2.5.5 AAA target size is 44px; we use 40 as a balanced floor for dense UIs. */
+  .ghost-btn { flex: 1; padding: 8px 10px; font-size: 12px; min-height: 40px; }
+  .primary-btn { padding: 8px 14px; min-height: 44px; }
+  .tab { padding: 8px 12px; min-height: 40px; font-size: 14px; }
+  .link-btn, .footer-link { min-height: 32px; padding: 6px 4px; }
+  .icon-btn { min-height: 40px; min-width: 40px; padding: 8px; }
+  select#sort-by, select#dir-sort-by { padding: 7px 8px; min-height: 40px; }
+  .inline-field input[type="text"], #dir-search, #home-symbol, #home-state, #home-lat, #home-lng,
+  #dir-home-symbol, #dir-home-state, #dir-home-lat, #dir-home-lng {
+    min-height: 40px; font-size: 16px;  /* 16px prevents iOS zoom on focus */
+  }
   .facet { padding: 8px 0; font-size: 14px; }
   .facet input { transform: scale(1.15); margin-right: 10px; }
-  .preset { padding: 8px 12px; font-size: 12px; }
+  .preset { padding: 8px 12px; font-size: 12px; min-height: 36px; }
   .card { padding: 14px; }
   .card-left input { transform: scale(1.15); }
-  .explain-btn { padding: 8px 4px; font-size: 12px; }
-  .policy-lookup-btn { padding: 6px 12px; font-size: 12px; }
+  .explain-btn { padding: 8px 4px; font-size: 12px; min-height: 36px; }
+  .policy-lookup-btn { padding: 6px 12px; font-size: 12px; min-height: 36px; }
+  .chip-close { min-width: 24px; min-height: 24px; }
 }
 
 @media (max-width: 460px) {
@@ -351,6 +360,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   border-bottom: none;
   margin-bottom: 0.75rem;
 }
+.facet-group h2,
 .facet-group h3 {
   font-size: 11px;
   text-transform: uppercase;
@@ -363,10 +373,12 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   gap: 6px;
   flex-wrap: wrap;
 }
+.facet-group h2.facet-toggle,
 .facet-group h3.facet-toggle {
   cursor: pointer;
   user-select: none;
 }
+.facet-group h2.facet-toggle::after,
 .facet-group h3.facet-toggle::after {
   content: '▾';
   margin-left: auto;
@@ -374,10 +386,13 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   color: var(--text-tertiary);
   transition: transform 0.15s ease;
 }
+.facet-group.collapsed > h2.facet-toggle::after,
 .facet-group.collapsed > h3.facet-toggle::after,
+.facet-group.collapsed > .group-header > h2.facet-toggle::after,
 .facet-group.collapsed > .group-header > h3.facet-toggle::after {
   transform: rotate(-90deg);
 }
+.facet-group.collapsed > h2.facet-toggle ~ *,
 .facet-group.collapsed > h3.facet-toggle ~ *,
 .facet-group.collapsed > .group-header ~ * {
   display: none;

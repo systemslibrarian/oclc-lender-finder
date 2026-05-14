@@ -2239,6 +2239,8 @@
       const active = b.dataset.tab === name;
       b.classList.toggle('active', active);
       b.setAttribute('aria-selected', active ? 'true' : 'false');
+      // Roving tabindex: only the active tab is in the natural tab order.
+      b.setAttribute('tabindex', active ? '0' : '-1');
     });
     document.getElementById('rankings-view').hidden = name !== 'rankings';
     document.getElementById('discover-view').hidden = name !== 'discover';
@@ -2365,8 +2367,21 @@
   /* ---------- Event wiring ---------- */
 
   function bindEvents() {
-    document.querySelectorAll('.tab').forEach(b => {
+    const tabEls = Array.from(document.querySelectorAll('.tab'));
+    tabEls.forEach((b, i) => {
       b.addEventListener('click', () => switchTab(b.dataset.tab));
+      b.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== 'Home' && e.key !== 'End') return;
+        e.preventDefault();
+        let next = i;
+        if (e.key === 'ArrowRight') next = (i + 1) % tabEls.length;
+        else if (e.key === 'ArrowLeft') next = (i - 1 + tabEls.length) % tabEls.length;
+        else if (e.key === 'Home') next = 0;
+        else if (e.key === 'End') next = tabEls.length - 1;
+        const target = tabEls[next];
+        target.focus();
+        switchTab(target.dataset.tab);
+      });
     });
 
     document.getElementById('csv-input').addEventListener('change', e => {
@@ -2661,7 +2676,7 @@
 
   function initFacetCollapse() {
     document.querySelectorAll('.facets .facet-group').forEach((group, i) => {
-      const headerH3 = group.querySelector(':scope > h3') || group.querySelector(':scope > .group-header > h3');
+      const headerH3 = group.querySelector(':scope > h2, :scope > h3') || group.querySelector(':scope > .group-header > h2, :scope > .group-header > h3');
       if (!headerH3) return;
       const title = (headerH3.textContent || '').trim().toLowerCase().replace(/\s+/g, '-').slice(0, 40);
       const key = `lf-facet-collapsed:${group.id || title || i}`;
