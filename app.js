@@ -2477,18 +2477,31 @@
     document.getElementById('dir-use-location').addEventListener('click', useMyLocation);
 
     document.querySelectorAll('input[data-weight]').forEach(inp => {
-      inp.addEventListener('input', () => {
-        weights[inp.dataset.weight] = parseInt(inp.value);
+      const onWeightChange = () => {
+        const n = inp.valueAsNumber;
+        if (Number.isFinite(n)) weights[inp.dataset.weight] = n;
         weightsTouched = true;
+        // Snap sort to "best match" so weight changes actually reorder visibly.
+        const sortSel = document.getElementById('sort-by');
+        if (sortSel && sortSel.value !== 'score') sortSel.value = 'score';
         syncWeightLabels();
-        debounce('weight', renderRankings, 50);
-      });
+        renderRankings();
+      };
+      inp.addEventListener('input', onWeightChange);
+      inp.addEventListener('change', onWeightChange);
     });
 
     document.querySelectorAll('.preset').forEach(btn => {
       btn.addEventListener('click', () => {
         const p = presets[btn.dataset.preset];
-        if (p) { weights = { ...p }; weightsTouched = true; syncWeightLabels(); renderRankings(); }
+        if (p) {
+          weights = { ...p };
+          weightsTouched = true;
+          const sortSel = document.getElementById('sort-by');
+          if (sortSel && sortSel.value !== 'score') sortSel.value = 'score';
+          syncWeightLabels();
+          renderRankings();
+        }
       });
     });
 

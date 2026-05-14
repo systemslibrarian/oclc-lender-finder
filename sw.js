@@ -1,5 +1,5 @@
 /* Lender Finder service worker — offline shell cache */
-const CACHE = 'lender-finder-v29';
+const CACHE = 'lender-finder-v30';
 const SHELL = [
   './',
   './index.html',
