@@ -82,6 +82,7 @@ MEDICAL_MARKERS = (
     "hospital",
     "veterinary medicine",
     "health center",
+    "upmc",
 )
 
 # Museums and art galleries.
@@ -350,6 +351,7 @@ SPECIAL_MARKERS = (
     "space telescope science",
     "telescope science",
     "policy institute",
+    "humanities center",
 )
 
 

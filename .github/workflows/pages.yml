@@ -31,7 +31,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html app.js styles.css sw.js manifest.webmanifest \
-             lenders-directory.json lvis-policies.json film-policies.json flin-policies.json tests.html _site/
+             lenders-directory.json lvis-policies.json film-policies.json flin-policies.json lyra-policies.json tests.html _site/
           # Optional: include the CSV template if present
           [ -f directory-template.csv ] && cp directory-template.csv _site/ || true
 

@@ -26,6 +26,7 @@
   const lvisPolicies = new Map();
   const filmPolicies = new Map();
   const flinPolicies = new Map();
+  const lyraPolicies = new Map();
   const activeFilters = { type: new Set(), state: new Set(), hist: new Set(), group: new Set() };
   const symbolGroups = new Map();
   // Whitelist of group affiliations shown in the facet UI. Other tags (e.g. ARL,
@@ -279,6 +280,7 @@
     mergePolicies(lvisPolicies, 'LVIS');
     mergePolicies(filmPolicies, 'FILM');
     mergePolicies(flinPolicies, 'FLIN');
+    mergePolicies(lyraPolicies, 'LYRA');
     return Array.from(map.values());
   }
 
@@ -294,6 +296,7 @@
     lvisPolicies.forEach((_, sym) => add(sym, 'LVIS'));
     filmPolicies.forEach((_, sym) => add(sym, 'FILM'));
     flinPolicies.forEach((_, sym) => add(sym, 'FLIN'));
+    lyraPolicies.forEach((_, sym) => add(sym, 'LYRA'));
   }
 
   function haversineKm(lat1, lng1, lat2, lng2) {
@@ -566,6 +569,18 @@
       Object.keys(libs).forEach(sym => flinPolicies.set(sym, libs[sym]));
     } catch (e) {
       console.warn('Could not load FLIN policies:', e);
+    }
+  }
+
+  async function loadLyraPolicies() {
+    try {
+      const r = await fetch('lyra-policies.json');
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const data = await r.json();
+      const libs = data.libraries || {};
+      Object.keys(libs).forEach(sym => lyraPolicies.set(sym, libs[sym]));
+    } catch (e) {
+      console.warn('Could not load LYRA policies:', e);
     }
   }
 
@@ -2679,7 +2694,7 @@
 
     switchTab(activeTab);
 
-    await Promise.all([loadBundledDirectory(), loadLvisPolicies(), loadFilmPolicies(), loadFlinPolicies()]);
+    await Promise.all([loadBundledDirectory(), loadLvisPolicies(), loadFilmPolicies(), loadFlinPolicies(), loadLyraPolicies()]);
     rebuildSymbolGroups();
     buildDirFacetOptions();
 
