@@ -1286,6 +1286,20 @@ select#sort-by, select#dir-sort-by {
 }
 .score.high { background: var(--bg-success); color: var(--text-success); }
 .score.med { background: var(--bg-warning); color: var(--text-warning); }
+
+/* Audit tier badges */
+.audit-tier { font-weight: 600; }
+.badge-top    { background: var(--bg-success); color: var(--text-success); }
+.badge-strong { background: var(--bg-info);    color: var(--text-info); }
+.badge-weak   { background: var(--bg-warning); color: var(--text-warning); }
+.badge-unused { background: var(--bg-tertiary); color: var(--text-tertiary); }
+.audit-card[data-tier="weak"]   { border-left: 3px solid var(--text-warning); }
+.audit-card[data-tier="unused"] { border-left: 3px solid var(--border-strong); }
+.audit-policy {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
 @keyframes score-pulse {
   0% { transform: scale(1); }
   40% { transform: scale(1.08); }

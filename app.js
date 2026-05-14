@@ -7,12 +7,14 @@
   const UI_KEY = 'lenderFinder.ui.v1';
   const NOTES_KEY = 'lenderFinder.notes.v1';
   const SAVED_GROUPS_KEY = 'lenderFinder.savedGroups.v1';
+  const AUDIT_KEY = 'lenderFinder.audit.v1';
 
   let months = [];
   let bundledDirectory = [];
   let importedDirectory = [];
   let notes = {};
   let savedGroups = [];
+  let auditHoldings = [];          // Symbols pasted/uploaded for Audit
   const notesExpanded = new Set();
   let homeState = 'FL';
   let homeLat = 30.4383;
@@ -358,6 +360,7 @@
       localStorage.setItem(UI_KEY, JSON.stringify({ activeTab }));
       localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
       localStorage.setItem(SAVED_GROUPS_KEY, JSON.stringify(savedGroups));
+      localStorage.setItem(AUDIT_KEY, JSON.stringify(auditHoldings));
     } catch (e) {
       console.warn('localStorage save failed:', e);
     }
@@ -400,6 +403,11 @@
       if (g) {
         const parsed = JSON.parse(g);
         if (Array.isArray(parsed)) savedGroups = parsed;
+      }
+      const a = localStorage.getItem(AUDIT_KEY);
+      if (a) {
+        const parsed = JSON.parse(a);
+        if (Array.isArray(parsed)) auditHoldings = parsed.filter(s => typeof s === 'string');
       }
     } catch (e) {
       console.warn('localStorage load failed:', e);
@@ -2259,10 +2267,150 @@
     });
     document.getElementById('rankings-view').hidden = name !== 'rankings';
     document.getElementById('discover-view').hidden = name !== 'discover';
-    renderProcessPanel(name);
+    const auditView = document.getElementById('audit-view');
+    if (auditView) auditView.hidden = name !== 'audit';
+    if (name === 'rankings' || name === 'discover') renderProcessPanel(name);
+    if (name === 'audit') renderAudit();
     saveData();
     // Re-clamp facets now that the newly-shown panel has a layout.
     clampAllFacets();
+  }
+
+  /* ---------- Audit tab ---------- */
+
+  function parseAuditInput(text) {
+    if (!text) return [];
+    const seen = new Set();
+    const out = [];
+    text.split(/[\s,;]+/).forEach(t => {
+      const sym = t.trim().toUpperCase();
+      if (!sym || seen.has(sym)) return;
+      seen.add(sym);
+      out.push(sym);
+    });
+    return out;
+  }
+
+  function auditTierForScore(score, inReport) {
+    if (!inReport) return 'unused';
+    if (score >= 70) return 'top';
+    if (score >= 50) return 'strong';
+    return 'weak';
+  }
+
+  const TIER_META = {
+    top:    { label: 'Top',    badge: 'badge-top'    },
+    strong: { label: 'Strong', badge: 'badge-strong' },
+    weak:   { label: 'Weak',   badge: 'badge-weak'   },
+    unused: { label: 'Unused', badge: 'badge-unused' }
+  };
+
+  function renderAudit() {
+    const ta = document.getElementById('audit-input');
+    if (ta && ta.value !== auditHoldings.join(', ')) ta.value = auditHoldings.join(', ');
+    const countEl = document.getElementById('audit-count');
+    if (countEl) countEl.textContent = auditHoldings.length === 1 ? '1 symbol' : `${auditHoldings.length} symbols`;
+
+    const merged = mergeMonths();
+    const reportBySym = new Map(merged.map(l => [l.symbol, l]));
+    const dir = getMergedDirectory();
+    const dirBySym = new Map(dir.map(l => [l.symbol, l]));
+
+    const rows = auditHoldings.map(sym => {
+      const r = reportBySym.get(sym);
+      const d = dirBySym.get(sym);
+      const inReport = !!r;
+      const score = inReport ? totalScore(r) : 0;
+      const subs = inReport ? subscores(r) : null;
+      const tier = auditTierForScore(score, inReport);
+      return {
+        symbol: sym,
+        name: (r && r.name) || (d && d.name) || sym,
+        type: (r && r.type) || (d && d.type) || '—',
+        state: (r && r.state) || (d && d.state) || '—',
+        groups: (d && d.groups) || [],
+        loansDays: d && typeof d.loansDaysToRespond === 'number' ? d.loansDaysToRespond : null,
+        copiesDays: d && typeof d.copiesDaysToRespond === 'number' ? d.copiesDaysToRespond : null,
+        requested: r ? r.requested : 0,
+        filled: r ? r.filled : 0,
+        avgHours: r ? r.avgHours : 0,
+        monthsPresent: r ? r.monthsPresent : 0,
+        monthsSpan: r ? r.monthsSpan : (months.length || 0),
+        score, subs, tier, inReport
+      };
+    });
+
+    const counts = { top: 0, strong: 0, weak: 0, unused: 0 };
+    rows.forEach(r => counts[r.tier]++);
+    document.getElementById('audit-total').textContent = rows.length;
+    document.getElementById('audit-top').textContent = counts.top;
+    document.getElementById('audit-strong').textContent = counts.strong;
+    document.getElementById('audit-weak').textContent = counts.weak;
+    document.getElementById('audit-unused').textContent = counts.unused;
+
+    const sortSel = document.getElementById('audit-sort-by');
+    const sortBy = (sortSel && sortSel.value) || 'score';
+    const tierOrder = { top: 0, strong: 1, weak: 2, unused: 3 };
+    const sortFns = {
+      score: (a, b) => b.score - a.score,
+      tier:  (a, b) => tierOrder[a.tier] - tierOrder[b.tier] || b.score - a.score,
+      name:  (a, b) => a.name.localeCompare(b.name),
+      filled:(a, b) => b.filled - a.filled,
+      fill:  (a, b) => {
+        const fa = a.requested > 0 ? a.filled / a.requested : -1;
+        const fb = b.requested > 0 ? b.filled / b.requested : -1;
+        return fb - fa;
+      },
+      speed: (a, b) => (a.filled > 0 ? a.avgHours : 1e9) - (b.filled > 0 ? b.avgHours : 1e9)
+    };
+    rows.sort(sortFns[sortBy] || sortFns.score);
+
+    const list = document.getElementById('audit-list');
+    if (rows.length === 0) {
+      list.innerHTML = `<div class="empty-state">
+        <strong>Paste your custom holdings group to audit it</strong>
+        Enter OCLC symbols on the left and click <em>Audit holdings</em>. Each member gets bucketed by how it has performed for you in the loaded Borrower reports.
+      </div>`;
+      return;
+    }
+    list.innerHTML = rows.map(renderAuditCard).join('');
+  }
+
+  function renderAuditCard(r) {
+    const meta = TIER_META[r.tier];
+    const fr = r.requested > 0 ? Math.min(100, (r.filled / r.requested) * 100) : null;
+    const days = r.avgHours > 0 ? r.avgHours / 24 : null;
+    const groupBadges = r.groups.map(g => `<span class="badge">${escapeHtml(g)}</span>`).join('');
+    const policy = (typeof r.loansDays === 'number' || typeof r.copiesDays === 'number')
+      ? `<div class="audit-policy">OCLC stated: loans ${typeof r.loansDays === 'number' ? r.loansDays + 'd' : '—'} · copies ${typeof r.copiesDays === 'number' ? r.copiesDays + 'd' : '—'}</div>`
+      : '';
+    const scoreCell = r.inReport
+      ? `<span class="score ${r.score >= 70 ? 'high' : r.score >= 50 ? 'med' : ''}">${r.score}</span>`
+      : '<span class="score" style="opacity:0.5;">—</span>';
+    return `
+      <div class="card audit-card" role="listitem" data-tier="${r.tier}">
+        <div class="card-top">
+          <div class="card-left">
+            <div>
+              <p class="card-name">${escapeHtml(r.name)}</p>
+              <p class="card-sub">${escapeHtml(r.symbol)} · ${escapeHtml(r.type)} · ${escapeHtml(r.state)}</p>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+            <span class="badge audit-tier ${meta.badge}">${meta.label}</span>
+            ${scoreCell}
+          </div>
+        </div>
+        <div class="card-stats">
+          <div class="stat"><span class="stat-label">Requested</span><span class="stat-val ${r.requested === 0 ? 'muted' : ''}">${r.requested || '—'}</span></div>
+          <div class="stat"><span class="stat-label">Filled</span><span class="stat-val ${r.filled === 0 ? 'muted' : ''}">${r.filled || '—'}</span></div>
+          <div class="stat"><span class="stat-label">Fill rate</span><span class="stat-val ${fr == null ? 'muted' : ''}">${fr == null ? '—' : fr.toFixed(0) + '%'}</span></div>
+          <div class="stat"><span class="stat-label">Avg days</span><span class="stat-val ${days == null ? 'muted' : ''}">${days == null ? '—' : days.toFixed(1)}</span></div>
+          <div class="stat"><span class="stat-label">Months</span><span class="stat-val ${r.monthsSpan === 0 ? 'muted' : ''}">${r.monthsSpan > 0 ? `${r.monthsPresent}/${r.monthsSpan}` : '—'}</span></div>
+        </div>
+        ${groupBadges ? `<div class="badges">${groupBadges}</div>` : ''}
+        ${policy}
+      </div>`;
   }
 
   /* ---------- Modal & help ---------- */
@@ -2619,11 +2767,42 @@
       renderDiscover();
     });
 
+    /* Audit tab */
+    const auditTa = document.getElementById('audit-input');
+    if (auditTa) {
+      // Live-update counter as the user types.
+      auditTa.addEventListener('input', () => {
+        const parsed = parseAuditInput(auditTa.value);
+        const c = document.getElementById('audit-count');
+        if (c) c.textContent = parsed.length === 1 ? '1 symbol' : `${parsed.length} symbols`;
+      });
+    }
+    const auditRun = document.getElementById('audit-run');
+    if (auditRun) {
+      auditRun.addEventListener('click', () => {
+        auditHoldings = parseAuditInput(auditTa ? auditTa.value : '');
+        renderAudit();
+        saveData();
+      });
+    }
+    const auditClear = document.getElementById('audit-clear');
+    if (auditClear) {
+      auditClear.addEventListener('click', () => {
+        auditHoldings = [];
+        if (auditTa) auditTa.value = '';
+        renderAudit();
+        saveData();
+      });
+    }
+    const auditSort = document.getElementById('audit-sort-by');
+    if (auditSort) auditSort.addEventListener('change', renderAudit);
+
     /* Filter toggle (mobile) */
     document.querySelectorAll('[data-filter-toggle]').forEach(btn => {
       btn.addEventListener('click', () => {
         const which = btn.dataset.filterToggle;
-        const facets = document.getElementById(which === 'rankings' ? 'rankings-facets' : 'discover-facets');
+        const facets = document.getElementById(`${which}-facets`);
+        if (!facets) return;
         const open = facets.classList.toggle('open');
         btn.setAttribute('aria-expanded', open);
       });
@@ -2677,6 +2856,7 @@
 
       if (e.key === '1') { switchTab('rankings'); e.preventDefault(); }
       else if (e.key === '2') { switchTab('discover'); e.preventDefault(); }
+      else if (e.key === '3') { switchTab('audit'); e.preventDefault(); }
       else if (e.key === '/') {
         if (activeTab !== 'discover') switchTab('discover');
         const inp = document.getElementById('dir-search');
@@ -2746,6 +2926,7 @@
     renderSavedGroups();
     renderRankings();
     renderDiscover();
+    if (activeTab === 'audit') renderAudit();
   }
 
   const inTestMode = typeof window !== 'undefined' && window.location && window.location.search.indexOf('test=1') >= 0;
