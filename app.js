@@ -253,6 +253,12 @@
           if (!existing.groups.includes(groupCode)) existing.groups.push(groupCode);
           if (existing.lat == null && typeof entry.lat === 'number') existing.lat = entry.lat;
           if (existing.lng == null && typeof entry.lng === 'number') existing.lng = entry.lng;
+          if (existing.copiesDaysToRespond == null && typeof entry.copiesDaysToRespond === 'number') {
+            existing.copiesDaysToRespond = entry.copiesDaysToRespond;
+          }
+          if (existing.loansDaysToRespond == null && typeof entry.loansDaysToRespond === 'number') {
+            existing.loansDaysToRespond = entry.loansDaysToRespond;
+          }
         } else {
           map.set(sym, {
             symbol: sym,
@@ -262,6 +268,8 @@
             groups: [groupCode],
             lat: typeof entry.lat === 'number' ? entry.lat : null,
             lng: typeof entry.lng === 'number' ? entry.lng : null,
+            copiesDaysToRespond: typeof entry.copiesDaysToRespond === 'number' ? entry.copiesDaysToRespond : null,
+            loansDaysToRespond: typeof entry.loansDaysToRespond === 'number' ? entry.loansDaysToRespond : null,
             _imported: false,
             _policyOnly: true
           });
@@ -1741,7 +1749,9 @@
     const sortFns = {
       distance: (a, b) => (a._distance ?? 1e9) - (b._distance ?? 1e9),
       name: (a, b) => a.name.localeCompare(b.name),
-      state: (a, b) => (a.state || '').localeCompare(b.state || '')
+      state: (a, b) => (a.state || '').localeCompare(b.state || ''),
+      loans: (a, b) => (a.loansDaysToRespond ?? 1e9) - (b.loansDaysToRespond ?? 1e9),
+      copies: (a, b) => (a.copiesDaysToRespond ?? 1e9) - (b.copiesDaysToRespond ?? 1e9)
     };
     filtered.sort(sortFns[sortBy] || sortFns.distance);
     lastFilteredDir = filtered;
@@ -1806,6 +1816,9 @@
     const distanceText = l._distanceMiles != null
       ? `${Math.round(l._distanceMiles)} mi`
       : '—';
+    const fmtDays = d => (typeof d === 'number' ? `${d} day${d === 1 ? '' : 's'}` : '—');
+    const loansDaysText = fmtDays(l.loansDaysToRespond);
+    const copiesDaysText = fmtDays(l.copiesDaysToRespond);
     const importedBadge = l._imported ? '<span class="badge" style="background:var(--bg-info); color:var(--text-info);">Imported</span>' : '';
     const borrowedBadge = alreadyBorrowed ? '<span class="badge every-month">Borrowed before</span>' : '<span class="badge local">New candidate</span>';
     const noteOpen = notesExpanded.has(l.symbol);
@@ -1825,6 +1838,8 @@
         </div>
         <div class="discover-card-stats">
           <div class="stat"><span class="stat-label">Distance</span><span class="stat-val ${l._distanceMiles == null ? 'muted' : ''}">${distanceText}</span></div>
+          <div class="stat" title="OCLC stated turnaround for loan requests"><span class="stat-label">Loans</span><span class="stat-val ${l.loansDaysToRespond == null ? 'muted' : ''}">${loansDaysText}</span></div>
+          <div class="stat" title="OCLC stated turnaround for copy requests"><span class="stat-label">Copies</span><span class="stat-val ${l.copiesDaysToRespond == null ? 'muted' : ''}">${copiesDaysText}</span></div>
           <div class="stat"><span class="stat-label">Groups</span><span class="stat-val ${(l.groups || []).length === 0 ? 'muted' : ''}">${(l.groups || []).length || '—'}</span></div>
           <div class="stat"><span class="stat-label">Status</span><span class="stat-val">${alreadyBorrowed ? 'Known' : 'New'}</span></div>
         </div>
