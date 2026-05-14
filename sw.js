@@ -1,5 +1,5 @@
 /* Lender Finder service worker — offline shell cache */
-const CACHE = 'lender-finder-v28';
+const CACHE = 'lender-finder-v29';
 const SHELL = [
   './',
   './index.html',
@@ -10,6 +10,7 @@ const SHELL = [
   './film-policies.json',
   './flin-policies.json',
   './lyra-policies.json',
+  './pla-policies.json',
   './manifest.webmanifest'
 ];
 
