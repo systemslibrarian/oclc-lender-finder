@@ -208,20 +208,20 @@
       <label class="inline-field" style="margin-top:8px;"><span>Latitude</span><input type="text" id="dir-home-lat" style="width:90px;"></label>
       <label class="inline-field" style="margin-top:8px;"><span>Longitude</span><input type="text" id="dir-home-lng" style="width:90px;"></label>
       <button class="link-btn" id="dir-use-location" type="button">📍 Use my location</button>
-      <p class="hint">Powers the distance filter and same-state badge below. Shared with the Rankings tab.</p>
+      <p class="hint">Setting Home symbol hides your own institution from the candidate list. Lat/long power the distance filter and the same-state badge.</p>
     </section>
 
     <section class="facet-group">
       <h3><span class="step-num" aria-hidden="true">2</span>Narrow the list</h3>
-      <label style="display:block; font-size:13px; margin-bottom:4px;">Search name or symbol</label>
+      <label for="dir-search" style="display:block; font-size:13px; margin-bottom:4px;">Search name or symbol</label>
       <div class="search-wrap">
         <input type="text" id="dir-search" placeholder="e.g. Florida, UCLA, FUG" autocomplete="off">
         <button type="button" class="search-clear" id="dir-search-clear" aria-label="Clear search" hidden>×</button>
       </div>
       <label class="facet" style="margin-top:10px;"><span><input type="checkbox" id="show-only-new" checked>Only libraries I haven't borrowed from</span></label>
       <div class="weight-row" style="margin-top:10px;">
-        <div class="weight-label"><span>Distance within</span><span id="dist-out">Any</span></div>
-        <input type="range" min="0" max="3000" value="0" step="50" id="max-dist" aria-label="Maximum distance in miles">
+        <div class="weight-label"><span id="dist-label">Distance within</span><span id="dist-out" aria-live="polite">Any</span></div>
+        <input type="range" min="0" max="3000" value="0" step="50" id="max-dist" aria-labelledby="dist-label dist-out">
       </div>
       <p class="hint">Set distance to 0 to disable. Needs lat/long in directory entries.</p>
     </section>

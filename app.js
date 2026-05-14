@@ -1158,7 +1158,7 @@
     const wrap = document.getElementById('rankings-chips');
     const chips = [];
     activeFilters.type.forEach(t => chips.push({ label: `Type: ${t}`, remove: () => activeFilters.type.delete(t) }));
-    activeFilters.state.forEach(s => chips.push({ label: `State: ${s}`, remove: () => activeFilters.state.delete(s) }));
+    activeFilters.state.forEach(s => chips.push({ label: `State: ${stateLabel(s)}`, remove: () => activeFilters.state.delete(s) }));
     activeFilters.group.forEach(g => chips.push({ label: `Group: ${g}`, remove: () => activeFilters.group.delete(g) }));
     activeFilters.hist.forEach(h => chips.push({ label: histLabels[h] || h, remove: () => activeFilters.hist.delete(h) }));
     renderChips(wrap, chips, () => {
@@ -1176,7 +1176,7 @@
     const wrap = document.getElementById('discover-chips');
     const chips = [];
     dirFilters.type.forEach(t => chips.push({ label: `Type: ${t}`, remove: () => dirFilters.type.delete(t) }));
-    dirFilters.state.forEach(s => chips.push({ label: `State: ${s}`, remove: () => dirFilters.state.delete(s) }));
+    dirFilters.state.forEach(s => chips.push({ label: `State: ${stateLabel(s)}`, remove: () => dirFilters.state.delete(s) }));
     dirFilters.group.forEach(g => chips.push({ label: `Group: ${g}`, remove: () => dirFilters.group.delete(g) }));
     dirFilters.loanDays.forEach(d => chips.push({ label: `Loans: ${d === '1' ? '1 day' : d + ' days'}`, remove: () => dirFilters.loanDays.delete(d) }));
     if (dirFilters.search) chips.push({ label: `"${dirFilters.search}"`, remove: () => {
