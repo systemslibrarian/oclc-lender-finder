@@ -31,7 +31,7 @@
   const flinPolicies = new Map();
   const lyraPolicies = new Map();
   const plaPolicies = new Map();
-  const activeFilters = { type: new Set(), state: new Set(), hist: new Set(), group: new Set(), onlyHoldings: false };
+  const activeFilters = { type: new Set(), state: new Set(), hist: new Set(), group: new Set(), onlyHoldings: false, scoreSegment: null };
   const symbolGroups = new Map();
   // Whitelist of group affiliations shown in the facet UI. Other tags (e.g. ARL,
   // ASERL, BTAA) stay on the underlying directory data but are filtered out of
@@ -1229,6 +1229,12 @@
     if (activeFilters.hist.has('reliable') && fillRate(l) < 75) return false;
     if (activeFilters.hist.has('consistent') && l.monthsPresent < 3) return false;
     if (activeFilters.onlyHoldings && !holdingsSet.has(l.symbol)) return false;
+    if (activeFilters.scoreSegment) {
+      const s = totalScore(l);
+      if (activeFilters.scoreSegment === 'top'  && s < 70) return false;
+      if (activeFilters.scoreSegment === 'weak' && (s >= 50 || l.filled === 0)) return false;
+      if (activeFilters.scoreSegment === 'borrowed' && l.filled === 0) return false;
+    }
     if (activeFilters.group.size) {
       const lenderGroups = symbolGroups.get(l.symbol);
       if (!lenderGroups) return false;
@@ -1246,9 +1252,18 @@
     const chips = [];
     if (activeFilters.onlyHoldings) chips.push({ label: 'Only my holdings', remove: () => {
       activeFilters.onlyHoldings = false;
+      activeFilters.scoreSegment = null;
       const cb = document.getElementById('only-holdings');
       if (cb) cb.checked = false;
+      const sp = document.getElementById('rankings-audit-summary');
+      if (sp) sp.dataset.unusedShown = '0';
     }});
+    if (activeFilters.scoreSegment) {
+      const segLabels = { borrowed: 'Holdings: borrowed from', top: 'Holdings: top performers', weak: 'Holdings: weak performers' };
+      chips.push({ label: segLabels[activeFilters.scoreSegment] || activeFilters.scoreSegment, remove: () => {
+        activeFilters.scoreSegment = null;
+      }});
+    }
     activeFilters.type.forEach(t => chips.push({ label: `Type: ${t}`, remove: () => activeFilters.type.delete(t) }));
     activeFilters.state.forEach(s => chips.push({ label: `State: ${stateLabel(s)}`, remove: () => activeFilters.state.delete(s) }));
     activeFilters.group.forEach(g => chips.push({ label: `Group: ${g}`, remove: () => activeFilters.group.delete(g) }));
@@ -1259,8 +1274,11 @@
       activeFilters.group.clear();
       activeFilters.hist.clear();
       activeFilters.onlyHoldings = false;
+      activeFilters.scoreSegment = null;
       const ohCb = document.getElementById('only-holdings');
       if (ohCb) ohCb.checked = false;
+      const sp = document.getElementById('rankings-audit-summary');
+      if (sp) sp.dataset.unusedShown = '0';
       resetRankPage();
       rebuildFacetOptions();
       document.querySelectorAll('#rankings-view input[type="checkbox"][data-facet="hist"]').forEach(cb => cb.checked = false);
@@ -1372,6 +1390,7 @@
 
     const auditNudge = document.getElementById('rankings-audit-nudge');
     if (auditNudge) auditNudge.hidden = !(months.length > 0 && auditHoldings.length === 0);
+    renderAuditSummary(merged);
 
     const ohCb = document.getElementById('only-holdings');
     const ohHint = document.getElementById('holdings-facet-hint');
@@ -2440,6 +2459,60 @@
     if (countEl) countEl.textContent = auditHoldings.length === 1 ? '1 symbol' : `${auditHoldings.length} symbols`;
   }
 
+  function renderAuditSummary(mergedArg) {
+    const panel = document.getElementById('rankings-audit-summary');
+    if (!panel) return;
+    if (auditHoldings.length === 0 || months.length === 0) { panel.hidden = true; return; }
+    panel.hidden = false;
+
+    const merged = mergedArg || mergeMonths();
+    const reportBySym = new Map(merged.map(l => [l.symbol, l]));
+
+    let borrowed = 0, top = 0, weak = 0;
+    const unused = [];
+    auditHoldings.forEach(sym => {
+      const l = reportBySym.get(sym);
+      if (l && l.filled > 0) {
+        borrowed++;
+        const s = totalScore(l);
+        if (s >= 70) top++;
+        else if (s < 50) weak++;
+      } else if (!l) {
+        unused.push(sym);
+      } else {
+        // In report but never filled — count as unused for the user's purposes.
+        unused.push(sym);
+      }
+    });
+    const total = auditHoldings.length;
+    const pct = total > 0 ? Math.round((borrowed / total) * 100) : 0;
+
+    document.getElementById('audit-summary-all').textContent = total;
+    document.getElementById('audit-summary-borrowed').textContent = borrowed;
+    document.getElementById('audit-summary-borrowed-pct').textContent = total > 0 ? `(${pct}%)` : '';
+    document.getElementById('audit-summary-top').textContent = top;
+    document.getElementById('audit-summary-weak').textContent = weak;
+    document.getElementById('audit-summary-unused').textContent = unused.length;
+
+    const activeSeg = activeFilters.onlyHoldings
+      ? (activeFilters.scoreSegment || (panel.dataset.unusedShown === '1' ? 'unused' : 'all'))
+      : null;
+    panel.querySelectorAll('.summary-tile').forEach(t => {
+      t.classList.toggle('active', t.dataset.summarySegment === activeSeg);
+    });
+
+    const unusedPanel = document.getElementById('audit-summary-unused-panel');
+    const unusedList = document.getElementById('audit-summary-unused-list');
+    if (panel.dataset.unusedShown === '1' && unused.length > 0) {
+      unusedPanel.hidden = false;
+      const display = unused.slice(0, 50).join(', ');
+      const more = unused.length > 50 ? `, +${unused.length - 50} more` : '';
+      unusedList.textContent = display + more;
+    } else {
+      unusedPanel.hidden = true;
+    }
+  }
+
   /* ---------- Modal & help ---------- */
 
   let lastFocusedBeforeModal = null;
@@ -2697,10 +2770,36 @@
     if (onlyHoldingsCb) {
       onlyHoldingsCb.addEventListener('change', () => {
         activeFilters.onlyHoldings = onlyHoldingsCb.checked;
+        if (!activeFilters.onlyHoldings) activeFilters.scoreSegment = null;
+        const summaryPanel = document.getElementById('rankings-audit-summary');
+        if (summaryPanel) summaryPanel.dataset.unusedShown = '0';
         resetRankPage();
         renderRankings();
       });
     }
+
+    const summaryPanel = document.getElementById('rankings-audit-summary');
+    if (summaryPanel) {
+      summaryPanel.querySelectorAll('.summary-tile').forEach(tile => {
+        tile.addEventListener('click', () => {
+          const seg = tile.dataset.summarySegment;
+          if (seg === 'unused') {
+            activeFilters.onlyHoldings = true;
+            activeFilters.scoreSegment = null;
+            summaryPanel.dataset.unusedShown = '1';
+          } else {
+            activeFilters.onlyHoldings = true;
+            activeFilters.scoreSegment = (seg === 'all') ? null : seg;
+            summaryPanel.dataset.unusedShown = '0';
+          }
+          if (onlyHoldingsCb) onlyHoldingsCb.checked = true;
+          resetRankPage();
+          renderRankings();
+        });
+      });
+    }
+    const editLink = document.getElementById('audit-summary-edit');
+    if (editLink) editLink.addEventListener('click', () => switchTab('audit'));
 
     document.getElementById('sort-by').addEventListener('change', () => { resetRankPage(); renderRankings(); });
     const rankPageSel = document.getElementById('rank-page-size');
@@ -2737,9 +2836,12 @@
       activeFilters.hist.clear();
       activeFilters.group.clear();
       activeFilters.onlyHoldings = false;
+      activeFilters.scoreSegment = null;
       document.querySelectorAll('#rankings-view input[type="checkbox"][data-facet]').forEach(cb => cb.checked = false);
       const ohCb = document.getElementById('only-holdings');
       if (ohCb) ohCb.checked = false;
+      const sp = document.getElementById('rankings-audit-summary');
+      if (sp) sp.dataset.unusedShown = '0';
       selected.clear();
       expanded.clear();
       document.getElementById('export-panel').innerHTML = '';

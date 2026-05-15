@@ -219,6 +219,39 @@
       </div>
       <button class="cross-tab-cta" id="rankings-audit-nudge-btn" type="button">Open Audit →</button>
     </div>
+    <section class="audit-summary" id="rankings-audit-summary" hidden aria-label="Audit of your saved holdings">
+      <header class="summary-head">
+        <h3>Audit of your saved holdings</h3>
+        <button class="link-btn" id="audit-summary-edit" type="button">Edit list →</button>
+      </header>
+      <div class="summary-tiles">
+        <button class="summary-tile" data-summary-segment="all" type="button" title="Show all your holdings in the rankings">
+          <span class="tile-num" id="audit-summary-all">0</span>
+          <span class="tile-label">saved</span>
+        </button>
+        <button class="summary-tile" data-summary-segment="borrowed" type="button" title="Show only holdings you've actually borrowed from">
+          <span class="tile-num tile-good" id="audit-summary-borrowed">0</span>
+          <span class="tile-label">borrowed from <span class="tile-pct" id="audit-summary-borrowed-pct"></span></span>
+        </button>
+        <button class="summary-tile" data-summary-segment="top" type="button" title="Show only top-performing holdings (score ≥ 70)">
+          <span class="tile-num tile-top" id="audit-summary-top">0</span>
+          <span class="tile-label">top performers</span>
+        </button>
+        <button class="summary-tile" data-summary-segment="weak" type="button" title="Show only weak-performing holdings (score &lt; 50, but still used)">
+          <span class="tile-num tile-warn" id="audit-summary-weak">0</span>
+          <span class="tile-label">weak performers</span>
+        </button>
+        <button class="summary-tile" data-summary-segment="unused" type="button" title="List the holdings that never appear in your reports">
+          <span class="tile-num tile-muted" id="audit-summary-unused">0</span>
+          <span class="tile-label">never borrowed</span>
+        </button>
+      </div>
+      <p class="summary-foot">Click a tile to filter rankings to that segment.</p>
+      <div class="summary-unused" id="audit-summary-unused-panel" hidden>
+        <strong>Holdings never borrowed from in your reports:</strong>
+        <p class="summary-unused-list" id="audit-summary-unused-list"></p>
+      </div>
+    </section>
     <div class="toolbar">
       <div class="result-count"><strong id="match-count">0</strong> match · <strong id="sel-count">0</strong> selected</div>
       <div class="toolbar-actions">
