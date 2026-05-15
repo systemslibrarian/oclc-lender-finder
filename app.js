@@ -15,6 +15,7 @@
   let notes = {};
   let savedGroups = [];
   let auditHoldings = [];          // Symbols pasted/uploaded for Audit
+  let holdingsSet = new Set();     // Set view of auditHoldings for fast membership checks
   const notesExpanded = new Set();
   let homeState = 'FL';
   let homeLat = 30.4383;
@@ -30,7 +31,7 @@
   const flinPolicies = new Map();
   const lyraPolicies = new Map();
   const plaPolicies = new Map();
-  const activeFilters = { type: new Set(), state: new Set(), hist: new Set(), group: new Set() };
+  const activeFilters = { type: new Set(), state: new Set(), hist: new Set(), group: new Set(), onlyHoldings: false };
   const symbolGroups = new Map();
   // Whitelist of group affiliations shown in the facet UI. Other tags (e.g. ARL,
   // ASERL, BTAA) stay on the underlying directory data but are filtered out of
@@ -1227,6 +1228,7 @@
     if (activeFilters.hist.has('fast') && (l.filled === 0 || avgDays(l) >= 3)) return false;
     if (activeFilters.hist.has('reliable') && fillRate(l) < 75) return false;
     if (activeFilters.hist.has('consistent') && l.monthsPresent < 3) return false;
+    if (activeFilters.onlyHoldings && !holdingsSet.has(l.symbol)) return false;
     if (activeFilters.group.size) {
       const lenderGroups = symbolGroups.get(l.symbol);
       if (!lenderGroups) return false;
@@ -1242,6 +1244,11 @@
   function renderRankingsChips() {
     const wrap = document.getElementById('rankings-chips');
     const chips = [];
+    if (activeFilters.onlyHoldings) chips.push({ label: 'Only my holdings', remove: () => {
+      activeFilters.onlyHoldings = false;
+      const cb = document.getElementById('only-holdings');
+      if (cb) cb.checked = false;
+    }});
     activeFilters.type.forEach(t => chips.push({ label: `Type: ${t}`, remove: () => activeFilters.type.delete(t) }));
     activeFilters.state.forEach(s => chips.push({ label: `State: ${stateLabel(s)}`, remove: () => activeFilters.state.delete(s) }));
     activeFilters.group.forEach(g => chips.push({ label: `Group: ${g}`, remove: () => activeFilters.group.delete(g) }));
@@ -1251,6 +1258,9 @@
       activeFilters.state.clear();
       activeFilters.group.clear();
       activeFilters.hist.clear();
+      activeFilters.onlyHoldings = false;
+      const ohCb = document.getElementById('only-holdings');
+      if (ohCb) ohCb.checked = false;
       resetRankPage();
       rebuildFacetOptions();
       document.querySelectorAll('#rankings-view input[type="checkbox"][data-facet="hist"]').forEach(cb => cb.checked = false);
@@ -1340,6 +1350,7 @@
     saveData();
     const merged = mergeMonths();
     const sortBy = document.getElementById('sort-by').value;
+    holdingsSet = new Set(auditHoldings);
     let filtered = merged.filter(passesFilter);
     filtered.forEach(l => { l._score = totalScore(l); l._subs = subscores(l); });
     const sortFns = {
@@ -1361,6 +1372,22 @@
 
     const auditNudge = document.getElementById('rankings-audit-nudge');
     if (auditNudge) auditNudge.hidden = !(months.length > 0 && auditHoldings.length === 0);
+
+    const ohCb = document.getElementById('only-holdings');
+    const ohHint = document.getElementById('holdings-facet-hint');
+    const hasHoldings = auditHoldings.length > 0;
+    if (ohCb) {
+      ohCb.disabled = !hasHoldings;
+      if (!hasHoldings && ohCb.checked) {
+        ohCb.checked = false;
+        activeFilters.onlyHoldings = false;
+      }
+    }
+    if (ohHint) {
+      ohHint.textContent = hasHoldings
+        ? `${auditHoldings.length} symbol${auditHoldings.length === 1 ? '' : 's'} saved. Combine with the History filters to see which you've borrowed from.`
+        : 'Save your current holdings on the Audit tab to enable.';
+    }
 
     const periodsLabel = months.map(m => m.period).filter(p => p).join(' + ') || 'no data';
     document.getElementById('meta').textContent =
@@ -1511,6 +1538,7 @@
           <div class="stat"><span class="stat-label">Months</span><span class="stat-val">${l.monthsPresent}/${l.monthsSpan}</span></div>
         </div>
         <div class="badges">
+          ${holdingsSet.has(l.symbol) ? '<span class="badge in-holdings" title="Part of your saved holdings group">★ In holdings</span>' : ''}
           ${l.state === homeState ? '<span class="badge local">Same state</span>' : ''}
           ${l.monthsPresent === l.monthsSpan && l.monthsSpan > 1 ? '<span class="badge every-month">Every month</span>' : ''}
           ${note ? '<span class="badge note-badge">📝 Note</span>' : ''}
@@ -2665,6 +2693,15 @@
       });
     });
 
+    const onlyHoldingsCb = document.getElementById('only-holdings');
+    if (onlyHoldingsCb) {
+      onlyHoldingsCb.addEventListener('change', () => {
+        activeFilters.onlyHoldings = onlyHoldingsCb.checked;
+        resetRankPage();
+        renderRankings();
+      });
+    }
+
     document.getElementById('sort-by').addEventListener('change', () => { resetRankPage(); renderRankings(); });
     const rankPageSel = document.getElementById('rank-page-size');
     if (rankPageSel) {
@@ -2699,7 +2736,10 @@
       activeFilters.state.clear();
       activeFilters.hist.clear();
       activeFilters.group.clear();
+      activeFilters.onlyHoldings = false;
       document.querySelectorAll('#rankings-view input[type="checkbox"][data-facet]').forEach(cb => cb.checked = false);
+      const ohCb = document.getElementById('only-holdings');
+      if (ohCb) ohCb.checked = false;
       selected.clear();
       expanded.clear();
       document.getElementById('export-panel').innerHTML = '';

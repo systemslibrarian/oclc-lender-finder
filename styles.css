@@ -1592,6 +1592,11 @@ select#sort-by, select#dir-sort-by {
 }
 .badge.local { background: var(--bg-success); color: var(--text-success); }
 .badge.every-month { background: var(--bg-info); color: var(--text-info); }
+.badge.in-holdings {
+  background: var(--bg-warning);
+  color: var(--text-warning);
+  font-weight: 600;
+}
 
 .explain-btn {
   margin-left: auto;
