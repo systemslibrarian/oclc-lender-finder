@@ -31,7 +31,7 @@
   const flinPolicies = new Map();
   const lyraPolicies = new Map();
   const plaPolicies = new Map();
-  const activeFilters = { type: new Set(), state: new Set(), hist: new Set(), group: new Set(), onlyHoldings: false, scoreSegment: null };
+  const activeFilters = { type: new Set(), state: new Set(), hist: new Set(), group: new Set(), onlyHoldings: false };
   const symbolGroups = new Map();
   // Whitelist of group affiliations shown in the facet UI. Other tags (e.g. ARL,
   // ASERL, BTAA) stay on the underlying directory data but are filtered out of
@@ -1229,12 +1229,6 @@
     if (activeFilters.hist.has('reliable') && fillRate(l) < 75) return false;
     if (activeFilters.hist.has('consistent') && l.monthsPresent < 3) return false;
     if (activeFilters.onlyHoldings && !holdingsSet.has(l.symbol)) return false;
-    if (activeFilters.scoreSegment) {
-      const s = totalScore(l);
-      if (activeFilters.scoreSegment === 'top'  && s < 70) return false;
-      if (activeFilters.scoreSegment === 'weak' && (s >= 50 || l.filled === 0)) return false;
-      if (activeFilters.scoreSegment === 'borrowed' && l.filled === 0) return false;
-    }
     if (activeFilters.group.size) {
       const lenderGroups = symbolGroups.get(l.symbol);
       if (!lenderGroups) return false;
@@ -1252,18 +1246,9 @@
     const chips = [];
     if (activeFilters.onlyHoldings) chips.push({ label: 'Only my holdings', remove: () => {
       activeFilters.onlyHoldings = false;
-      activeFilters.scoreSegment = null;
       const cb = document.getElementById('only-holdings');
       if (cb) cb.checked = false;
-      const sp = document.getElementById('rankings-audit-summary');
-      if (sp) sp.dataset.unusedShown = '0';
     }});
-    if (activeFilters.scoreSegment) {
-      const segLabels = { borrowed: 'Holdings: borrowed from', top: 'Holdings: top performers', weak: 'Holdings: weak performers' };
-      chips.push({ label: segLabels[activeFilters.scoreSegment] || activeFilters.scoreSegment, remove: () => {
-        activeFilters.scoreSegment = null;
-      }});
-    }
     activeFilters.type.forEach(t => chips.push({ label: `Type: ${t}`, remove: () => activeFilters.type.delete(t) }));
     activeFilters.state.forEach(s => chips.push({ label: `State: ${stateLabel(s)}`, remove: () => activeFilters.state.delete(s) }));
     activeFilters.group.forEach(g => chips.push({ label: `Group: ${g}`, remove: () => activeFilters.group.delete(g) }));
@@ -1274,11 +1259,8 @@
       activeFilters.group.clear();
       activeFilters.hist.clear();
       activeFilters.onlyHoldings = false;
-      activeFilters.scoreSegment = null;
       const ohCb = document.getElementById('only-holdings');
       if (ohCb) ohCb.checked = false;
-      const sp = document.getElementById('rankings-audit-summary');
-      if (sp) sp.dataset.unusedShown = '0';
       resetRankPage();
       rebuildFacetOptions();
       document.querySelectorAll('#rankings-view input[type="checkbox"][data-facet="hist"]').forEach(cb => cb.checked = false);
@@ -1390,7 +1372,6 @@
 
     const auditNudge = document.getElementById('rankings-audit-nudge');
     if (auditNudge) auditNudge.hidden = !(months.length > 0 && auditHoldings.length === 0);
-    renderAuditSummary(merged);
 
     const ohCb = document.getElementById('only-holdings');
     const ohHint = document.getElementById('holdings-facet-hint');
@@ -2457,60 +2438,85 @@
     if (ta && ta.value !== auditHoldings.join(', ')) ta.value = auditHoldings.join(', ');
     const countEl = document.getElementById('audit-count');
     if (countEl) countEl.textContent = auditHoldings.length === 1 ? '1 symbol' : `${auditHoldings.length} symbols`;
+    renderAuditLiveResults(parseAuditInput(ta ? ta.value : ''));
   }
 
-  function renderAuditSummary(mergedArg) {
-    const panel = document.getElementById('rankings-audit-summary');
-    if (!panel) return;
-    if (auditHoldings.length === 0 || months.length === 0) { panel.hidden = true; return; }
-    panel.hidden = false;
+  function renderAuditLiveResults(symbolsArg) {
+    const list = document.getElementById('audit-results-list');
+    const summaryLine = document.getElementById('audit-summary-line');
+    if (!list || !summaryLine) return;
 
-    const merged = mergedArg || mergeMonths();
-    const reportBySym = new Map(merged.map(l => [l.symbol, l]));
+    const ta = document.getElementById('audit-input');
+    const symbols = symbolsArg != null
+      ? symbolsArg
+      : parseAuditInput(ta ? ta.value : auditHoldings.join(', '));
 
-    let borrowed = 0, top = 0, weak = 0;
-    const unused = [];
-    auditHoldings.forEach(sym => {
-      const l = reportBySym.get(sym);
-      if (l && l.filled > 0) {
-        borrowed++;
-        const s = totalScore(l);
-        if (s >= 70) top++;
-        else if (s < 50) weak++;
-      } else if (!l) {
-        unused.push(sym);
-      } else {
-        // In report but never filled — count as unused for the user's purposes.
-        unused.push(sym);
-      }
-    });
-    const total = auditHoldings.length;
-    const pct = total > 0 ? Math.round((borrowed / total) * 100) : 0;
-
-    document.getElementById('audit-summary-all').textContent = total;
-    document.getElementById('audit-summary-borrowed').textContent = borrowed;
-    document.getElementById('audit-summary-borrowed-pct').textContent = total > 0 ? `(${pct}%)` : '';
-    document.getElementById('audit-summary-top').textContent = top;
-    document.getElementById('audit-summary-weak').textContent = weak;
-    document.getElementById('audit-summary-unused').textContent = unused.length;
-
-    const activeSeg = activeFilters.onlyHoldings
-      ? (activeFilters.scoreSegment || (panel.dataset.unusedShown === '1' ? 'unused' : 'all'))
-      : null;
-    panel.querySelectorAll('.summary-tile').forEach(t => {
-      t.classList.toggle('active', t.dataset.summarySegment === activeSeg);
-    });
-
-    const unusedPanel = document.getElementById('audit-summary-unused-panel');
-    const unusedList = document.getElementById('audit-summary-unused-list');
-    if (panel.dataset.unusedShown === '1' && unused.length > 0) {
-      unusedPanel.hidden = false;
-      const display = unused.slice(0, 50).join(', ');
-      const more = unused.length > 50 ? `, +${unused.length - 50} more` : '';
-      unusedList.textContent = display + more;
-    } else {
-      unusedPanel.hidden = true;
+    if (symbols.length === 0) {
+      list.innerHTML = '';
+      summaryLine.hidden = true;
+      summaryLine.innerHTML = '';
+      return;
     }
+    if (months.length === 0) {
+      list.innerHTML = `<div class="audit-results-empty">Load a Borrower report on Rankings to see how each symbol has performed.</div>`;
+      summaryLine.hidden = true;
+      summaryLine.innerHTML = '';
+      return;
+    }
+
+    const merged = mergeMonths();
+    const reportBySym = new Map(merged.map(l => [l.symbol, l]));
+    const dir = getMergedDirectory();
+    const dirBySym = new Map(dir.map(l => [l.symbol, l]));
+
+    let borrowed = 0, top = 0, weak = 0, unused = 0;
+    const rows = symbols.map(sym => {
+      const r = reportBySym.get(sym);
+      const d = dirBySym.get(sym);
+      const inReport = !!r;
+      const filled = inReport ? r.filled : 0;
+      const requested = inReport ? r.requested : 0;
+      const score = inReport ? totalScore(r) : 0;
+      const fr = requested > 0 ? Math.round((filled / requested) * 100) : null;
+      const days = inReport && r.avgHours > 0 ? r.avgHours / 24 : null;
+      let tier;
+      if (!inReport || filled === 0) { tier = 'unused'; unused++; }
+      else if (score >= 70) { tier = 'top'; top++; borrowed++; }
+      else if (score >= 50) { tier = 'strong'; borrowed++; }
+      else { tier = 'weak'; weak++; borrowed++; }
+      return {
+        sym,
+        name: (r && r.name) || (d && d.name) || '',
+        filled, requested, fr, days, score, tier
+      };
+    });
+
+    const tierLabel = { top: 'Top', strong: 'Strong', weak: 'Weak', unused: 'Never borrowed' };
+    const tierOrder = { top: 0, strong: 1, weak: 2, unused: 3 };
+    rows.sort((a, b) => tierOrder[a.tier] - tierOrder[b.tier] || b.score - a.score || a.sym.localeCompare(b.sym));
+
+    list.innerHTML = rows.map(r => {
+      const stats = r.tier === 'unused'
+        ? '<span class="row-stats">not in your reports</span>'
+        : `<span class="row-stats">${r.filled}/${r.requested} filled${r.fr != null ? ` · ${r.fr}%` : ''}${r.days != null ? ` · ${r.days.toFixed(1)}d` : ''} · score ${r.score}</span>`;
+      return `<div class="audit-row tier-${r.tier}">
+        <span class="row-sym">${escapeHtml(r.sym)}</span>
+        <span class="row-name" title="${escapeHtml(r.name || r.sym)}">${escapeHtml(r.name || '—')}</span>
+        ${stats}
+        <span class="row-tag">${tierLabel[r.tier]}</span>
+      </div>`;
+    }).join('');
+
+    const total = symbols.length;
+    const pct = total > 0 ? Math.round((borrowed / total) * 100) : 0;
+    summaryLine.hidden = false;
+    summaryLine.innerHTML = `
+      <span><strong>${total}</strong> symbol${total === 1 ? '' : 's'}</span>
+      <span class="seg-good"><strong>${borrowed}</strong> borrowed from (${pct}%)</span>
+      <span><strong>${top}</strong> top</span>
+      <span class="seg-warn"><strong>${weak}</strong> weak</span>
+      <span class="seg-muted"><strong>${unused}</strong> never borrowed</span>
+    `;
   }
 
   /* ---------- Modal & help ---------- */
@@ -2770,36 +2776,10 @@
     if (onlyHoldingsCb) {
       onlyHoldingsCb.addEventListener('change', () => {
         activeFilters.onlyHoldings = onlyHoldingsCb.checked;
-        if (!activeFilters.onlyHoldings) activeFilters.scoreSegment = null;
-        const summaryPanel = document.getElementById('rankings-audit-summary');
-        if (summaryPanel) summaryPanel.dataset.unusedShown = '0';
         resetRankPage();
         renderRankings();
       });
     }
-
-    const summaryPanel = document.getElementById('rankings-audit-summary');
-    if (summaryPanel) {
-      summaryPanel.querySelectorAll('.summary-tile').forEach(tile => {
-        tile.addEventListener('click', () => {
-          const seg = tile.dataset.summarySegment;
-          if (seg === 'unused') {
-            activeFilters.onlyHoldings = true;
-            activeFilters.scoreSegment = null;
-            summaryPanel.dataset.unusedShown = '1';
-          } else {
-            activeFilters.onlyHoldings = true;
-            activeFilters.scoreSegment = (seg === 'all') ? null : seg;
-            summaryPanel.dataset.unusedShown = '0';
-          }
-          if (onlyHoldingsCb) onlyHoldingsCb.checked = true;
-          resetRankPage();
-          renderRankings();
-        });
-      });
-    }
-    const editLink = document.getElementById('audit-summary-edit');
-    if (editLink) editLink.addEventListener('click', () => switchTab('audit'));
 
     document.getElementById('sort-by').addEventListener('change', () => { resetRankPage(); renderRankings(); });
     const rankPageSel = document.getElementById('rank-page-size');
@@ -2836,12 +2816,9 @@
       activeFilters.hist.clear();
       activeFilters.group.clear();
       activeFilters.onlyHoldings = false;
-      activeFilters.scoreSegment = null;
       document.querySelectorAll('#rankings-view input[type="checkbox"][data-facet]').forEach(cb => cb.checked = false);
       const ohCb = document.getElementById('only-holdings');
       if (ohCb) ohCb.checked = false;
-      const sp = document.getElementById('rankings-audit-summary');
-      if (sp) sp.dataset.unusedShown = '0';
       selected.clear();
       expanded.clear();
       document.getElementById('export-panel').innerHTML = '';
@@ -2962,6 +2939,7 @@
         const parsed = parseAuditInput(auditTa.value);
         const c = document.getElementById('audit-count');
         if (c) c.textContent = parsed.length === 1 ? '1 symbol' : `${parsed.length} symbols`;
+        debounce('audit-live', () => renderAuditLiveResults(parsed), 200);
       });
     }
     const auditImport = document.getElementById('audit-import');

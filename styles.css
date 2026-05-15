@@ -763,96 +763,75 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   margin-top: 8px;
   flex-wrap: wrap;
 }
-
-.audit-summary {
-  background: var(--bg);
+.audit-summary-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 12.5px;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
   border: 0.5px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-  margin-bottom: 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+}
+.audit-summary-line strong { color: var(--text); font-variant-numeric: tabular-nums; }
+.audit-summary-line .seg-good { color: var(--text-success); }
+.audit-summary-line .seg-warn { color: var(--text-warning); }
+.audit-summary-line .seg-muted { color: var(--text-tertiary); }
+.audit-results-list {
+  max-height: 420px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
+  gap: 4px;
+  padding-right: 4px;
+}
+.audit-row {
+  display: grid;
+  grid-template-columns: 60px 1fr auto auto;
   gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  font-size: 13px;
 }
-.audit-summary .summary-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-.audit-summary .summary-head h3 {
-  margin: 0;
-  font-size: 14px;
+.audit-row .row-sym {
+  font-family: var(--font-mono);
   font-weight: 600;
   color: var(--text);
 }
-.summary-tiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-  gap: 8px;
+.audit-row .row-name {
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.summary-tile {
-  background: var(--bg-secondary);
-  border: 0.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  cursor: pointer;
-  font-family: var(--font);
-  transition: background var(--transition), border-color var(--transition);
-}
-.summary-tile:hover {
-  background: var(--bg);
-  border-color: var(--border-strong);
-}
-.summary-tile.active {
-  background: var(--bg-info);
-  border-color: var(--text-info);
-}
-.summary-tile.active .tile-label { color: var(--text); }
-.tile-num {
-  font-size: 22px;
-  font-weight: 700;
+.audit-row .row-stats {
+  color: var(--text-tertiary);
   font-variant-numeric: tabular-nums;
-  line-height: 1;
-  color: var(--text);
+  font-size: 12px;
+  white-space: nowrap;
 }
-.tile-good { color: var(--text-success); }
-.tile-top { color: var(--text-success); }
-.tile-warn { color: var(--text-warning); }
-.tile-muted { color: var(--text-tertiary); }
-.tile-label {
-  font-size: 11px;
-  color: var(--text-secondary);
+.audit-row .row-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.audit-row.tier-top    .row-tag { background: var(--bg-success); color: var(--text-success); }
+.audit-row.tier-strong .row-tag { background: var(--bg-info);    color: var(--text-info); }
+.audit-row.tier-weak   .row-tag { background: var(--bg-warning); color: var(--text-warning); }
+.audit-row.tier-unused { opacity: 0.78; }
+.audit-row.tier-unused .row-tag { background: var(--bg-secondary); color: var(--text-tertiary); }
+.audit-results-empty {
+  font-size: 12.5px;
+  color: var(--text-tertiary);
+  padding: 12px 10px;
   text-align: center;
-  line-height: 1.2;
-}
-.tile-pct {
-  font-size: 10px;
-  color: var(--text-tertiary);
-}
-.summary-foot {
-  margin: 0;
-  font-size: 11px;
-  color: var(--text-tertiary);
-}
-.summary-unused {
-  background: var(--bg-secondary);
-  border: 0.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-.summary-unused-list {
-  margin: 4px 0 0;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text);
-  word-break: break-word;
 }
 
 .cross-tab-nudge {
