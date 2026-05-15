@@ -614,6 +614,47 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 .next-skip:hover { color: var(--text); }
 .process-panel.all-done .process-next { display: none; }
 
+.cross-tab-nudge {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-warning);
+  border: 0.5px solid color-mix(in srgb, var(--text-warning) 35%, transparent);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.cross-tab-text {
+  flex: 1;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.cross-tab-text strong {
+  display: block;
+  color: var(--text);
+  font-size: 13.5px;
+  margin-bottom: 2px;
+}
+.cross-tab-cta {
+  background: var(--text-warning);
+  color: var(--bg-warning);
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  white-space: nowrap;
+  transition: filter var(--transition);
+}
+.cross-tab-cta:hover { filter: brightness(1.08); }
+@media (max-width: 640px) {
+  .cross-tab-nudge { flex-direction: column; align-items: flex-start; }
+  .cross-tab-cta { width: 100%; }
+}
+
 .flash-highlight {
   animation: lf-flash 1.4s ease-out;
   scroll-margin-top: 90px;

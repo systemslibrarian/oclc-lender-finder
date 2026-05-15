@@ -21,7 +21,7 @@
   let homeLat = 30.4383;
   let homeLng = -84.2807;
   let homeSymbol = '';
-  let activeTab = 'audit';
+  let activeTab = 'rankings';
   let weights = { speed: 25, fill: 30, volume: 15, consistency: 20, local: 10 };
   const expanded = new Set();
   const selected = new Set();
@@ -437,7 +437,7 @@
       const ui = localStorage.getItem(UI_KEY);
       if (ui) {
         const parsed = JSON.parse(ui);
-        if (parsed.activeTab === 'rankings' || parsed.activeTab === 'discover') {
+        if (parsed.activeTab === 'rankings' || parsed.activeTab === 'audit' || parsed.activeTab === 'discover') {
           activeTab = parsed.activeTab;
         }
       }
@@ -1345,6 +1345,9 @@
     const cmpBtn = document.getElementById('compare-btn');
     if (cmpBtn) cmpBtn.hidden = months.length < 2;
 
+    const auditNudge = document.getElementById('rankings-audit-nudge');
+    if (auditNudge) auditNudge.hidden = !(months.length > 0 && auditHoldings.length === 0);
+
     const periodsLabel = months.map(m => m.period).filter(p => p).join(' + ') || 'no data';
     document.getElementById('meta').textContent =
       months.length === 0
@@ -1360,8 +1363,8 @@
       if (months.length === 0) {
         list.innerHTML = `<div class="empty-state">
           <svg class="empty-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m-4 4l4-4 4 4M5 18h14"/></svg>
-          <strong>No data yet</strong>
-          Upload one or more OCLC Borrower Transaction-Level Detail reports using the panel on the left. Your data stays in this browser.
+          <strong>Upload a Borrower report to begin</strong>
+          Drop your OCLC Borrower Transaction-Level Detail .xls in the panel on the left. Once it's loaded you can audit your current holdings group, rank lenders, and discover new candidates. Everything stays in this browser.
           <div class="empty-cta-row">
             <button class="empty-cta primary" id="empty-upload-cta" type="button">+ Add a report</button>
             <button class="empty-cta" id="empty-sample-cta" type="button">Try with sample data</button>
@@ -2469,10 +2472,21 @@
 
     const list = document.getElementById('audit-list');
     if (rows.length === 0) {
-      if (auditHoldings.length === 0) {
+      if (months.length === 0) {
         list.innerHTML = `<div class="empty-state">
-          <strong>Paste your custom holdings group to audit it</strong>
-          Enter OCLC symbols on the left and click <em>Audit holdings</em>. Each member gets bucketed by how it has performed for you in the loaded Borrower reports.
+          <svg class="empty-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m-4 4l4-4 4 4M5 18h14"/></svg>
+          <strong>Load a Borrower report first</strong>
+          The audit needs your actual borrowing history to bucket each holdings member as Top, Strong, Weak, or Unused. Head to Rankings, upload at least one month, then come back here.
+          <div class="empty-cta-row">
+            <button class="empty-cta primary" id="audit-empty-rankings-cta" type="button">Go to Rankings →</button>
+          </div>
+        </div>`;
+        const goBtn = document.getElementById('audit-empty-rankings-cta');
+        if (goBtn) goBtn.addEventListener('click', () => switchTab('rankings'));
+      } else if (auditHoldings.length === 0) {
+        list.innerHTML = `<div class="empty-state">
+          <strong>Paste your current holdings group to audit it</strong>
+          Enter OCLC symbols on the left and click <em>Audit holdings</em>. Each member gets bucketed by how it has performed in your loaded Borrower reports.
         </div>`;
       } else {
         list.innerHTML = `<div class="empty-state">
@@ -2573,7 +2587,8 @@
     openModal('Help & shortcuts', `
       <h3>Keyboard shortcuts</h3>
       <div class="shortcut-row"><span>Switch to Rankings</span><span class="shortcut-keys"><kbd>1</kbd></span></div>
-      <div class="shortcut-row"><span>Switch to Discover</span><span class="shortcut-keys"><kbd>2</kbd></span></div>
+      <div class="shortcut-row"><span>Switch to Audit</span><span class="shortcut-keys"><kbd>2</kbd></span></div>
+      <div class="shortcut-row"><span>Switch to Discover</span><span class="shortcut-keys"><kbd>3</kbd></span></div>
       <div class="shortcut-row"><span>Focus search (Discover)</span><span class="shortcut-keys"><kbd>/</kbd></span></div>
       <div class="shortcut-row"><span>Clear search / close panel</span><span class="shortcut-keys"><kbd>Esc</kbd></span></div>
       <div class="shortcut-row"><span>Toggle card selection</span><span class="shortcut-keys"><kbd>Enter</kbd> or <kbd>Space</kbd></span></div>
@@ -2825,6 +2840,17 @@
       });
     });
 
+    /* Cross-tab nudge: Rankings → Audit */
+    const auditNudgeBtn = document.getElementById('rankings-audit-nudge-btn');
+    if (auditNudgeBtn) {
+      auditNudgeBtn.addEventListener('click', () => {
+        switchTab('audit');
+        openSidebarIfNeeded('audit');
+        const ta = document.getElementById('audit-input');
+        if (ta) ta.focus();
+      });
+    }
+
     /* Discover tab events */
     const searchInput = document.getElementById('dir-search');
     const searchClear = document.getElementById('dir-search-clear');
@@ -3007,8 +3033,8 @@
 
       if (inEditable) return;
 
-      if (e.key === '1') { switchTab('audit'); e.preventDefault(); }
-      else if (e.key === '2') { switchTab('rankings'); e.preventDefault(); }
+      if (e.key === '1') { switchTab('rankings'); e.preventDefault(); }
+      else if (e.key === '2') { switchTab('audit'); e.preventDefault(); }
       else if (e.key === '3') { switchTab('discover'); e.preventDefault(); }
       else if (e.key === '/') {
         if (activeTab !== 'discover') switchTab('discover');

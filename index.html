@@ -29,11 +29,11 @@
       <h1>Lender Finder</h1>
     </div>
     <nav class="tabs" role="tablist" aria-label="Views">
-      <button role="tab" class="tab active" data-tab="audit" aria-selected="true" aria-controls="audit-view">
-        <span class="tab-num">1</span>Audit
+      <button role="tab" class="tab active" data-tab="rankings" aria-selected="true" aria-controls="rankings-view">
+        <span class="tab-num">1</span>Rankings
       </button>
-      <button role="tab" class="tab" data-tab="rankings" aria-selected="false" aria-controls="rankings-view">
-        <span class="tab-num">2</span>Rankings
+      <button role="tab" class="tab" data-tab="audit" aria-selected="false" aria-controls="audit-view">
+        <span class="tab-num">2</span>Audit
       </button>
       <button role="tab" class="tab" data-tab="discover" aria-selected="false" aria-controls="discover-view">
         <span class="tab-num">3</span>Discover
@@ -179,6 +179,13 @@
           <button class="next-skip" id="rankings-next-skip" type="button" hidden>Skip for now</button>
         </div>
       </div>
+    </div>
+    <div class="cross-tab-nudge" id="rankings-audit-nudge" hidden>
+      <div class="cross-tab-text">
+        <strong>Got an existing holdings group?</strong>
+        Paste your OCLC symbols into the Audit tab to see how each member has actually performed — bucketed Top / Strong / Weak / Unused.
+      </div>
+      <button class="cross-tab-cta" id="rankings-audit-nudge-btn" type="button">Open Audit →</button>
     </div>
     <div class="toolbar">
       <div class="result-count"><strong id="match-count">0</strong> match · <strong id="sel-count">0</strong> selected</div>
