@@ -48,6 +48,32 @@
   </div>
 </header>
 
+<nav class="journey-stepper" aria-label="Workflow progress">
+  <button class="journey-step" type="button" data-step-tab="rankings">
+    <span class="journey-marker"><span class="journey-num">1</span><span class="journey-check" aria-hidden="true">✓</span></span>
+    <span class="journey-text">
+      <span class="journey-label">Load reports</span>
+      <span class="journey-sub">Borrower .xls</span>
+    </span>
+  </button>
+  <span class="journey-arrow" aria-hidden="true">→</span>
+  <button class="journey-step" type="button" data-step-tab="audit">
+    <span class="journey-marker"><span class="journey-num">2</span><span class="journey-check" aria-hidden="true">✓</span></span>
+    <span class="journey-text">
+      <span class="journey-label">Save holdings</span>
+      <span class="journey-sub">Your current group</span>
+    </span>
+  </button>
+  <span class="journey-arrow" aria-hidden="true">→</span>
+  <button class="journey-step" type="button" data-step-tab="discover">
+    <span class="journey-marker"><span class="journey-num">3</span><span class="journey-check" aria-hidden="true">✓</span></span>
+    <span class="journey-text">
+      <span class="journey-label">Find new lenders</span>
+      <span class="journey-sub">Build &amp; export</span>
+    </span>
+  </button>
+</nav>
+
 <div class="sr-only" id="aria-live-status" aria-live="polite" aria-atomic="true"></div>
 <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
 
@@ -183,7 +209,7 @@
     <div class="cross-tab-nudge" id="rankings-audit-nudge" hidden>
       <div class="cross-tab-text">
         <strong>Got an existing holdings group?</strong>
-        Paste your OCLC symbols into the Audit tab to see how each member has actually performed — bucketed Top / Strong / Weak / Unused.
+        Paste or import your OCLC symbols on the Audit tab — saved holdings can be hidden from Discover so you only see new candidates.
       </div>
       <button class="cross-tab-cta" id="rankings-audit-nudge-btn" type="button">Open Audit →</button>
     </div>
@@ -341,69 +367,24 @@
   </section>
 </main>
 
-<main class="layout" id="audit-view" hidden>
-  <button class="filter-toggle" type="button" aria-expanded="false" aria-controls="audit-facets" data-filter-toggle="audit">
-    <span>Filters</span>
-    <span class="chev" aria-hidden="true">▾</span>
-  </button>
-
-  <aside class="facets" id="audit-facets" aria-label="Audit input">
-    <section class="facet-group">
-      <h2 class="facet-heading">Your current holdings</h2>
-      <p class="hint" style="margin-bottom: 12px;">Paste your custom holdings group — OCLC symbols separated by commas, spaces, or newlines. Each symbol is cross-referenced against your loaded Borrower reports.</p>
-      <label for="audit-input" class="sr-only">Custom holdings symbols</label>
-      <textarea id="audit-input" rows="8" placeholder="FUG, FDA, SFU&#10;FOC, FJV, NYP" aria-describedby="audit-count" style="width:100%; font-family: var(--font-mono); font-size: 13px; padding: 8px; border: 0.5px solid var(--border); border-radius: var(--radius-sm); resize: vertical;"></textarea>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; gap:8px; flex-wrap:wrap;">
-        <span id="audit-count" class="hint" style="margin:0;">0 symbols</span>
-        <button class="link-btn" id="audit-clear" type="button">Clear</button>
-      </div>
-      <button class="primary-btn" id="audit-run" type="button" style="margin-top:10px; width:100%;">Audit holdings</button>
-    </section>
-
-    <section class="facet-group">
-      <h2 class="facet-heading">Tier thresholds</h2>
-      <p class="hint">Members are bucketed by their composite score from Rankings. The scoring weights from the Rankings sidebar carry over here.</p>
-      <ul style="font-size:12px; color: var(--text-secondary); padding-left: 18px; margin: 6px 0 0;">
-        <li><strong style="color: var(--text-success);">Top</strong> — score ≥ 70</li>
-        <li><strong style="color: var(--text-warning);">Strong</strong> — 50–69</li>
-        <li><strong style="color: var(--text-danger);">Weak</strong> — 1–49</li>
-        <li><strong style="color: var(--text-tertiary);">Unused</strong> — not in your reports</li>
-      </ul>
-    </section>
-  </aside>
-
-  <section class="results" aria-label="Audit results">
-    <div class="toolbar">
-      <div class="result-count audit-tiers" role="group" aria-label="Filter audit by tier">
-        <button class="audit-tier-pill active" data-tier="all" type="button" title="Show all members">
-          <strong id="audit-total">0</strong> members
-        </button>
-        <button class="audit-tier-pill" data-tier="top" type="button" title="Show only Top tier">
-          <strong id="audit-top">0</strong> top
-        </button>
-        <button class="audit-tier-pill" data-tier="strong" type="button" title="Show only Strong tier">
-          <strong id="audit-strong">0</strong> strong
-        </button>
-        <button class="audit-tier-pill" data-tier="weak" type="button" title="Show only Weak tier">
-          <strong id="audit-weak">0</strong> weak
-        </button>
-        <button class="audit-tier-pill" data-tier="unused" type="button" title="Show only Unused (never borrowed from)">
-          <strong id="audit-unused">0</strong> unused
-        </button>
-      </div>
-      <div class="toolbar-actions">
-        <select id="audit-sort-by" aria-label="Sort audit by">
-          <option value="score">Sort: best match</option>
-          <option value="tier">Sort: tier</option>
-          <option value="name">Sort: name</option>
-          <option value="filled">Sort: most filled</option>
-          <option value="fill">Sort: fill rate</option>
-          <option value="speed">Sort: turnaround</option>
-        </select>
-      </div>
+<main class="audit-form-view" id="audit-view" hidden>
+  <div class="audit-form-card">
+    <h2 class="audit-form-heading">Your current holdings group</h2>
+    <p class="audit-form-hint">Paste your OCLC symbols below — separated by commas, spaces, or newlines — or import a .csv / .txt file. Save when you're done; you'll come back to Rankings.</p>
+    <label for="audit-input" class="sr-only">Current holdings symbols</label>
+    <textarea id="audit-input" rows="12" placeholder="FUG, FDA, SFU&#10;FOC, FJV, NYP" aria-describedby="audit-count"></textarea>
+    <div class="audit-form-row">
+      <span id="audit-count" class="hint">0 symbols</span>
+      <label class="ghost-btn audit-import-btn" for="audit-import">
+        Import .csv / .txt
+      </label>
+      <input type="file" id="audit-import" accept=".csv,.txt" hidden>
     </div>
-    <div id="audit-list" role="list"></div>
-  </section>
+    <div class="audit-form-actions">
+      <button class="ghost-btn" id="audit-clear" type="button">Clear &amp; return</button>
+      <button class="primary-btn" id="audit-save" type="button">Save &amp; return to Rankings</button>
+    </div>
+  </div>
 </main>
 
 <footer class="site-footer">

@@ -15,7 +15,6 @@
   let notes = {};
   let savedGroups = [];
   let auditHoldings = [];          // Symbols pasted/uploaded for Audit
-  let auditTierFilter = null;      // null = all, otherwise 'top' | 'strong' | 'weak' | 'unused'
   const notesExpanded = new Set();
   let homeState = 'FL';
   let homeLat = 30.4383;
@@ -411,6 +410,21 @@
     } catch (e) {
       console.warn('localStorage save failed:', e);
     }
+    updateJourneyStepper();
+  }
+
+  function updateJourneyStepper() {
+    const stepStates = {
+      rankings: months.length > 0,
+      audit:    auditHoldings.length > 0,
+      discover: savedGroups.length > 0 || (typeof dirSelected !== 'undefined' && dirSelected.size > 0)
+    };
+    document.querySelectorAll('.journey-step').forEach(btn => {
+      const tab = btn.dataset.stepTab;
+      btn.classList.toggle('done', !!stepStates[tab]);
+      btn.classList.toggle('active', tab === activeTab);
+      btn.setAttribute('aria-current', tab === activeTab ? 'step' : 'false');
+    });
   }
 
   function loadData() {
@@ -2370,12 +2384,13 @@
     if (auditView) auditView.hidden = name !== 'audit';
     if (name === 'rankings' || name === 'discover') renderProcessPanel(name);
     if (name === 'audit') renderAudit();
+    updateJourneyStepper();
     saveData();
     // Re-clamp facets now that the newly-shown panel has a layout.
     clampAllFacets();
   }
 
-  /* ---------- Audit tab ---------- */
+  /* ---------- Audit tab (holdings entry form) ---------- */
 
   function parseAuditInput(text) {
     if (!text) return [];
@@ -2390,150 +2405,11 @@
     return out;
   }
 
-  function auditTierForScore(score, inReport) {
-    if (!inReport) return 'unused';
-    if (score >= 70) return 'top';
-    if (score >= 50) return 'strong';
-    return 'weak';
-  }
-
-  const TIER_META = {
-    top:    { label: 'Top',    badge: 'badge-top'    },
-    strong: { label: 'Strong', badge: 'badge-strong' },
-    weak:   { label: 'Weak',   badge: 'badge-weak'   },
-    unused: { label: 'Unused', badge: 'badge-unused' }
-  };
-
   function renderAudit() {
     const ta = document.getElementById('audit-input');
     if (ta && ta.value !== auditHoldings.join(', ')) ta.value = auditHoldings.join(', ');
     const countEl = document.getElementById('audit-count');
     if (countEl) countEl.textContent = auditHoldings.length === 1 ? '1 symbol' : `${auditHoldings.length} symbols`;
-
-    const merged = mergeMonths();
-    const reportBySym = new Map(merged.map(l => [l.symbol, l]));
-    const dir = getMergedDirectory();
-    const dirBySym = new Map(dir.map(l => [l.symbol, l]));
-
-    let rows = auditHoldings.map(sym => {
-      const r = reportBySym.get(sym);
-      const d = dirBySym.get(sym);
-      const inReport = !!r;
-      const score = inReport ? totalScore(r) : 0;
-      const subs = inReport ? subscores(r) : null;
-      const tier = auditTierForScore(score, inReport);
-      return {
-        symbol: sym,
-        name: (r && r.name) || (d && d.name) || sym,
-        type: (r && r.type) || (d && d.type) || '—',
-        state: (r && r.state) || (d && d.state) || '—',
-        groups: (d && d.groups) || [],
-        loansDays: d && typeof d.loansDaysToRespond === 'number' ? d.loansDaysToRespond : null,
-        copiesDays: d && typeof d.copiesDaysToRespond === 'number' ? d.copiesDaysToRespond : null,
-        requested: r ? r.requested : 0,
-        filled: r ? r.filled : 0,
-        avgHours: r ? r.avgHours : 0,
-        monthsPresent: r ? r.monthsPresent : 0,
-        monthsSpan: r ? r.monthsSpan : (months.length || 0),
-        score, subs, tier, inReport
-      };
-    });
-
-    const counts = { top: 0, strong: 0, weak: 0, unused: 0 };
-    rows.forEach(r => counts[r.tier]++);
-    document.getElementById('audit-total').textContent = rows.length;
-    document.getElementById('audit-top').textContent = counts.top;
-    document.getElementById('audit-strong').textContent = counts.strong;
-    document.getElementById('audit-weak').textContent = counts.weak;
-    document.getElementById('audit-unused').textContent = counts.unused;
-    document.querySelectorAll('.audit-tier-pill').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.tier === (auditTierFilter || 'all'));
-    });
-    // Apply the tier filter to the rendered rows (counts above always reflect
-    // the full set so the user can see how many would match each tier).
-    if (auditTierFilter) rows = rows.filter(r => r.tier === auditTierFilter);
-
-    const sortSel = document.getElementById('audit-sort-by');
-    const sortBy = (sortSel && sortSel.value) || 'score';
-    const tierOrder = { top: 0, strong: 1, weak: 2, unused: 3 };
-    const sortFns = {
-      score: (a, b) => b.score - a.score,
-      tier:  (a, b) => tierOrder[a.tier] - tierOrder[b.tier] || b.score - a.score,
-      name:  (a, b) => a.name.localeCompare(b.name),
-      filled:(a, b) => b.filled - a.filled,
-      fill:  (a, b) => {
-        const fa = a.requested > 0 ? a.filled / a.requested : -1;
-        const fb = b.requested > 0 ? b.filled / b.requested : -1;
-        return fb - fa;
-      },
-      speed: (a, b) => (a.filled > 0 ? a.avgHours : 1e9) - (b.filled > 0 ? b.avgHours : 1e9)
-    };
-    rows.sort(sortFns[sortBy] || sortFns.score);
-
-    const list = document.getElementById('audit-list');
-    if (rows.length === 0) {
-      if (months.length === 0) {
-        list.innerHTML = `<div class="empty-state">
-          <svg class="empty-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V8m-4 4l4-4 4 4M5 18h14"/></svg>
-          <strong>Load a Borrower report first</strong>
-          The audit needs your actual borrowing history to bucket each holdings member as Top, Strong, Weak, or Unused. Head to Rankings, upload at least one month, then come back here.
-          <div class="empty-cta-row">
-            <button class="empty-cta primary" id="audit-empty-rankings-cta" type="button">Go to Rankings →</button>
-          </div>
-        </div>`;
-        const goBtn = document.getElementById('audit-empty-rankings-cta');
-        if (goBtn) goBtn.addEventListener('click', () => switchTab('rankings'));
-      } else if (auditHoldings.length === 0) {
-        list.innerHTML = `<div class="empty-state">
-          <strong>Paste your current holdings group to audit it</strong>
-          Enter OCLC symbols on the left and click <em>Audit holdings</em>. Each member gets bucketed by how it has performed in your loaded Borrower reports.
-        </div>`;
-      } else {
-        list.innerHTML = `<div class="empty-state">
-          <strong>No members in this tier</strong>
-          Click <em>members</em> at the top to clear the filter.
-        </div>`;
-      }
-      return;
-    }
-    list.innerHTML = rows.map(renderAuditCard).join('');
-  }
-
-  function renderAuditCard(r) {
-    const meta = TIER_META[r.tier];
-    const fr = r.requested > 0 ? Math.min(100, (r.filled / r.requested) * 100) : null;
-    const days = r.avgHours > 0 ? r.avgHours / 24 : null;
-    const groupBadges = r.groups.map(g => `<span class="badge">${escapeHtml(g)}</span>`).join('');
-    const policy = (typeof r.loansDays === 'number' || typeof r.copiesDays === 'number')
-      ? `<div class="audit-policy">OCLC stated: loans ${typeof r.loansDays === 'number' ? r.loansDays + 'd' : '—'} · copies ${typeof r.copiesDays === 'number' ? r.copiesDays + 'd' : '—'}</div>`
-      : '';
-    const scoreCell = r.inReport
-      ? `<span class="score ${r.score >= 70 ? 'high' : r.score >= 50 ? 'med' : ''}">${r.score}</span>`
-      : '<span class="score" style="opacity:0.5;">—</span>';
-    return `
-      <div class="card audit-card" role="listitem" data-tier="${r.tier}">
-        <div class="card-top">
-          <div class="card-left">
-            <div>
-              <p class="card-name">${escapeHtml(r.name)}</p>
-              <p class="card-sub">${escapeHtml(r.symbol)} · ${escapeHtml(r.type)} · ${escapeHtml(r.state)}</p>
-            </div>
-          </div>
-          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
-            <span class="badge audit-tier ${meta.badge}">${meta.label}</span>
-            ${scoreCell}
-          </div>
-        </div>
-        <div class="card-stats">
-          <div class="stat"><span class="stat-label">Requested</span><span class="stat-val ${r.requested === 0 ? 'muted' : ''}">${r.requested || '—'}</span></div>
-          <div class="stat"><span class="stat-label">Filled</span><span class="stat-val ${r.filled === 0 ? 'muted' : ''}">${r.filled || '—'}</span></div>
-          <div class="stat"><span class="stat-label">Fill rate</span><span class="stat-val ${fr == null ? 'muted' : ''}">${fr == null ? '—' : fr.toFixed(0) + '%'}</span></div>
-          <div class="stat"><span class="stat-label">Avg days</span><span class="stat-val ${days == null ? 'muted' : ''}">${days == null ? '—' : days.toFixed(1)}</span></div>
-          <div class="stat"><span class="stat-label">Months</span><span class="stat-val ${r.monthsSpan === 0 ? 'muted' : ''}">${r.monthsSpan > 0 ? `${r.monthsPresent}/${r.monthsSpan}` : '—'}</span></div>
-        </div>
-        ${groupBadges ? `<div class="badges">${groupBadges}</div>` : ''}
-        ${policy}
-      </div>`;
   }
 
   /* ---------- Modal & help ---------- */
@@ -2654,6 +2530,10 @@
   /* ---------- Event wiring ---------- */
 
   function bindEvents() {
+    document.querySelectorAll('.journey-step').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.stepTab));
+    });
+
     const tabEls = Array.from(document.querySelectorAll('.tab'));
     tabEls.forEach((b, i) => {
       b.addEventListener('click', () => switchTab(b.dataset.tab));
@@ -2933,26 +2813,50 @@
       renderDiscover();
     });
 
-    /* Audit tab */
+    /* Audit tab — holdings entry form */
     const auditTa = document.getElementById('audit-input');
     if (auditTa) {
-      // Live-update counter as the user types.
       auditTa.addEventListener('input', () => {
         const parsed = parseAuditInput(auditTa.value);
         const c = document.getElementById('audit-count');
         if (c) c.textContent = parsed.length === 1 ? '1 symbol' : `${parsed.length} symbols`;
       });
     }
-    const auditRun = document.getElementById('audit-run');
-    if (auditRun) {
-      auditRun.addEventListener('click', () => {
+    const auditImport = document.getElementById('audit-import');
+    if (auditImport) {
+      auditImport.addEventListener('change', e => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const text = String(ev.target.result || '');
+          const parsed = parseAuditInput(text);
+          if (auditTa) {
+            auditTa.value = parsed.join(', ');
+            auditTa.dispatchEvent(new Event('input'));
+          }
+          showToast({ message: parsed.length === 1 ? `Imported 1 symbol from ${file.name}` : `Imported ${parsed.length} symbols from ${file.name}`, kind: 'ok' });
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      });
+    }
+    const auditSave = document.getElementById('audit-save');
+    if (auditSave) {
+      auditSave.addEventListener('click', () => {
         auditHoldings = parseAuditInput(auditTa ? auditTa.value : '');
-        renderAudit();
-        // Keep Discover in sync — it can be configured to hide audit-list
-        // symbols, and its facet counts need to refresh too.
+        saveData();
         buildDirFacetOptions();
         renderDiscover();
-        saveData();
+        showToast({
+          message: auditHoldings.length === 0
+            ? 'Holdings cleared'
+            : auditHoldings.length === 1
+              ? 'Saved 1 symbol to your holdings'
+              : `Saved ${auditHoldings.length} symbols to your holdings`,
+          kind: 'ok'
+        });
+        switchTab('rankings');
       });
     }
     const auditClear = document.getElementById('audit-clear');
@@ -2964,17 +2868,10 @@
         buildDirFacetOptions();
         renderDiscover();
         saveData();
+        showToast({ message: 'Holdings cleared', kind: 'ok' });
+        switchTab('rankings');
       });
     }
-    const auditSort = document.getElementById('audit-sort-by');
-    if (auditSort) auditSort.addEventListener('change', renderAudit);
-    document.querySelectorAll('.audit-tier-pill').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const t = btn.dataset.tier;
-        auditTierFilter = t === 'all' ? null : t;
-        renderAudit();
-      });
-    });
 
     /* Filter toggle (mobile) */
     document.querySelectorAll('[data-filter-toggle]').forEach(btn => {
