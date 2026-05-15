@@ -48,7 +48,7 @@ jobs:
             const js = fs.readFileSync('app.js', 'utf8');
             const ids = new Set([...html.matchAll(/id=\"([^\"]+)\"/g)].map(m => m[1]));
             const refs = [...new Set([...js.matchAll(/getElementById\(['\"]([^'\"]+)['\"]\)/g)].map(m => m[1]))];
-            const dynamic = ['empty-upload-cta', 'empty-sample-cta', 'leaflet-map', 'compare-body', 'compare-results', 'compare-close', 'compare-export-csv', 'session-cancel', 'session-merge', 'session-replace', 'csv-cancel', 'csv-apply'];
+            const dynamic = ['empty-upload-cta', 'empty-sample-cta', 'leaflet-map', 'compare-body', 'compare-results', 'compare-close', 'compare-export-csv', 'session-cancel', 'session-merge', 'session-replace', 'csv-cancel', 'csv-apply', 'reset-cancel', 'reset-confirm'];
             const missing = refs.filter(id => !ids.has(id) && !dynamic.includes(id));
             if (missing.length) { console.error('Missing IDs:', missing); process.exit(1); }
             console.log('All', refs.length, 'JS-referenced IDs accounted for');

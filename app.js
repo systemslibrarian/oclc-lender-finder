@@ -3009,6 +3009,36 @@
     document.getElementById('footer-help').addEventListener('click', showHelpModal);
     document.getElementById('open-scoring-help').addEventListener('click', showScoringModal);
 
+    /* Reset everything */
+    const resetAllBtn = document.getElementById('reset-all');
+    if (resetAllBtn) resetAllBtn.addEventListener('click', () => {
+      const summary = [
+        months.length > 0 ? `${months.length} month${months.length === 1 ? '' : 's'} of reports` : null,
+        auditHoldings.length > 0 ? `${auditHoldings.length} holding symbol${auditHoldings.length === 1 ? '' : 's'}` : null,
+        savedGroups.length > 0 ? `${savedGroups.length} saved group${savedGroups.length === 1 ? '' : 's'}` : null,
+        Object.keys(notes).length > 0 ? `${Object.keys(notes).length} lender note${Object.keys(notes).length === 1 ? '' : 's'}` : null,
+        importedDirectory.length > 0 ? `${importedDirectory.length} imported directory entr${importedDirectory.length === 1 ? 'y' : 'ies'}` : null
+      ].filter(Boolean);
+      const summaryHtml = summary.length > 0
+        ? `<ul style="margin:6px 0 12px; padding-left: 18px; line-height: 1.7;">${summary.map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ul>`
+        : '<p>No saved data — nothing to clear.</p>';
+      openModal('Reset everything?', `
+        <p>This wipes all data this app has stored in your browser:</p>
+        ${summaryHtml}
+        <p>Settings (home location, scoring weights), filters, and selections are also cleared. <strong>This cannot be undone.</strong></p>
+        <p style="font-size:12px; color: var(--text-secondary);">Tip: use <em>Export session</em> in the footer first if you want a backup.</p>
+        <div style="display:flex; gap:8px; margin-top:16px; justify-content:flex-end; flex-wrap:wrap;">
+          <button class="ghost-btn" id="reset-cancel" type="button">Cancel</button>
+          <button class="primary-btn" id="reset-confirm" type="button" style="background: var(--text-danger);">Yes, reset everything</button>
+        </div>
+      `);
+      document.getElementById('reset-cancel').addEventListener('click', closeModal);
+      document.getElementById('reset-confirm').addEventListener('click', () => {
+        try { localStorage.clear(); } catch (_) {}
+        location.reload();
+      });
+    });
+
     /* Session export/import */
     document.getElementById('footer-export').addEventListener('click', exportSession);
     document.getElementById('footer-import').addEventListener('click', () => {
